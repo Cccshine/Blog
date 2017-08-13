@@ -25,6 +25,7 @@ module.exports = {
 		vendors:['react','react-dom','react-router']//抽取公共框架
 	},
 	output:{
+		// path:__dirname+'/dist',
 		publicPath:'dist',
 		filename:'js/bundle.js'
 	},
