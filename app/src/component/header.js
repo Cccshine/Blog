@@ -1,15 +1,15 @@
 import React from 'react';
-import {Link} from 'react-router-dom';
+import {NavLink} from 'react-router-dom';
 
 export default class Header extends React.Component{
 	render(){
 		return (
 			<nav>
-				<Link to="/home">首页</Link>
-				<Link to="/article-list">文章列表</Link>
-				<Link to="tag">标签</Link>
-				<Link to="archive">归档</Link>
-				<Link to="about">About Me</Link>
+				<NavLink exact to="/" activeClassName="active">首页</NavLink>
+				<NavLink to="/article-list">文章列表</NavLink>
+				<NavLink to="/tag">标签</NavLink>
+				<NavLink to="/archive">归档</NavLink>
+				<NavLink to="/about">About Me</NavLink>
 			</nav>
 		)
 	}
