@@ -16,6 +16,7 @@ import 'es5-shim';
 import 'babel-polyfill';
 
 import './sass/main.scss'
+import 'font-awesome.css'
 
 export default class App extends React.Component{
 	constructor(props){

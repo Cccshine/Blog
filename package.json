@@ -48,6 +48,7 @@
   "dependencies": {
     "antd": "^2.12.5",
     "babel-polyfill": "^6.23.0",
+    "font-awesome": "^4.7.0",
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
     "react-router": "^4.1.2",

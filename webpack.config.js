@@ -23,7 +23,7 @@ module.exports = {
 	entry:{
 		//__dirname是node.js中的一个全局变量，它指向当前执行脚本所在的目录。
 		pages:path.resolve(__dirname, './app/src/router.js'),//所有页面的入口
-		vendors:['react','react-dom','react-router']//抽取公共框架
+		vendors:['react','react-dom','react-router','font-awesome']//抽取公共框架
 	},
 	output:{
 		// path:__dirname+'/dist',
