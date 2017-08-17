@@ -1,7 +1,37 @@
 import React from 'react';
-import createBrowserHistory from 'history/createBrowserHistory';
-const history = createBrowserHistory();
+import {Link} from 'react-router-dom';
 
+
+class QuickLink extends React.Component{
+	render(){
+		return(
+			<nav class="quick-link">
+				<Link to="/" className="fa fa-home">首页</Link>
+				<Link to="/register" className="fa fa-user-plus">注册</Link>
+			</nav>
+		)
+	}
+}
+class LoginBox extends React.Component{
+	render(){
+		return(
+			<div id="login-box" className="form-box">
+				<h3>登录</h3>
+				<form action="">
+					<div className="form-group">
+						<label htmlFor="username">用户名：</label>
+						<input type="text" name="username" id="username"/>
+					</div>
+					<div className="form-group">
+						<label htmlFor="password">密码：</label>
+						<input type="password" name="password" id="password"/>
+					</div>
+					<input type="submit" name="login-btn" value="登录"/>
+				</form>
+			</div>
+		)
+	}
+}
 export default class Login extends React.Component{
 	constructor(props){
 		super(props);
@@ -12,9 +42,20 @@ export default class Login extends React.Component{
 	}
 	render(){
 		return(
-			<div>
-				<h1>我是登录注册页</h1>
-				<button id="login-btn" onClick={this.handleLogin}>登录</button>
+			<QuickLink />
+			<div id="login-box" className="form-box">
+				<h3>登录</h3>
+				<form action="">
+					<div className="form-group">
+						<label htmlFor="username">用户名：</label>
+						<input type="text" name="username" id="username"/>
+					</div>
+					<div className="form-group">
+						<label htmlFor="password">密码：</label>
+						<input type="password" name="password" id="password"/>
+					</div>
+					<input type="submit" name="login-btn" value="登录"/>
+				</form>
 			</div>
 		)
 	}

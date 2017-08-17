@@ -9,14 +9,13 @@ import {Route} from 'react-router-dom';
 // import About from './pages/about';
 
 import Main from './component/main'
-import Header from './component/header'
+import Header from './component/public/header'
 
 import 'es5-shim';
 //为当前环境提供一个垫片babel-polyfill,来转换JavaScript新的API
 import 'babel-polyfill';
 
 import './sass/main.scss'
-import 'font-awesome.css'
 
 export default class App extends React.Component{
 	constructor(props){

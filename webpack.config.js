@@ -11,7 +11,7 @@ module.exports = {
 		//浏览器刷新时所有的路径都执行index.html。
 		historyApiFallback:true,
 		//热更新
-		hot:true,
+		// hot:true,
 		//自动刷新模式为内联模式（还有iframe模式）
 		inline:true,
 		//设定webpack-dev-server伺服的directory。如果不进行设定的话，默认是在当前目录下
@@ -23,26 +23,42 @@ module.exports = {
 	entry:{
 		//__dirname是node.js中的一个全局变量，它指向当前执行脚本所在的目录。
 		pages:path.resolve(__dirname, './app/src/router.js'),//所有页面的入口
-		vendors:['react','react-dom','react-router','font-awesome']//抽取公共框架
+		vendors:['react','react-dom','react-router']//抽取公共框架
 	},
 	output:{
 		// path:__dirname+'/dist',
-		publicPath:'dist',
+		publicPath:'dist/',
 		filename:'js/bundle.js'
 	},
 	module:{
 		rules:[
 			{
 				test:/\.css$/,
-				use: extractTextPlugin.extract({
-				        fallback: 'style-loader',
-				        use: 'css-loader'
-			        })
+				use:extractTextPlugin.extract({
+						fallback: 'style-loader',
+				        use: 'css-loader!modules'
+				    })
 			},
 			{
 				test:/\.scss$/,
-				use: extractTextPlugin.extract({
-				        use: 'css-loader!sass-loader'
+				use:extractTextPlugin.extract({
+						fallback: 'style-loader',
+				        use: [
+				        	{
+				        		loader:'css-loader'
+				        	},
+				        	{
+				        		loader:'postcss-loader',
+				        		options:{
+				        			plugins: (loader) => [
+	        			              require('autoprefixer'),
+	        			            ]
+				        		}
+				        	},
+				        	{
+				        		loader:'sass-loader'
+				        	}
+				        ]
 			        })
 			},
 			{
@@ -66,7 +82,7 @@ module.exports = {
 						loader:'url-loader',//名称
 						options:{//其他配置选项
 							limit:8192,
-							name:'/img/[name].[ext]'
+							name:'/images/[name].[ext]'
 						}
 					}
 			},
@@ -85,6 +101,6 @@ module.exports = {
 		new extractTextPlugin({filename:'css/bundle.css'}),
 		// new webpack.ProvidePlugin({$:'jquery'}),
 		new webpack.HotModuleReplacementPlugin(),
-		new openBrowserPlugin({url:'http://localhost:3000/'})
+		new openBrowserPlugin({url:'http://localhost:3000/'}),
 	]
 };

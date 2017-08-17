@@ -7,6 +7,8 @@ import Article from '../pages/article';
 import Tag from '../pages/tag';
 import Archive from '../pages/archive';
 import About from '../pages/about';
+import Login from '../pages/login.js';
+import Register from '../pages/register.js';
 
 
 export default class Main extends React.Component{
@@ -19,6 +21,8 @@ export default class Main extends React.Component{
 					<Route path="/tag" component={Tag}/>
 					<Route path="/archive" component={Archive}/>
 					<Route path="/about" component={About}/>
+					<Route path="/login" component={About}/>
+					<Route path="/register" component={About}/>
 			    </Switch>
 		   </main>
 		)

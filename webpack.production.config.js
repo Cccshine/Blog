@@ -50,7 +50,7 @@ module.exports = {
 						loader:'url-loader',//名称
 						options:{//其他配置选项
 							limit:8192,
-							name:'/img/[name].[ext]'
+							name:'images/[name].[ext]'
 						}
 					}
 			},
