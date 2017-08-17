@@ -1,0 +1,107 @@
+@import "../mixin/square";
+@import "../mixin/vertical_center";
+$theme-main-color:#22C3AA;
+$theme-adorn-color:#D0648A;
+$header-height:60px;
+$header-padding-vertical:5px;
+$header-padding-level:20px;
+$logo-size:$header-height - $header-padding-vertical*2;
+$nav-height:30px;
+$header-n-color:#fff;
+$header-n-font-size:18px;
+$contact-item-size:40px;
+$header-n-shadow:5px 5px 10px #555;
+
+header{
+	width:100%;
+	height:$header-height;
+	position:absolute;
+	top:0;
+	left:0;
+	padding:$header-padding-vertical $header-padding-level;
+	background-color:$theme-main-color;
+	color:$header-n-color;
+	font:bold $header-n-font-size "Microsoft YaHei",sans-serif;
+}
+#logo {
+	float:left;
+	@include square($logo-size);
+	img{
+		@include square($logo-size);
+		border-radius:50%;
+	}
+}
+nav{
+	float:left;
+	@include vCenterLineHeight($header-height - $header-padding-vertical*2);
+	a{
+		display: inline-block;
+		width:120px;
+		@include vCenterLineHeight($nav-height);
+		margin:0 10px;
+		border-radius:0 10px 0 10px;
+		text-align: center;
+		color:$header-n-color;
+		transition: all 1s;
+		&:hover{
+			background-color: $theme-adorn-color;
+			border-radius:10px 0 10px 0;
+		}
+	}
+}
+.active-nav{
+	background-color:$theme-adorn-color;
+	box-shadow:$header-n-shadow;
+}
+#user{
+	float:right;
+	@include vCenterLineHeight($header-height - $header-padding-vertical*2);
+	font-size:$header-n-font-size - 4;
+	a{
+		color:$header-n-color;
+		padding: 0 5px;
+		transition: all 1s;
+		&:first-child{
+			border-right: 1px solid $header-n-color;
+		}
+		&:hover{
+			color:$theme-adorn-color;
+		}
+	}
+}
+#contact{
+	float:right;
+	@include vCenterLineHeight($header-height - $header-padding-vertical*2);
+	.contact-item{
+		display: inline-block;
+		@include square($contact-item-size);
+		@include vCenterLineHeight($contact-item-size);
+		margin: 0 10px;
+		text-align: center;
+		border-radius: 50%;
+		cursor: pointer;
+		transition: all 1s;
+		&:hover{
+			background-color: $theme-adorn-color;
+			box-shadow:$header-n-shadow;
+		}
+	}
+	.fa{
+		display: inline-block;
+		color:$header-n-color;
+		font-size: $header-n-font-size + 6;
+	}
+	.fa-segmentfault:before{
+		content:"Seg";
+		font-size:16px;
+		font-weight: bold;
+	}
+	.fa-douban:before{
+		content:"豆瓣";
+		font-size:16px;
+		font-weight: bold;
+	}
+}
+main{
+	margin-top:$header-height;
+}

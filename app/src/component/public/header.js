@@ -2,6 +2,9 @@ import React from 'react';
 import {NavLink,Link} from 'react-router-dom';
 import ContactIcon from './contact-icon';
 
+
+import style from '../../sass/public/header.scss'
+
 export default class Header extends React.Component{
 	render(){
 		return (
