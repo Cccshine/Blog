@@ -19,7 +19,7 @@ module.exports = {
 		port:3000
 	},
 	//在控制台的sources下，点开可以看到webpack://目录，里面可以直接看到我们开发态的源代码，这样方便我们直接在浏览器中打断点调试
-	devtool:"eval-source-map",  
+	devtool:"inline-source-map",  
 	entry:{
 		//__dirname是node.js中的一个全局变量，它指向当前执行脚本所在的目录。
 		pages:path.resolve(__dirname, './app/src/router.js'),//所有页面的入口
@@ -36,7 +36,7 @@ module.exports = {
 				test:/\.css$/,
 				use:extractTextPlugin.extract({
 						fallback: 'style-loader',
-				        use: 'css-loader!modules'
+				        use: 'css-loader!modules&localIdentName=[name]-[local]-[hash:base64:5]'
 				    })
 			},
 			{
@@ -45,18 +45,28 @@ module.exports = {
 						fallback: 'style-loader',
 				        use: [
 				        	{
-				        		loader:'css-loader'
+				        		loader:'css-loader',
+				        		options:{
+				        			modules:true,
+				        			localIdentName:'[name]-[local]-[hash:base64:5]',
+				        			sourceMap:true
+				        		}
 				        	},
 				        	{
 				        		loader:'postcss-loader',
 				        		options:{
 				        			plugins: (loader) => [
 	        			              require('autoprefixer'),
-	        			            ]
+	        			            ],
+	        			            sourceMap:true
 				        		}
 				        	},
 				        	{
-				        		loader:'sass-loader'
+				        		loader:'sass-loader',
+				        		options:{
+				        			sourceMap:true,
+				        			outputStyle:'expanded'
+				        		}
 				        	}
 				        ]
 			        })

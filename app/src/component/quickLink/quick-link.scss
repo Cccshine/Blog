@@ -1,0 +1,19 @@
+@import "../../sass/variables";
+// @import "../../sass/mixin/square";
+@import "../../sass/mixin/vertical_center";
+.quick-link{
+	float:right;
+	@include vCenterLineHeight($header-height - $header-padding-vertical*2);
+	font-size:$header-n-font-size - 4;
+}
+.quick-link-item{
+	color:$header-n-color;
+	padding: 0 5px;
+	transition: all 1s;
+	&:first-child{
+		border-right: 1px solid $header-n-color;
+	}
+	&:hover{
+		color:$theme-adorn-color;
+	}
+}

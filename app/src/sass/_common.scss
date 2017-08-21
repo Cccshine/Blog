@@ -1,0 +1,16 @@
+.common-vertical-center-transform{
+	position:absolute;
+	top:50%;
+	transform:translateY(-50%);
+}
+.common-level-center-transform{
+	position:absolute;
+	left:50%;
+	transform:translateX(-50%);
+}
+.common-l-v-center-transform{
+	position:absolute;
+	top:50%;
+	left:50%;
+	transform:translate(-50%,-50%);
+}

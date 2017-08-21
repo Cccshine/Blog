@@ -21,8 +21,8 @@ export default class Main extends React.Component{
 					<Route path="/tag" component={Tag}/>
 					<Route path="/archive" component={Archive}/>
 					<Route path="/about" component={About}/>
-					<Route path="/login" component={About}/>
-					<Route path="/register" component={About}/>
+					<Route path="/login" component={Login}/>
+					<Route path="/register" component={Register}/>
 			    </Switch>
 		   </main>
 		)
