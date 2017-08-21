@@ -26,11 +26,11 @@ class FormBox extends React.Component{
 						<label htmlFor="password">密码：</label>
 						<input type="password" name="password" id="password"/>
 					</div>
-					<button type="button" name="login-btn" onClick={this.handleLogin}>登录</button>
+					<button type="button" name="login-btn">登录</button>
 				</form>
 			</div>
 		)
 	}
 }
 
-export default CSSModules(Header, style,{handleNotFoundStyleName:'log'});
+export default CSSModules(FormBox, style,{handleNotFoundStyleName:'log'});
