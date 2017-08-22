@@ -1,5 +1,4 @@
 import React from 'react';
-import {Link} from 'react-router-dom';
 import QuickLink from '../component/quickLink/quick-link';
 import FormBox from '../component/FormBox/form-box';
 
@@ -16,8 +15,8 @@ export default class Login extends React.Component{
 	render(){
 		return(
 			<div>
-				<QuickLink />
-				<FormBox />
+				<QuickLink pageName="login"/>
+				<FormBox pageName="login"/>
 			</div>
 		)
 	}

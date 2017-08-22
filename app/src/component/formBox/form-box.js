@@ -6,27 +6,25 @@ class FormBox extends React.Component{
 	constructor(props) {
 		super(props);
 		this.state = {
-			pageName:""
 		}
-		this.componentWillMount = this.componentWillMount.bind(this);
+		this.handleSubmit = this.handleSubmit.bind(this);
 	}
-	componentWillMount(){
-		this.setState({pageName:window.location.pathname});
+	handleSubmit(event){
+		event.preventDefault();
 	}
 	render(){
+		var mode = this.props.pageName == 'login' ? '登录' : '注册';
+		var name = this.props.pageName == 'login' ? 'login-btn' : 'register-btn';
 		return (
-			<div id="login-box" className="form-box">
-				<h3>登录</h3>
-				<form action="" method="post">
-					<div className="form-group">
-						<label htmlFor="username">用户名：</label>
-						<input type="text" name="username" id="username"/>
+			<div styleName="form-box">
+				<form onSubmit={this.handleSubmit}>
+					<div styleName="form-group" className="fa fa-user">
+						<input type="text" name="username" id="username" placeholder="用户名"/>
 					</div>
-					<div className="form-group">
-						<label htmlFor="password">密码：</label>
-						<input type="password" name="password" id="password"/>
+					<div styleName="form-group" className="fa fa-lock">
+						<input type="password" name="password" id="password" placeholder="密码"/>
 					</div>
-					<button type="button" name="login-btn">登录</button>
+					<button styleName="operate-btn" name={name}>{mode}</button>
 				</form>
 			</div>
 		)

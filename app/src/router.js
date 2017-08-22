@@ -7,7 +7,7 @@ import Login from './pages/login.js';
 import Register from './pages/register.js';
 import App from './app';
 
-import 'font-awesome-webpack';
+import './sass/global/_common.scss';
 
 //配置路由，将路由注入到id为blog的DOM中
 ReactDOM.render(

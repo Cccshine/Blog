@@ -1,0 +1,7 @@
+@import "../_variables";
+@import "./_reset.scss";
+@import "./_font-awsome.scss";
+.active-nav{
+	background-color:$theme-adorn-color;
+	box-shadow:$top-header-n-shadow;
+}

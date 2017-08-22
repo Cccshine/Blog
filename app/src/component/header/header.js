@@ -8,7 +8,7 @@ import style from './header.scss'
 class Header extends React.Component{
 	render(){
 		return (
-			<header>
+			<header styleName="top-header">
 				<div styleName="logo">
 					<img src={require('../../images/logo.jpg')}  alt="cshine"/>
 				</div>
@@ -19,9 +19,7 @@ class Header extends React.Component{
 					<NavLink to="/archive" activeClassName="active-nav">归档</NavLink>
 					<NavLink to="/about" activeClassName="active-nav">About Me</NavLink>
 				</nav>
-				<div>
-					<QuickLink />
-				</div>
+				<QuickLink pageName="index"/>
 				<ContactIcon />
 			</header>
 		)

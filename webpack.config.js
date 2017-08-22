@@ -36,11 +36,43 @@ module.exports = {
 				test:/\.css$/,
 				use:extractTextPlugin.extract({
 						fallback: 'style-loader',
-				        use: 'css-loader!modules&localIdentName=[name]-[local]-[hash:base64:5]'
+				        use: 'css-loader'
 				    })
 			},
 			{
 				test:/\.scss$/,
+				include:path.resolve(__dirname, './app/src/sass/global'),
+				use:extractTextPlugin.extract({
+						fallback: 'style-loader',
+				        use: [
+				        	{
+				        		loader:'css-loader',
+				        		options:{
+				        			sourceMap:true
+				        		}
+				        	},
+				        	{
+				        		loader:'postcss-loader',
+				        		options:{
+				        			plugins: (loader) => [
+	        			              require('autoprefixer'),
+	        			            ],
+	        			            sourceMap:true
+				        		}
+				        	},
+				        	{
+				        		loader:'sass-loader',
+				        		options:{
+				        			sourceMap:true,
+				        			outputStyle:'expanded'
+				        		}
+				        	}
+				        ]
+			        })
+			},
+			{
+				test:/\.scss$/,
+				exclude:path.resolve(__dirname, './app/src/sass/global'),
 				use:extractTextPlugin.extract({
 						fallback: 'style-loader',
 				        use: [

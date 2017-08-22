@@ -1,19 +1,24 @@
 @import "../../sass/variables";
-// @import "../../sass/mixin/square";
 @import "../../sass/mixin/vertical_center";
 .quick-link{
 	float:right;
-	@include vCenterLineHeight($header-height - $header-padding-vertical*2);
-	font-size:$header-n-font-size - 4;
+	@include vCenterLineHeight($quick-link-height);
+	font-size:$quick-link-font-size;
 }
 .quick-link-item{
-	color:$header-n-color;
+	color:$quick-link-color-default;
 	padding: 0 5px;
 	transition: all 1s;
 	&:first-child{
-		border-right: 1px solid $header-n-color;
+		border-right: $quick-link-item-division;
 	}
 	&:hover{
 		color:$theme-adorn-color;
 	}
+}
+.quick-link-item:before{
+	padding-right: 5px;
+}
+[data-role="index-quick-link"]{
+	color:$quick-link-color-custom;
 }

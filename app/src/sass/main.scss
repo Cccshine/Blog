@@ -1,7 +1,9 @@
-@import "./reset";
 main{
 	margin-top:60px;
 }
+html{
+	height:100%;
+}
 body{
-	background:#22C3AA;
+	background: linear-gradient(#fff,#22C3AA);;
 }

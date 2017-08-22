@@ -2,44 +2,40 @@
 @import "../../sass/mixin/square";
 @import "../../sass/mixin/vertical_center";
 
-header{
-	width:100%;
-	height:$header-height;
-	position:absolute;
+.top-header{
+	width:$top-header-width;
+	height:$top-header-height;
+	position:fixed;
 	top:0;
 	left:0;
-	padding:$header-padding-vertical $header-padding-level;
+	padding:$top-header-padding-vertical $top-header-padding-level;
 	background-color:$theme-main-color;
-	color:$header-n-color;
-	font:bold $header-n-font-size "Microsoft YaHei",sans-serif;
+	color:$top-header-n-color;
+	font:$top-header-n-font;
 }
 .logo{
 	float:left;
 	@include square($logo-size);
 	img{
 		@include square($logo-size);
-		border-radius:50%;
+		border-radius:$border-radius-circle;
 	}
 }
 .header-nav{
 	float:left;
-	@include vCenterLineHeight($header-height - $header-padding-vertical*2);
+	@include vCenterLineHeight($top-header-height - $top-header-padding-vertical*2);
 	a{
 		display: inline-block;
-		width:120px;
-		@include vCenterLineHeight($nav-height);
-		margin:0 10px;
-		border-radius:0 10px 0 10px;
+		width:$header-nav-item-width;
+		@include vCenterLineHeight($header-nav-height);
+		margin:$header-nav-item-margin;
+		border-radius:$header-nav-item-border-radius;
 		text-align: center;
-		color:$header-n-color;
-		transition: all 1s;
+		color:$top-header-n-color;
+		transition: all $transition-time-normal;
 		&:hover{
 			background-color: $theme-adorn-color;
-			border-radius:10px 0 10px 0;
+			border-radius:$header-nav-item-border-radius-hover;
 		}
 	}
-}
-:global(.active-nav){
-	background-color:$theme-adorn-color;
-	box-shadow:$header-n-shadow;
 }

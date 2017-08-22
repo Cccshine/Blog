@@ -3,36 +3,24 @@
 @import "../../sass/mixin/vertical_center";
 .contact{
 	float:right;
-	@include vCenterLineHeight($header-height - $header-padding-vertical*2);
+	@include vCenterLineHeight($contact-icon-height);
 	.contact-item{
 		display: inline-block;
-		@include square($contact-item-size);
-		@include vCenterLineHeight($contact-item-size);
-		margin: 0 10px;
+		@include square($contact-icon-size);
+		@include vCenterLineHeight($contact-icon-size);
+		margin: $contact-icon-margin;
 		text-align: center;
-		border-radius: 50%;
+		border-radius: $border-radius-circle;
 		cursor: pointer;
-		transition: all 1s;
+		transition: all $transition-time-normal;
 		&:hover{
 			background-color: $theme-adorn-color;
-			box-shadow:$header-n-shadow;
+			box-shadow:$contact-icon-shadow;
 		}
 	}
 }
-:global{
-	.fa{
-		display: inline-block;
-		color:$header-n-color;
-		font-size: $header-n-font-size + 6;
-	}
-	.fa-segmentfault::before{
-		content:"Seg";
-		font-size:16px;
-		font-weight: bold;
-	}
-	.fa-douban::before{
-		content:"豆瓣";
-		font-size:16px;
-		font-weight: bold;
-	}
+.fa{
+	display: inline-block;
+	color:$contact-icon-color;
+	font-size: $contact-icon-font-size;
 }

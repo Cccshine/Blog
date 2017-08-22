@@ -1,12 +1,53 @@
 $theme-main-color:#22C3AA;
 $theme-adorn-color:#D0648A;
-//herader
-$header-height:60px;
-$header-padding-vertical:5px;
-$header-padding-level:20px;
-$logo-size:$header-height - $header-padding-vertical*2;
-$nav-height:30px;
-$header-n-color:#fff;
-$header-n-font-size:18px;
-$contact-item-size:40px;
-$header-n-shadow:5px 5px 10px #555;
+$border-radius-normal: 5px;
+$border-radius-circle: 50%;
+$border-normal-main:1px solid $theme-main-color;
+$border-normal-adorn:1px solid $theme-adorn-color;
+$transition-time-normal:1s;
+
+//top-header
+$top-header-width:100%;
+$top-header-height:60px;
+$top-header-padding-vertical:5px;
+$top-header-padding-level:20px;
+$top-header-n-color:#fff;
+$top-header-n-font-size:18px;
+$top-header-n-font:bold $top-header-n-font-size "Microsoft YaHei",sans-serif;;
+$top-header-n-shadow:5px 5px 10px #555;
+$logo-size:$top-header-height - $top-header-padding-vertical*2;
+$header-nav-height:30px;
+$header-nav-item-width:120px;
+$header-nav-item-margin:0 10px;
+$header-nav-item-border-radius:0 10px 0 10px;
+$header-nav-item-border-radius-hover:10px 0 10px 0;
+
+//form-box
+$form-box-width:400px;
+$form-box-margin-top:200px;
+$form-box-border: 1px solid $theme-main-color;
+$form-group-height:42px;
+$form-group-margin-bottom:10px;
+$form-input-icon-width:20px;
+$form-input-width:300px;
+$form-input-padding-left:$form-input-icon-width;
+$form-operate-btn-width:$form-input-width;
+$form-operate-btn-color:#fff;
+$form-operate-btn-font-size:16px;
+
+//quick-link
+$quick-link-height:$top-header-height - $top-header-padding-vertical*2;
+$quick-link-font-size:14px;
+$quick-link-color-default:$theme-main-color;
+$quick-link-color-custom:$top-header-n-color;
+$quick-link-color-hover:$theme-adorn-color;
+$quick-link-item-padding:0 5px;
+$quick-link-item-division:1px solid #fff;
+
+//contact-icon
+$contact-icon-height:$top-header-height - $top-header-padding-vertical*2;
+$contact-icon-size:40px;
+$contact-icon-margin:0 10px;
+$contact-icon-shadow:$top-header-n-shadow;
+$contact-icon-color:$top-header-n-color;
+$contact-icon-font-size:24px;
