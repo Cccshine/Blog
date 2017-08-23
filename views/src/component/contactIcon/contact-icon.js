@@ -2,8 +2,7 @@ import React from 'react';
 import CSSModules from 'react-css-modules';
 import style from './contact-icon.scss'
 
-class ContactIcon extends React.Component{
-	render(){
+const ContactIcon = (props) => {
 		return (
 			<ul styleName="contact">
 				<li styleName="contact-item"><a href="" title="Github" styleName="fa" className="fa fa-github"></a></li>
@@ -13,7 +12,6 @@ class ContactIcon extends React.Component{
 				<li styleName="contact-item"><a href="" title="Douban" styleName="fa" className="fa fa-douban"></a></li>
 			</ul>
 		)
-	}
 }
 
 export default CSSModules(ContactIcon,style,{handleNotFoundStyleName:'log'});

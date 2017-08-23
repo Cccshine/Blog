@@ -1,0 +1,50 @@
+@import "../../sass/variables";
+@import "../../sass/mixin/_triangle.scss";
+@import "../../sass/mixin/_vertical_center.scss";
+@import "../../sass/global/_center.scss";
+.tip{
+	@extend .common-vertical-center-transform;
+	left:$tip-bar-left;
+	width:$tip-bar-width;
+	text-align:left;
+	color:$tip-bar-color;
+	padding:$tip-bar-padding;
+	background-color:$tip-bar-background-default;
+	border-radius:$border-radius-small;
+	i{
+		@extend .common-vertical-center-transform;
+		left:$tip-bar-icon-left;
+		font-size:$tip-bar-icon-font-size;
+	}
+	span{
+		font-size:$tip-bar-font-size;
+		line-height:$tip-bar-line-height;
+	}
+	&:before{
+		@include triangle(right,$tip-bar-arrow-size,$tip-bar-arrow-color-default);
+		@extend .common-vertical-center-transform;
+		left:-$tip-bar-arrow-size*2;
+	}
+	
+}
+.tip-info{
+	@extend .tip;
+	background-color:$tip-bar-background-info;
+	&:before{
+		border-right-color:$tip-bar-arrow-color-info;
+	}
+}
+.tip-error{
+	@extend .tip;
+	background-color:$tip-bar-background-error;
+	&:before{
+		border-right-color:$tip-bar-arrow-color-error;
+	}
+}
+.tip-success{
+	@extend .tip;
+	background-color:$tip-bar-background-success;
+	&:before{
+		border-right-color:$tip-bar-arrow-color-success;
+	}
+}
