@@ -1,12 +1,59 @@
 var express = require("express");
 var path = require("path");
-
+var bodyParser = require("body-parser");
 var app = express();
 //设置应用程序的静态路径
 app.use(express.static(path.join(__dirname,"/views")));
-app.listen(3000,function(){
-    console.log("Started listening on port", 3000);
+app.listen(4000,function(){
+    console.log("Started listening on port", 4000);
 })
+
+app.use(bodyParser.json());
+
+app.post('/register', function (req, res) {
+	// var user_name=req.body.email;
+ //  	var password=req.body.password
+ var name = req.body.name;
+ console.log(req.body)
+  res.send(req.body);
+   //  if(user_name=='admin' && password=='admin'){
+   //  	res.send('success');
+   //  }
+   //  else{
+   //  	res.send('Failure');
+  	// }
+});
+
+
+// var path = require('path');
+// var express = require('express');
+// var webpack = require('webpack');
+// var config = require('./webpack.config');//webpack.config.js同一目录
+// var port = 3000;
+// var app = express();
+// var compiler = webpack(config);
+// //内存生成的js文件，请求第一优先
+// app.use(require('webpack-dev-middleware')(compiler, {
+//     noInfo: true,
+//     publicPath: config.output.publicPath,//必须跟webpack.config.js的ouput.publickPath一致
+// }));
+// //设置路径不存在(webpack-dev-middleware内存中也不存在)时访问静态文件目录，请求第二优先
+// app.use(express.static(path.join(__dirname, './views')));
+// app.use(require('webpack-hot-middleware')(compiler));
+// //上面静态文件访问不存在时，所有请求都定位到index.html文件，最后都找不到的请求都访问index.html
+// app.get('*', function(req, res) {
+//     res.sendFile(path.join(__dirname, './views/index.html'));
+// });
+// var host = "localhost"
+// app.listen(port, host, function(err) {
+//     if (err) {
+//         console.log(err);
+//         return;
+//     }
+//     console.info("==> 🌎  Listening on port %s. Open up http://"+host+":%s/ in your browser.",     port, port)
+// });
+
+
 // var http = require('http');
 // var MongoClient = require('mongodb').MongoClient;
 // var DB_CONN_STR = 'mongodb://localhost/runoob';

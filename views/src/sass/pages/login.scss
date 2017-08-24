@@ -1,0 +1,8 @@
+@import "../../sass/variables";
+@import "../../sass/global/_center.scss";
+@import "../../sass/mixin/_vertical_center.scss";
+[data-role*="tip-no"]{
+	position:relative;
+	margin: $login-tip-bar-margin;
+	height:$login-tip-bar-height;
+}

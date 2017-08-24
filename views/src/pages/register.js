@@ -1,93 +1,125 @@
 import React from 'react';
 import TipBar from '../component/tipBar/tip-bar';
 import QuickLink from '../component/quickLink/quick-link';
+import ValidateInput from '../component/form/validate-input';
 import CSSModules from 'react-css-modules';
-import style from '../component/formBox/form-box.scss';
+import style from '../sass/pages/register.scss';
+import '../sass/global/_form-box.scss';
 
-class Login extends React.Component{
+class Register extends React.Component{
 	constructor(props){
 		super(props);
 		this.state = {
-	      userName:'',
-	      password:'',
-	      comfirmPassword:'',
-	      userNameErr:'',
-	      userNamePass:false,
-	      userNameInfo:'只包含汉字、数字、字母、下划线其中一种或几种，长度不能超过10',
-	      passwordErr:'',
-	      passwordPass:false,
-	      passwordInfo:'必须包含数字、字母、下划线其中两种，长度不小于8',
-	      comfirmPasswordErr:'',
-	      comfirmPasswordPass:false
-	    };
+		    userName:'',
+		    password:'',
+		    comfirmPassword:'',
+		    userNameTip:'只包含汉字、数字、字母、下划线其中一种或几种，长度不能超过10',
+		    passwordTip:'必须包含数字、字母、下划线其中两种，长度不小于8',
+		    comfirmPasswordTip:'',
+		    userNameStatus:0,//0--提示 1--错误 2--通过
+		    passwordStatus:0,//0--提示 1--错误 2--通过
+		    comfirmPasswordStatus:0//0--正获得焦点 1--错误 2--通过
+		};
 	}
+
 	handleUserNameChange = (event) => {
 		var value = event.target.value;
 		this.setState({userName:value});
 		if(value === ''){
-			this.setState({userNameErr:'用户名不能为空',userNamePass:false});
+			this.setState({userNameTip:'只包含汉字、数字、字母、下划线其中一种或几种，长度不能超过10',userNameStatus:0});
 			return;
 		}else if(value.length > 10){
-			this.setState({userNameErr:'用户名长度不能超过10个字符',userNamePass:false});
+			this.setState({userNameTip:'用户名长度不能超过10个字符',userNameStatus:1});
 			return;
 		}else if(value.match(/[^a-zA-Z0-9_\u4e00-\u9fa5]+/)){//只含有汉字、数字、字母、下划线
-			this.setState({userNameErr:'用户名只能含有汉字、数字、字母、下划线',userNamePass:false});
+			this.setState({userNameTip:'用户名只能含有汉字、数字、字母、下划线',userNameStatus:1});
 			return;
 		}else{
-			this.setState({userNamePass:true});
+			this.setState({userNameTip:'符合规则',userNameStatus:2});
 		}
 	}
 	handlePasswordChange = (event) => {
 		var value = event.target.value;
 		this.setState({password:value});
 		if(value === ''){
-			this.setState({passwordErr:'密码不能为空',passwordPass:false});
+			this.setState({passwordTip:'必须包含数字、字母、下划线其中两种，长度不小于8',passwordStatus:0});
 			return;
 		}else if(value.length < 8){
-			this.setState({passwordErr:'密码长度不能少于8个字符',passwordPass:false});
+			this.setState({passwordTip:'密码长度不能少于8个字符',passwordStatus:1});
 			return;
 		}else if(value.match(/^[0-9]+$/) || value.match(/^[a-zA-Z]+$/) || value.match(/^[_]+$/)){
-			this.setState({passwordErr:'密码必须包含数字、字母、下划线其中两种',passwordPass:false});
+			this.setState({passwordTip:'密码必须包含数字、字母、下划线其中两种',passwordStatus:1});
 			return;
 		}else{
-			this.setState({passwordPass:true});
+			this.setState({passwordTip:'符合规则',passwordStatus:2});
 		}
 	}
 	handleComfirmPasswordChange = (event) => {
-		var value = event.target.value;
-		// this.setState({comfirmPassword:value});
-		// if(value !== this.state.password){
-		// 	this.setState({comfirmPasswordErr:'两次输入密码不一致',comfirmPasswordPass:false});
-		// 	return;
-		// }
-		// this.setState({comfirmPasswordErr:'',comfirmPasswordPass:true});
+		this.setState({comfirmPassword:event.target.value});
+	}
+	handleComfirmPasswordFocus = (event) => {
+		this.setState({comfirmPasswordStatus:0});
+	}
+	handleComfirmPasswordBlur = (event) => {
+		if(this.state.comfirmPassword !== this.state.password){
+			this.setState({comfirmPasswordTip:'两次输入密码不一致',comfirmPasswordStatus:1});
+			return;
+		}
+		this.setState({comfirmPasswordTip:'',comfirmPasswordStatus:2});
 	}
 	handleSubmit = (event) => {
 		event.preventDefault();
-	}
+
+		let formData = new FormData();
+        formData.append('userName', 'ccc');
+
+		let url = "http://localhost:4000/register";
+        fetch(url, {
+          method: 'POST',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          },
+          mode:'no-cors',
+          body: formData
+        }).then(function(response){
+        	console.log(response)
+        }).then(function(err){
+        	 console.log(err)
+        })
+    }
+
 	render(){
-		var userNameTipType = this.state.userNamePass ?  'success' : (this.state.userNameErr === '' ? 'info' : 'error');
-		var userNameTipText = this.state.userNamePass ?  '符合规则' : (this.state.userNameErr === '' ? this.state.userNameInfo : this.state.userNameErr);
-		var passwordTipType = this.state.passwordPass ?  'success' : (this.state.passwordErr === '' ? 'info' : 'error');
-		var passwordTipText = this.state.passwordPass ?  '符合规则' : (this.state.passwordErr === '' ? this.state.passwordInfo : this.state.passwordErr);
+		var userNameTipType = {
+			0:'info',
+			1:'error',
+			2:'success'
+		}[this.state.userNameStatus];
+		var userNameTipText = this.state.userNameTip;
+		var passwordTipType = {
+			0:'info',
+			1:'error',
+			2:'success'
+		}[this.state.passwordStatus];
+		var passwordTipText = this.state.passwordTip;
 		return(
 			<div>
 				<QuickLink pageName="register"/>
-				<div styleName="form-box">
+				<div className="form-box">
 					<form onSubmit={this.handleSubmit}>
-						<div styleName="form-group" className="fa fa-user">
-							<input type="text" name="username" id="username" placeholder="用户名" onChange={this.handleUserNameChange}/>
-							<TipBar type={userNameTipType} text={userNameTipText}/>
+						<div className="form-group fa fa-user">
+							<input type="text" name="username" placeholder="用户名" onChange={this.handleUserNameChange}/>
+							<TipBar type={userNameTipType} text={userNameTipText} arrow="has"/>
 						</div>
-						<div styleName="form-group" className="fa fa-lock">
-							<input type="password" name="password" id="password" placeholder="密码" onChange={this.handlePasswordChange}/>
-							<TipBar type={passwordTipType} text={passwordTipText}/>
+						<div className="form-group fa fa-lock">
+							<input type="password" name="password" placeholder="密码" onChange={this.handlePasswordChange}/>
+							<TipBar type={passwordTipType} text={passwordTipText} arrow="has"/>
 						</div>
-						<div styleName="form-group" className="fa fa-lock">
-							<input type="password" name="password"  placeholder="确认密码" onChange={this.handleComfirmPasswordChange}/>
-							// {this.state.comfirmPasswordErr == '' ? '' : <TipBar type="error" text={this.state.comfirmPasswordErr}/>}
+						<div className="form-group fa fa-lock">
+							<input type="password" name="password"  placeholder="确认密码" onChange={this.handleComfirmPasswordChange} onFocus={this.handleComfirmPasswordFocus} onBlur={this.handleComfirmPasswordBlur}/>
+							{this.state.comfirmPasswordStatus != 1 ? '' : <TipBar type="error" text={this.state.comfirmPasswordTip} arrow="has"/>}
 						</div>
-						<button styleName="operate-btn" name="login-btn">注册</button>
+						<button className="operate-btn" name="login-btn">注册</button>
 					</form>
 				</div>
 			</div>
@@ -96,4 +128,5 @@ class Login extends React.Component{
 }
 
 
-export default CSSModules(Login, style,{handleNotFoundStyleName:'log'});
+export default CSSModules(Register, style,{handleNotFoundStyleName:'log'});
+// export default Register;

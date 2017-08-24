@@ -2,9 +2,7 @@
 @import "../../sass/mixin/_triangle.scss";
 @import "../../sass/mixin/_vertical_center.scss";
 @import "../../sass/global/_center.scss";
-.tip{
-	@extend .common-vertical-center-transform;
-	left:$tip-bar-left;
+.tip-no-arrow{
 	width:$tip-bar-width;
 	text-align:left;
 	color:$tip-bar-color;
@@ -20,31 +18,46 @@
 		font-size:$tip-bar-font-size;
 		line-height:$tip-bar-line-height;
 	}
+}
+.tip-has-arrow{
+	@extend .tip-no-arrow;
 	&:before{
 		@include triangle(right,$tip-bar-arrow-size,$tip-bar-arrow-color-default);
 		@extend .common-vertical-center-transform;
 		left:-$tip-bar-arrow-size*2;
 	}
-	
 }
-.tip-info{
-	@extend .tip;
+.tip-has-arrow-info{
+	@extend .tip-has-arrow;
 	background-color:$tip-bar-background-info;
 	&:before{
 		border-right-color:$tip-bar-arrow-color-info;
 	}
 }
-.tip-error{
-	@extend .tip;
+.tip-has-arrow-error{
+	@extend .tip-has-arrow;
 	background-color:$tip-bar-background-error;
 	&:before{
 		border-right-color:$tip-bar-arrow-color-error;
 	}
 }
-.tip-success{
-	@extend .tip;
+.tip-has-arrow-success{
+	@extend .tip-has-arrow;
 	background-color:$tip-bar-background-success;
 	&:before{
 		border-right-color:$tip-bar-arrow-color-success;
 	}
+}
+
+.tip-no-arrow-info{
+	@extend .tip-no-arrow;
+	background-color:$tip-bar-background-info;
+}
+.tip-no-arrow-error{
+	@extend .tip-no-arrow;
+	background-color:$tip-bar-background-error;
+}
+.tip-no-arrow-success{
+	@extend .tip-no-arrow;
+	background-color:$tip-bar-background-success;
 }

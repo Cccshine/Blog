@@ -1,0 +1,6 @@
+@import "../../sass/variables";
+@import "../../sass/global/_center.scss";
+[data-role*="tip-has"]{
+	@extend .common-vertical-center-transform;
+	left:$register-tip-bar-left;
+}
