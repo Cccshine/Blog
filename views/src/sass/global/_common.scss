@@ -5,3 +5,15 @@
 	background-color:$theme-adorn-color;
 	box-shadow:$top-header-n-shadow;
 }
+.show{
+	display:block;
+}
+.hide{
+	display:none;
+}
+.unvisible{
+	visibility: hidden;
+}
+.visible{
+	visibility: visible;
+}

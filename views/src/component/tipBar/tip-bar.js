@@ -10,7 +10,7 @@ const TipBar = (props) => {
 		'success':'fa-check-circle'
 	}[props.type];
 	return (
-		<div styleName={tipType} data-role={tipType}>
+		<div styleName={tipType} data-role={tipType} className={props.classNames}>
 			<i className={'fa '+icon}></i>
 			<span>{props.text}</span>
 		</div>

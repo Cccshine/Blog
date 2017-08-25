@@ -1,28 +1,96 @@
-var express = require("express");
-var path = require("path");
-var bodyParser = require("body-parser");
-var app = express();
-//设置应用程序的静态路径
-app.use(express.static(path.join(__dirname,"/views")));
-app.listen(4000,function(){
-    console.log("Started listening on port", 4000);
-})
+const express = require('express');
+const app = express();
+const bodyParser = require('body-parser');
+const MongoClient = require('mongodb').MongoClient;
+const config = require('config-lite');
+const DB_CONN_STR = 'mongodb://localhost/runoob';
 
-app.use(bodyParser.json());
+app.use( bodyParser.json() );       // to support JSON-encoded bodies
+app.use( bodyParser.urlencoded({ extended: true }) ); // to support URL-encoded bodies
 
-app.post('/register', function (req, res) {
-	// var user_name=req.body.email;
- //  	var password=req.body.password
- var name = req.body.name;
- console.log(req.body)
-  res.send(req.body);
-   //  if(user_name=='admin' && password=='admin'){
-   //  	res.send('success');
-   //  }
-   //  else{
-   //  	res.send('Failure');
-  	// }
+app.all('*', function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Content-Length, Authorization, Accept, X-Requested-With , yourHeaderFeild');
+    res.header("Access-Control-Allow-Methods","PUT,POST,GET,DELETE,OPTIONS");
+    next();
 });
+app.post('/register', function (req, res) {
+	var username = req.body.username;
+	var password = req.body.password;
+
+	let queryData = function(db,callback){
+		let queryStr = {"username":username};
+		let collection = db.collection('site');
+		collection.find(queryStr).toArray(function(err,result){
+			if(err){
+				console.log('Error'+err);
+				return;
+			}
+			callback(result);
+		});
+	}
+
+	MongoClient.connect(DB_CONN_STR,function(err,db){
+		console.log('连接成功');
+		queryData(db,function(result){
+			console.log(result);
+			if(result.length > 0){
+				res.json({"status":1});
+				db.close();
+				return;
+			}else{
+				let insertData = function(db,callback){
+					let data = [{"username":username,"password":password}];
+					let collection = db.collection('site');
+					collection.insert(data,function(err,result){
+						if(err){
+							console.log('Error'+err);
+							return;
+						}
+						callback(result);
+					});
+				}
+				MongoClient.connect(DB_CONN_STR,function(err,db){
+					console.log('连接成功');
+					insertData(db,function(result){
+						console.log(result);
+						db.close()
+					})
+				})
+			}
+			
+		})
+	})
+    res.json({"status":0});
+});
+
+app.listen(4000);
+
+// var express = require("express");
+// var path = require("path");
+// var bodyParser = require("body-parser");
+// var app = express();
+// //设置应用程序的静态路径
+// app.use(express.static(path.join(__dirname,"/views")));
+// app.listen(4000,function(){
+//     console.log("Started listening on port", 4000);
+// })
+
+// app.use(bodyParser.json());
+
+// app.post('/register', function (req, res) {
+// 	// var user_name=req.body.email;
+//  //  	var password=req.body.password
+//  var name = req.body.name;
+//  console.log(req.body)
+//   res.send(req.body);
+//    //  if(user_name=='admin' && password=='admin'){
+//    //  	res.send('success');
+//    //  }
+//    //  else{
+//    //  	res.send('Failure');
+//   	// }
+// });
 
 
 // var path = require('path');

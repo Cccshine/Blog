@@ -55,6 +55,7 @@ $contact-icon-font-size:24px;
 
 //tip-bar
 $tip-bar-width:300px;
+$tip-bar-oneline-height:36px;
 $tip-bar-font-size:12px;
 $tip-bar-line-height:1.5;
 $tip-bar-color:#fff;
@@ -71,9 +72,11 @@ $tip-bar-arrow-color-info:$tip-bar-background-info;
 $tip-bar-arrow-color-error:$tip-bar-background-error;
 $tip-bar-arrow-color-success:$tip-bar-background-success;
 
+
 //register
 $register-tip-bar-left:$form-input-width+20;
+$register-tip-bar-noarrow-margin:0 auto 20px;
 
 //login
-$login-tip-bar-height:36px;
+$login-tip-bar-height:$tip-bar-oneline-height;
 $login-tip-bar-margin:0 auto 20px;
