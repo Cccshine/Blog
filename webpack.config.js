@@ -15,14 +15,14 @@ module.exports = {
 		//自动刷新模式为内联模式（还有iframe模式）
 		inline:true,
 		//设定webpack-dev-server伺服的directory。如果不进行设定的话，默认是在当前目录下
-		contentBase:'./views',
+		contentBase:'./public',
 		port:3000
 	},
 	//在控制台的sources下，点开可以看到webpack://目录，里面可以直接看到我们开发态的源代码，这样方便我们直接在浏览器中打断点调试
 	devtool:"inline-source-map",  
 	entry:{
 		//__dirname是node.js中的一个全局变量，它指向当前执行脚本所在的目录。
-		pages:path.resolve(__dirname, './views/src/router.js'),//所有页面的入口
+		pages:path.resolve(__dirname, './public/src/router.js'),//所有页面的入口
 		vendors:['react','react-dom','react-router']//抽取公共框架
 	},
 	output:{
@@ -41,7 +41,7 @@ module.exports = {
 			},
 			{
 				test:/\.scss$/,
-				include:path.resolve(__dirname, './views/src/sass/global'),
+				include:path.resolve(__dirname, './public/src/sass/global'),
 				use:extractTextPlugin.extract({
 						fallback: 'style-loader',
 				        use: [
@@ -72,7 +72,7 @@ module.exports = {
 			},
 			{
 				test:/\.scss$/,
-				exclude:path.resolve(__dirname, './views/src/sass/global'),
+				exclude:path.resolve(__dirname, './public/src/sass/global'),
 				use:extractTextPlugin.extract({
 						fallback: 'style-loader',
 				        use: [
@@ -110,7 +110,7 @@ module.exports = {
 	                loader: 'eslint-loader', 
 	                options: { fix: true }
 	            }],
-	            include: path.resolve(__dirname, './views/src/**/*.js'),
+	            include: path.resolve(__dirname, './public/src/**/*.js'),
 	            exclude: /node_modules/
 	        },
 			{
