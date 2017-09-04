@@ -14,12 +14,15 @@ class Register extends React.Component{
 		this.state = {
 		    username:'',
 		    password:'',
+		    email:'',
 		    comfirmPassword:'',
 		    usernameTip:blogGlobal.usernameRuleTip,
 		    passwordTip:blogGlobal.passwordRuleTip,
+		    emailTip:'',
 		    comfirmPasswordTip:'',
 		    usernameStatus:0,//0--提示 1--错误 2--通过
 		    passwordStatus:0,//0--提示 1--错误 2--通过
+		    emailStatus:0,//0--提示 1--错误 2--通过
 		    comfirmPasswordStatus:0,//0--正获得焦点 1--错误 2--通过
 		    dbStatus:0,//0--暂未点击注册 1--用户已存在  2--成功
 		    dbTip:''
@@ -27,55 +30,95 @@ class Register extends React.Component{
 	}
 
 	handleUserNameChange = (event) => {
-		var value = event.target.value;
+		let value = event.target.value;
 		this.setState({username:value});
 		if(value === ''){
-			this.setState({usernameTip:blogGlobal.usernameRuleTip,usernameStatus:0});
+			this.setState({
+				usernameTip:blogGlobal.usernameRuleTip,
+				usernameStatus:0
+			});
 			return;
 		}else if(value.length > 10){
-			this.setState({usernameTip:blogGlobal.usernameRuleErrLength,usernameStatus:1});
+			this.setState({
+				usernameTip:blogGlobal.usernameRuleErrLength,
+				usernameStatus:1
+			});
 			return;
 		}else if(value.match(/[^a-zA-Z0-9_\u4e00-\u9fa5]+/)){//只含有汉字、数字、字母、下划线
-			this.setState({usernameTip:blogGlobal.usernameRuleErrType,usernameStatus:1});
+			this.setState({
+				usernameTip:blogGlobal.usernameRuleErrType,
+				usernameStatus:1
+			});
 			return;
-		}else{
-			this.setState({usernameTip:blogGlobal.rulePassTip,usernameStatus:2});
 		}
+		this.setState({
+			usernameTip:blogGlobal.rulePassTip,
+			usernameStatus:2
+		});
 	}
 	handleUserNameFocus = (event) => {
-		this.setState({usernameTip:blogGlobal.usernameRuleTip,usernameStatus:0});
+		if(this.state.username.trim() === ''){
+			this.setState({
+				usernameTip:blogGlobal.usernameRuleTip,
+				usernameStatus:0
+			});
+		}
 	}
 	handleUserNameBlur = (event) => {
-		let username = this.state.username;
-		if(username.trim() === ''){
-			this.setState({usernameTip:blogGlobal.usernameNullTip,usernameStatus:1});
-			return;
+		if(this.state.username.trim() === ''){
+			this.setState({
+				usernameTip:blogGlobal.usernameNullTip,
+				usernameStatus:1
+			});
 		}
 	}
 	handlePasswordChange = (event) => {
-		var value = event.target.value;
+		let value = event.target.value;
 		this.setState({password:value});
 		if(value === ''){
-			this.setState({passwordTip:blogGlobal.passwordRuleTip,passwordStatus:0});
+			this.setState({
+				passwordTip:blogGlobal.passwordRuleTip,
+				passwordStatus:0,
+				comfirmPasswordTip:'',
+				comfirmPasswordStatus:0
+			});
 			return;
 		}else if(value.length < 8){
-			this.setState({passwordTip:blogGlobal.passwordRuleErrLength,passwordStatus:1});
+			this.setState({
+				passwordTip:blogGlobal.passwordRuleErrLength,
+				passwordStatus:1,
+				comfirmPasswordTip:'',
+				comfirmPasswordStatus:0
+			});
 			return;
 		}else if(value.match(/^[0-9]+$/) || value.match(/^[a-zA-Z]+$/) || value.match(/^[_]+$/)){
-			this.setState({passwordTip:blogGlobal.passwordRuleErrType,passwordStatus:1});
+			this.setState({
+				passwordTip:blogGlobal.passwordRuleErrType,
+				passwordStatus:1,
+				comfirmPasswordTip:'',
+				comfirmPasswordStatus:0
+			});
 			return;
-		}else{
-			this.setState({passwordTip:blogGlobal.rulePassTip,passwordStatus:2});
 		}
+		this.setState({
+			passwordTip:blogGlobal.rulePassTip,
+			passwordStatus:2
+		});
 	}
 	handlePasswordFocus = (event) => {
-		this.setState({passwordTip:blogGlobal.passwordRuleTip,passwordStatus:0});
+		if(this.state.password.trim() === ''){
+			this.setState({
+				passwordTip:blogGlobal.passwordRuleTip,
+				passwordStatus:0
+			});
+		}
 	}
 	handlePasswordBlur = (event) => {
-		let password = this.state.password;
-		if(password.trim() === ''){
-			this.setState({passwordTip:blogGlobal.passwordNullTip,passwordStatus:1});
-			return;
+		if(this.state.password.trim() === ''){
+			this.setState({
+				passwordTip:blogGlobal.passwordNullTip,
+				passwordStatus:1
+			});
 		}
 	}
 	handleComfirmPasswordChange = (event) => {
@@ -87,24 +130,90 @@ class Register extends React.Component{
 	handleComfirmPasswordBlur = (event) => {
 		let comfirmPassword = this.state.comfirmPassword;
 		if(comfirmPassword.trim() === '' && this.state.passwordStatus === 2){
-			this.setState({comfirmPasswordTip:blogGlobal.comfirmPasswordNullTip,comfirmPasswordStatus:1});
+			this.setState({
+				comfirmPasswordTip:blogGlobal.comfirmPasswordNullTip,
+				comfirmPasswordStatus:1
+			});
 			return;
-		}else if(this.state.comfirmPassword !== this.state.password && this.state.passwordStatus === 2){
-			this.setState({comfirmPasswordTip:blogGlobal.comfirmPasswordErr,comfirmPasswordStatus:1});
+		}else if(comfirmPassword !== this.state.password && this.state.passwordStatus === 2){
+			this.setState({
+				comfirmPasswordTip:blogGlobal.comfirmPasswordErr,
+				comfirmPasswordStatus:1
+			});
 			return;
 		}
-		this.setState({comfirmPasswordTip:'',comfirmPasswordStatus:2});
+		this.setState({
+			comfirmPasswordTip:'',
+			comfirmPasswordStatus:2
+		});
 	}
+
+	handleEmailChange = (event) => {
+		this.setState({email:event.target.value});
+	}
+	handleEmailFocus = (event) => {
+		this.setState({emailStatus:0});
+	}
+	handleEmailBlur = (event) => {
+		let email = this.state.email;
+		if(email.trim() === ''){
+			this.setState({
+				emailTip:blogGlobal.emailNullTip,
+				emailStatus:1
+			});
+			return;
+		}else if(!email.match(/^([A-z0-9_\-\.])+@([A-z0-9_\-])+\.([A-z0-9]{2,4})+$/)){
+			this.setState({
+				emailTip:blogGlobal.emailRuleErrTip,
+				emailStatus:1
+			});
+			return;
+		}
+		this.setState({
+			emailTip:blogGlobal.rulePassTip,
+			emailStatus:2
+		});
+	}
+
 	handleSubmit = (event) => {
 		event.preventDefault();
-		if(this.state.usernameStatus!=2||this.state.passwordStatus!=2||this.state.comfirmPasswordStatus!=2){
+		if(this.state.username.trim() === ''){
+			this.setState({
+				usernameTip:blogGlobal.usernameNullTip,
+				usernameStatus:1
+			});
+			return;
+		}
+		if(this.state.email.trim() === ''){
+			this.setState({
+				emailTip:blogGlobal.emailNullTip,
+				emailStatus:1
+			});
+			return;
+		}
+		if(this.state.password.trim() === ''){
+			this.setState({
+				passwordTip:blogGlobal.passwordNullTip,
+				passwordStatus:1
+			});
+			return;
+		}
+		if(this.state.comfirmPassword.trim() === ''){
+			this.setState({
+				comfirmPasswordTip:blogGlobal.comfirmPasswordNullTip,
+				comfirmPasswordStatus:1
+			});
+			return;
+		}
+		if(this.state.usernameStatus!=2||this.state.passwordStatus!=2||this.state.comfirmPasswordStatus!=2||this.state.emailStatus!=2){
 			return;
 		}
 		let data = {
 			username:this.state.username,
-			password:SHA(this.state.password)
+			password:SHA(this.state.password),
+			email:this.state.email
 		}
-		let url = "http://localhost:4000/register";
+		let url =blogGlobal.requestBaseUrl+"/register";
         fetch(url, {
           method: 'POST',
           headers: {
@@ -112,6 +221,7 @@ class Register extends React.Component{
     		'Content-Type': 'application/json'
           },
           mode:'cors',
+          credentials: 'include',
           body: JSON.stringify(data)
         }).then((response) => {
                 return response.json();
@@ -119,7 +229,6 @@ class Register extends React.Component{
         ).then(
             (json) => {
             	let status = json.status;
-            	console.log(status)
             	if(status === 0){
             		this.setState({dbStatus:1,dbTip:'用户名已存在'});
             		this.setState({usernameTip:blogGlobal.usernameRuleTip,usernameStatus:0},() => {
@@ -132,27 +241,27 @@ class Register extends React.Component{
             		this.refs.inputComfirm.value = ''; 
             	}else{
             		this.setState({dbStatus:2,dbTip:blogGlobal.registerPassTip});
-            		setTimeout(() => this.props.history.push('/'), 2000);
+            		setTimeout(() => this.props.history.push('/login'), 2000);
             	}
             }
-        ).catch(function(err){
+        ).catch((err) => {
         	 console.log(err)
         })
     }
 
 	render(){
-		var usernameTipType = {
+		let usernameTipType = {
 			0:'info',
 			1:'error',
 			2:'success'
 		}[this.state.usernameStatus];
-		var usernameTipText = this.state.usernameTip;
-		var passwordTipType = {
+		let usernameTipText = this.state.usernameTip;
+		let passwordTipType = {
 			0:'info',
 			1:'error',
 			2:'success'
 		}[this.state.passwordStatus];
-		var passwordTipText = this.state.passwordTip;
+		let passwordTipText = this.state.passwordTip;
 		return(
 			<div>
 				<QuickLink pageName="register"/>
@@ -161,6 +270,10 @@ class Register extends React.Component{
 						<div className="form-group fa fa-user">
 							<input type="text" name="username" ref="inputUsername" placeholder="用户名" onChange={this.handleUserNameChange} onFocus={this.handleUserNameFocus} onBlur={this.handleUserNameBlur}/>
 							<TipBar type={usernameTipType} text={usernameTipText} arrow="has"/>
+						</div>
+						<div className="form-group fa fa-envelope">
+							<input type="text" name="email" ref="inputEmail" placeholder="邮箱" onChange={this.handleEmailChange} onFocus={this.handleEmailFocus} onBlur={this.handleEmailBlur}/>
+							{this.state.emailStatus == 0 ? '' : <TipBar type={this.state.emailStatus == 1 ? 'error' : 'success'} text={this.state.emailTip} arrow="has"/>}
 						</div>
 						<div className="form-group fa fa-lock">
 							<input type="password" name="password" ref="inputPassword" placeholder="密码" onChange={this.handlePasswordChange} onFocus={this.handlePasswordFocus} onBlur={this.handlePasswordBlur}/>

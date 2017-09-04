@@ -23,7 +23,7 @@ module.exports = {
 	entry:{
 		//__dirname是node.js中的一个全局变量，它指向当前执行脚本所在的目录。
 		pages:path.resolve(__dirname, './public/src/router.js'),//所有页面的入口
-		vendors:['react','react-dom','react-router']//抽取公共框架
+		vendors:['react','react-dom','react-router','jquery']//抽取公共框架
 	},
 	output:{
 		// path:__dirname+'/dist',
@@ -141,7 +141,7 @@ module.exports = {
 	//Common Chunks 插件的作用就是提取代码中的公共模块，然后将公共模块打包到一个独立的文件中去，以便在其它的入口和模块中使用。
 		new webpack.optimize.CommonsChunkPlugin({name:'vendors',filename:'js/vendors.js'}),
 		new extractTextPlugin({filename:'css/bundle.css'}),
-		// new webpack.ProvidePlugin({$:'jquery'}),
+		new webpack.ProvidePlugin({$:'jquery'}),
 		new webpack.HotModuleReplacementPlugin(),
 		new openBrowserPlugin({url:'http://localhost:3000/'}),
 	]

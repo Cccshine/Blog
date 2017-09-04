@@ -1,11 +1,44 @@
 import React from 'react';
+import blogGlobal from '../../data/global';
 import {NavLink,Link} from 'react-router-dom';
 import CSSModules from 'react-css-modules';
 import QuickLink from '../quickLink/quick-link';
 import ContactIcon from '../contactIcon/contact-icon';
 import style from './header.scss'
 
+
+
 class Header extends React.Component{
+	constructor(props){
+		super(props);
+		this.state = {
+			isLogin:false
+		}
+	}
+	componentDidMount = () => {
+		let url = blogGlobal.requestBaseUrl;
+		fetch(url,{
+			method:'GET',
+			headers:{
+				'Accept':'application/json',
+				'Content-Type':'application/json'
+			},
+			mode:'cors',
+			credentials: 'include',
+		}).then((response) => {
+			return response.json();
+		}).then((json) => {
+			console.log(json,json.isLogin)
+			this.setState({isLogin:json.isLogin});
+			if(json.username){
+				this.setState({username:json.username});
+			}else{
+				alert('您暂未登录，是否前往登录页登录')
+			}
+		}).catch((err) => {
+			console.log(err)
+		})
+	}
 	render(){
 		return (
 			<header styleName="top-header">

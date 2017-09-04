@@ -6,6 +6,7 @@
 	width:$form-box-width;
 	text-align:center;
 	margin-top:$form-box-margin-top;
+	font-size:$form-box-font-size;
 	@extend .common-level-center-transform;
 }
 .form-group{
@@ -26,6 +27,11 @@
 		width:$form-input-icon-width;
 		color:$theme-main-color;
 		@include vCenterLineHeight($form-group-height);
+	}
+}
+.fa-envelope{
+	&:before{
+		font-size:$form-box-font-size - 2;
 	}
 }
 .operate-btn{

@@ -4,6 +4,7 @@ module.exports = {
         secret: 'cshine',
         key: 'cshine',
         resave:false,
+        saveUninitialized:false,
         maxAge: 2592000000
     },
     mongodb: 'mongodb://localhost:27017/runoob'

@@ -1,8 +1,7 @@
 var express = require('express');
 var router = express.Router();
+var checkLogin = require('../middlewares/check').checkLogin;
 
-router.get('/', function(req, res) {
-  res.send('hello, express');
-});
+router.get('/', checkLogin);
 
 module.exports = router;
