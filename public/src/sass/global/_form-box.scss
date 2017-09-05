@@ -12,7 +12,7 @@
 .form-group{
 	position: relative;
 	margin-bottom:$form-group-margin-bottom;
-	input{
+	input:not([type=checkbox]){
 		width:$form-input-width;
 		padding-left:$form-input-padding-left;
 		border:$border-normal-main;

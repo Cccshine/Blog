@@ -9,6 +9,7 @@ import Archive from '../pages/archive';
 import About from '../pages/about';
 import Login from '../pages/login.js';
 import Register from '../pages/register.js';
+import User from '../pages/user.js';
 
 
 export default class Main extends React.Component{
@@ -23,6 +24,7 @@ export default class Main extends React.Component{
 					<Route path="/about" component={About}/>
 					<Route path="/login" component={Login}/>
 					<Route path="/register" component={Register}/>
+					<Route path="/user" component={User}/>
 			    </Switch>
 		   </main>
 		)

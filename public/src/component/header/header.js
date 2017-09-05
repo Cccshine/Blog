@@ -6,23 +6,33 @@ import QuickLink from '../quickLink/quick-link';
 import ContactIcon from '../contactIcon/contact-icon';
 import style from './header.scss'
 
-
-
 class Header extends React.Component{
 	constructor(props){
 		super(props);
 		this.state = {
-			isLogin:false
+			isLogin:false,
+			username:''
 		}
+	}
+	handleLogout = () => {
+		let url = blogGlobal.requestBaseUrl+'/logout';
+		fetch(url,{
+			method:'GET',
+			mode:'cors',
+			credentials: 'include',
+		}).then((response) => {
+			return response.json();
+		}).then((json) => {
+			console.log(json);
+			this.setState({isLogin:false});
+		}).catch((err) => {
+			console.log(err)
+		})
 	}
 	componentDidMount = () => {
 		let url = blogGlobal.requestBaseUrl;
 		fetch(url,{
 			method:'GET',
-			headers:{
-				'Accept':'application/json',
-				'Content-Type':'application/json'
-			},
 			mode:'cors',
 			credentials: 'include',
 		}).then((response) => {
@@ -52,7 +62,7 @@ class Header extends React.Component{
 					<NavLink to="/archive" activeClassName="active-nav">归档</NavLink>
 					<NavLink to="/about" activeClassName="active-nav">About Me</NavLink>
 				</nav>
-				<QuickLink pageName="index"/>
+				<QuickLink pageName={this.state.isLogin ? 'logined' : 'index'} username={this.state.username} logout={this.handleLogout}/>
 				<ContactIcon />
 			</header>
 		)

@@ -3,7 +3,6 @@ import SHA from 'sha1';
 import blogGlobal from '../data/global';
 import TipBar from '../component/tipBar/tip-bar';
 import QuickLink from '../component/quickLink/quick-link';
-import ValidateInput from '../component/form/validate-input';
 import CSSModules from 'react-css-modules';
 import style from '../sass/pages/register.scss';
 import '../sass/global/_form-box.scss';

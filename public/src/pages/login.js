@@ -12,23 +12,27 @@ class Login extends React.Component{
 	constructor(props){
 		super(props);
 		this.state = {
-		    userName:'',
+		    username:'',
 		    password:'',
+		    autoLogin:false,
 		    info:'',
 		    status:0//0--暂未输入 1--错误 2--通过
 		};
 	}
 	handleUserNameChange = (event) => {
-		this.setState({userName:event.target.value});
+		this.setState({username:event.target.value});
 	}
 	handlePasswordChange = (event) => {
 		this.setState({password:event.target.value});
 	}
+	handleAutoLoginClick = (event) => {
+		this.setState({autoLogin:event.target.checked});
+	}
 	handleSubmit = (event) => {
 		event.preventDefault();
-		let userName = this.state.userName;
+		let username = this.state.username;
 		let password = this.state.password;
-		if(userName === ''){
+		if(username === ''){
 			this.setState({info:blogGlobal.usernameNullTip,status:1});
 			return;
 		}else if(password === ''){
@@ -36,8 +40,9 @@ class Login extends React.Component{
 			return;
 		}
 		let data = {
-			username:userName,
-			password:SHA(password)
+			username:username,
+			password:SHA(password),
+			isAuto:this.state.autoLogin
 		}
 		let url = blogGlobal.requestBaseUrl+"/login";
 		fetch(url,{
@@ -59,7 +64,6 @@ class Login extends React.Component{
 				this.setState({info:blogGlobal.passwordUnMatchTip,status:1});
 			}else{
 				this.setState({info:blogGlobal.loginPassTip,status:2});
-				document.cookie = 'cc=1;max-age=3600'
 				setTimeout(() => this.props.history.push('/'), 2000);
 			}
 		}).catch(function(err){
@@ -78,6 +82,10 @@ class Login extends React.Component{
 						</div>
 						<div className="form-group fa fa-lock">
 							<input type="password" name="password" placeholder="密码" onChange={this.handlePasswordChange}/>
+						</div>
+						<div className="form-group" styleName="auto-login">
+							<input type="checkbox" id="auto" onClick={this.handleAutoLoginClick}/>
+							<label htmlFor="auto">下次自动登录</label>
 						</div>
 						<TipBar type={this.state.status == 1 ? 'error' : 'success'} text={this.state.info} arrow="no" classNames={this.state.status == 0 ? 'unvisible':'visible'}/>
 						<button className="operate-btn" name="login-btn">登录</button>

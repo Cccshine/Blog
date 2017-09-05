@@ -11,6 +11,7 @@ const userModel = require('./models/user');
 const indexRouter = require('./routes/index');
 const registerRouter = require('./routes/register');
 const loginRouter = require('./routes/login');
+const logoutRouter = require('./routes/logout');
 
 const app = express();
 
@@ -29,7 +30,8 @@ app.use(cookieParser('cshine'));
 app.use(session({
     name: config.session.key,// 设置 cookie 中保存session id的字段名称
     secret: config.session.secret,// 通过设置secret来计算hash值并放在cookie中，使产生的signedCookie防篡改
-    resave:config.session.resave,// 默认为 true , 若为 true 会强制重新存储 session 到数据库，即时在请求过程中没有改变 session 内容
+    resave:config.session.resave,// 默认为 true , 若为 true 会强制重新存储 session 到数据库，即使在请求过程中没有改变 session 内容
+    rolling:config.session.rolling,//默认为false， 在每次请求后的响应中设置cookie，这将重置cookie过期时间
     cookie: {
         maxAge: config.session.maxAge// 过期时间，过期后cookie中的session id自动删除
     },
@@ -53,6 +55,7 @@ app.all('*', function(req, res, next) {
 app.use('/api/', indexRouter);
 app.use('/api/register', registerRouter);
 app.use('/api/login', loginRouter);
+app.use('/api/logout', logoutRouter);
 
 app.listen(port);
 

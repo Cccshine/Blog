@@ -6,3 +6,7 @@
 	margin: $login-tip-bar-margin;
 	height:$login-tip-bar-height;
 }
+.auto-login{
+	text-align:left;
+	padding-left:($form-box-width - $form-input-width)/2;
+}
