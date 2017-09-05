@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import {Route,Switch} from 'react-router-dom';
-
+import blogGlobal from '../data/global';
 import Home from '../pages/home';
 import Article from '../pages/article';
 import Tag from '../pages/tag';
@@ -17,7 +17,7 @@ export default class Main extends React.Component{
 		return (
 			<main>
 			    <Switch>
-			    	<Route exact path='/' component={Home}/>
+			    	<Route exact path='/' component={Home} />
 				    <Route path="/article-list" component={Article}/>
 					<Route path="/tag" component={Tag}/>
 					<Route path="/archive" component={Archive}/>

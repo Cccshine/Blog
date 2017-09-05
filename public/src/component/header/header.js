@@ -9,9 +9,10 @@ import style from './header.scss'
 class Header extends React.Component{
 	constructor(props){
 		super(props);
+		console.log(props)
 		this.state = {
-			isLogin:false,
-			username:''
+			isLogin:props.isLogin,
+			username:props.username
 		}
 	}
 	handleLogout = () => {
@@ -25,30 +26,13 @@ class Header extends React.Component{
 		}).then((json) => {
 			console.log(json);
 			this.setState({isLogin:false});
+			sessionStorage.setItem('isLogin',false);
+			sessionStorage.removeItem('username');
 		}).catch((err) => {
 			console.log(err)
 		})
 	}
-	componentDidMount = () => {
-		let url = blogGlobal.requestBaseUrl;
-		fetch(url,{
-			method:'GET',
-			mode:'cors',
-			credentials: 'include',
-		}).then((response) => {
-			return response.json();
-		}).then((json) => {
-			console.log(json,json.isLogin)
-			this.setState({isLogin:json.isLogin});
-			if(json.username){
-				this.setState({username:json.username});
-			}else{
-				alert('您暂未登录，是否前往登录页登录')
-			}
-		}).catch((err) => {
-			console.log(err)
-		})
-	}
+	
 	render(){
 		return (
 			<header styleName="top-header">

@@ -1,13 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import {Route} from 'react-router-dom';
-
-// import Home from './pages/home';
-// import Article from './pages/article';
-// import Tag from './pages/tag';
-// import Archive from './pages/archive';
-// import About from './pages/about';
-
+import blogGlobal from './data/global';
 import Main from './component/main'
 import Header from './component/header/header'
 
@@ -20,15 +14,37 @@ import './sass/main.scss'
 export default class App extends React.Component{
 	constructor(props){
 		super(props);
+		this.state = {
+			isLogin:false,
+			username:''
+		}
 	}
-	// componentDidMount(){
-	// 	this.props.history.push('home');
-	// }
+	componentDidMount = () => {
+		let url = blogGlobal.requestBaseUrl;
+		fetch(url,{
+			method:'GET',
+			mode:'cors',
+			credentials: 'include',
+		}).then((response) => {
+			return response.json();
+		}).then((json) => {
+			console.log(json,json.isLogin)
+			this.setState({isLogin:json.isLogin});
+			if(json.username){
+				this.setState({username:json.username});
+				sessionStorage.setItem('username',json.username);
+			}
+			sessionStorage.setItem('isLogin',json.isLogin);
+
+		}).catch((err) => {
+			console.log(err)
+		})
+	}
 	render(){
 		return(
 			<div>
-				<Header />
-				<Main />
+				<Header  isLogin={this.state.isLogin} username={this.state.username}/>
+				<Main isLogin={this.state.isLogin}/>
 			</div>
 		)
 	}

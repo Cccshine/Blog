@@ -8,18 +8,23 @@
 	width:400px;
 	border-radius:$border-radius-normal;
 	box-shadow:$top-header-n-shadow;
-	background-color:pink;
+	background-color:#fff;
 }
 .modal-header{
 	@include vCenterLineHeight(30px);
 	position:relative;
+	color:#fff;
 	padding:0 10px;
 	font-size:14px;
+	background-color:pink;
 	i{
 		position: absolute;
 		top:5px;
 		right:10px;
-		cursor: poionter;
+		cursor: pointer;
+		&:hover{
+			color: red;
+		}
 	}
 }
 .modal-body{
@@ -32,7 +37,13 @@
 	button{
 		width:80px;
 		height: 30px;
-		background-color: blue;
-		margin-right: 10px;
+		color: #fff;
+		border:1px solid pink;
+		background-color: pink;
+		margin-right: 20px;
+		cursor: pointer;
+		&:hover{
+			box-shadow:$top-header-n-shadow;
+		}
 	}
 }
