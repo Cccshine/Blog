@@ -1,4 +1,5 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
 import CSSModules from 'react-css-modules';
 import style from './modal.scss'
 
@@ -6,30 +7,36 @@ class Modal extends React.Component{
 	constructor(props) {
 		super(props);
 	    this.state = {
-	    	inputValue:'',
-	    	pass:false,
-	    	tipInfo:'',
-	    	errInfo:''
+	    	isOpen:!sessionStorage.getItem('loginTipClose') 
 	    };
 	}
-	handleChange = (event) => {
-			var value = event.target.value;
+
+	handleClose = (event) => {
+		this.setState({isOpen:false});
+		sessionStorage.setItem('loginTipClose',true);
 	}
 
 	render(){
+		let {title,modalHtml,btns} = this.props;
 		return (
-			<div styleName="modal">
-				<header styleName="modal-header">
-					<h4>{this.props.title}</h4>
-					<i className="fa fa-close"></i>
-				</header>
-				<main styleName="modal-body">
-					{this.props.modalHtml}
-				</main>
-				<footer styleName="modal-footer">
-					<button>确定</button>
-					<button>取消</button>
-				</footer>
+			<div>
+				{this.state.isOpen ? 
+					<div styleName="modal" ref="modal">
+						<header styleName="modal-header">
+							<h4>{title}</h4>
+							<i className="fa fa-close" onClick={this.handleClose}></i>
+						</header>
+						<main styleName="modal-body">
+							{modalHtml}
+						</main>
+						<footer styleName="modal-footer">
+							{
+								btns.map((btn,index) => (
+									<button key={index} onClick={btn.ref == 'close' ? this.handleClose : btn.handleClick}>{btn.name}</button>
+								))
+							}
+						</footer>
+					</div> : null}
 			</div>
 		)
 	}

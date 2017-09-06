@@ -3,14 +3,15 @@ import CSSModules from 'react-css-modules';
 import style from './tip-bar.scss';
 
 const TipBar = (props) => {
-	let tipType = 'tip-'+props.arrow+'-arrow-'+props.type
+	let {arrow,type,classNames} = props;
+	let tipType = 'tip-'+arrow+'-arrow-'+type
 	let icon = {
 		'info':'fa-info-circle',
 		'error':'fa-times-circle',
 		'success':'fa-check-circle'
-	}[props.type];
+	}[type];
 	return (
-		<div styleName={tipType} data-role={tipType} className={props.classNames}>
+		<div styleName={tipType} data-role={tipType} className={classNames}>
 			<i className={'fa '+icon}></i>
 			<span>{props.text}</span>
 		</div>

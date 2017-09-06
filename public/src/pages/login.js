@@ -64,7 +64,7 @@ class Login extends React.Component{
 				this.setState({info:blogGlobal.passwordUnMatchTip,status:1});
 			}else{
 				this.setState({info:blogGlobal.loginPassTip,status:2});
-				setTimeout(() => this.props.history.push('/'), 2000);
+				setTimeout(() => this.props.history.push({ pathname: '/', state: {isLogin:true} }), 2000);
 			}
 		}).catch(function(err){
         	 console.log(err)
@@ -72,6 +72,13 @@ class Login extends React.Component{
 
 	}
 	render(){
+		let {status,info} = this.state;
+		let tipbarProps = {
+			type:status == 1 ? 'error' : 'success',
+			text:info,
+			arrow:'no',
+			classNames:status == 0 ? 'unvisible':'visible'
+		}
 		return(
 			<div>
 				<QuickLink pageName="login"/>
@@ -87,7 +94,7 @@ class Login extends React.Component{
 							<input type="checkbox" id="auto" onClick={this.handleAutoLoginClick}/>
 							<label htmlFor="auto">下次自动登录</label>
 						</div>
-						<TipBar type={this.state.status == 1 ? 'error' : 'success'} text={this.state.info} arrow="no" classNames={this.state.status == 0 ? 'unvisible':'visible'}/>
+						<TipBar {...tipbarProps}/>
 						<button className="operate-btn" name="login-btn">登录</button>
 					</form>
 				</div>

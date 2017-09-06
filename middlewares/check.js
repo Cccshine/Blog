@@ -3,7 +3,7 @@ module.exports = {
     if (!req.session.username) {
       return res.json({"isLogin":false});
     }else{
-      res.json({"isLogin":true,"username":req.session.username});
+      res.json({"isLogin":true,"username":req.session.username,"role":req.session.role});
     }
     next();
   }

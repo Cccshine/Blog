@@ -19,6 +19,7 @@ router.post('/', function(req, res, next) {
     if(user){
       if(password === user.password){
         req.session.username = user.name; 
+        req.session.role = user.role; 
         req.session.foobar = Date.now();//加上这一句才能使req.session.cookie.maxAge生效,使数据库中的session更新
         if(isAuto){
           req.session.cookie.maxAge = config.session.maxAge;

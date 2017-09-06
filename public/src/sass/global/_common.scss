@@ -1,12 +1,29 @@
 @import "../_variables";
 @import "./_reset.scss";
 @import "./_font-awsome.scss";
+html{
+	height:100%;
+}
+body{
+	background: linear-gradient(#fff,#22C3AA);
+	height:100%;
+}
+#blog,#root{
+	height:100%;
+}
 .active-nav{
 	background-color:$theme-adorn-color;
 	box-shadow:$top-header-n-shadow;
 }
 .tips-in-modal{
 	text-align:center;
+	.small-tip{
+		font-size:12px;
+	}
+}
+.main-content{
+	padding-top:60px;
+	height:100%;
 }
 .show{
 	display:block;
@@ -19,4 +36,11 @@
 }
 .visible{
 	visibility: visible;
+}
+.clearfix{
+	&:after{
+		content: "";
+		display: block;
+		clear: both;
+	}
 }

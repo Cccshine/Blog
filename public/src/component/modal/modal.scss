@@ -4,46 +4,50 @@
 @import "../../sass/global/_center.scss";
 .modal{
 	@extend .common-level-center-transform;
-	top:20%;
-	width:400px;
+	top:$modal-pos-top;
+	width:$modal-normal-width;
 	border-radius:$border-radius-normal;
-	box-shadow:$top-header-n-shadow;
+	box-shadow:$box-shadow-normal;
 	background-color:#fff;
+	font-size:$modal-font-size;
 }
 .modal-header{
-	@include vCenterLineHeight(30px);
+	@include vCenterLineHeight($modal-header-height);
 	position:relative;
-	color:#fff;
-	padding:0 10px;
-	font-size:14px;
-	background-color:pink;
+	color:$modal-header-color;
+	padding:$modal-header-padding;
+	background-color:$modal-adorn-background;
+	border-radius:$border-radius-normal;
 	i{
 		position: absolute;
-		top:5px;
-		right:10px;
+		top:$modal-close-pos-top;
+		right:$modal-close-pos-right;
 		cursor: pointer;
 		&:hover{
-			color: red;
+			color: $modal-close-hover-color;
 		}
 	}
 }
 .modal-body{
-	padding:10px;
+	padding:$modal-body-padding;
 
 }
 .modal-footer{
-	@include vCenterLineHeight(60px);
+	@include vCenterLineHeight($modal-footer-height);
 	text-align:center;
 	button{
-		width:80px;
-		height: 30px;
-		color: #fff;
-		border:1px solid pink;
-		background-color: pink;
-		margin-right: 20px;
+		width:$modal-footer-button-width;
+		height: $modal-footer-button-height;
+		color: $modal-footer-button-color;
+		border:1px solid $modal-adorn-background;
+		background-color: $modal-adorn-background;
+		margin-right: $modal-footer-button-margin;
 		cursor: pointer;
+		border-radius: $border-radius-normal;
+		transition: all $transition-time-normal;
 		&:hover{
-			box-shadow:$top-header-n-shadow;
+			background-color: $modal-footer-button-hover-background;
+			border-color:$modal-footer-button-hover-background;
 		}
 	}
 }

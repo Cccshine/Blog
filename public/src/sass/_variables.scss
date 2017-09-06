@@ -5,6 +5,7 @@ $border-radius-small: 3px;
 $border-radius-circle: 50%;
 $border-normal-main:1px solid $theme-main-color;
 $border-normal-adorn:1px solid $theme-adorn-color;
+$box-shadow-normal:5px 5px 10px #555;
 $transition-time-normal:1s;
 
 //top-header
@@ -15,7 +16,7 @@ $top-header-padding-level:20px;
 $top-header-n-color:#fff;
 $top-header-n-font-size:18px;
 $top-header-n-font:bold $top-header-n-font-size "Microsoft YaHei",sans-serif;;
-$top-header-n-shadow:5px 5px 10px #555;
+$top-header-n-shadow:$box-shadow-normal;
 $logo-size:$top-header-height - $top-header-padding-vertical*2;
 $header-nav-height:30px;
 $header-nav-item-width:120px;
@@ -72,6 +73,26 @@ $tip-bar-arrow-color-default:$tip-bar-background-default;
 $tip-bar-arrow-color-info:$tip-bar-background-info;
 $tip-bar-arrow-color-error:$tip-bar-background-error;
 $tip-bar-arrow-color-success:$tip-bar-background-success;
+
+//modal
+$modal-normal-width:400px;
+$modal-pos-top:20%;
+$modal-header-height:30px;
+$modal-header-padding:0 10px;
+$modal-header-color:#fff;
+$modal-adorn-background:$theme-adorn-color;
+$modal-font-size:14px;
+$modal-close-pos-top:5px;
+$modal-close-pos-right:10px;
+$modal-close-hover-color:$theme-main-color;;
+$modal-body-padding:10px;
+$modal-footer-height:60px;
+$modal-footer-button-width:80px;
+$modal-footer-button-height:30px;
+$modal-footer-button-color:#fff;
+$modal-footer-button-margin:20px;
+$modal-footer-button-hover-background:$theme-main-color;
+
 
 
 //register

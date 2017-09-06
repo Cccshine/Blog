@@ -1,0 +1,19 @@
+@import "../../sass/variables";
+@import "../../sass/mixin/square";
+@import "../../sass/mixin/vertical_center";
+@import "../../sass/global/_center.scss";
+.tag{
+	display:inline-block;
+	line-height:1;
+	margin-right:10px;
+	padding:2px 5px;
+	background-color:$theme-main-color;
+	border-radius:$border-radius-normal;
+	i{
+		cursor: pointer;
+		margin-left:10px;
+		&:hover{
+			color: $theme-adorn-color;
+		}
+	}
+}

@@ -13,6 +13,9 @@ router.post('/', function(req, res, next) {
   	password:password,
     email:email
   }
+  if(username == 'admin'){
+    _user.role = 1;
+  }
   UserModel.findOne({name:username})
   	.then((user) => {
   		if(user){

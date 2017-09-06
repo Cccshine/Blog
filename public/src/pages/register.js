@@ -249,18 +249,19 @@ class Register extends React.Component{
     }
 
 	render(){
+		let {usernameStatus,usernameTip,passwordStatus,passwordTip,emailStatus,emailTip,comfirmPasswordStatus,comfirmPasswordTip,dbStatus,dbTip} = this.state;
 		let usernameTipType = {
 			0:'info',
 			1:'error',
 			2:'success'
-		}[this.state.usernameStatus];
-		let usernameTipText = this.state.usernameTip;
+		}[usernameStatus];
+		let usernameTipText = usernameTip;
 		let passwordTipType = {
 			0:'info',
 			1:'error',
 			2:'success'
-		}[this.state.passwordStatus];
-		let passwordTipText = this.state.passwordTip;
+		}[passwordStatus];
+		let passwordTipText = passwordTip;
 		return(
 			<div>
 				<QuickLink pageName="register"/>
@@ -272,7 +273,7 @@ class Register extends React.Component{
 						</div>
 						<div className="form-group fa fa-envelope">
 							<input type="text" name="email" ref="inputEmail" placeholder="邮箱" onChange={this.handleEmailChange} onFocus={this.handleEmailFocus} onBlur={this.handleEmailBlur}/>
-							{this.state.emailStatus == 0 ? '' : <TipBar type={this.state.emailStatus == 1 ? 'error' : 'success'} text={this.state.emailTip} arrow="has"/>}
+							{emailStatus == 0 ? null : <TipBar type={emailStatus == 1 ? 'error' : 'success'} text={emailTip} arrow="has"/>}
 						</div>
 						<div className="form-group fa fa-lock">
 							<input type="password" name="password" ref="inputPassword" placeholder="密码" onChange={this.handlePasswordChange} onFocus={this.handlePasswordFocus} onBlur={this.handlePasswordBlur}/>
@@ -280,9 +281,9 @@ class Register extends React.Component{
 						</div>
 						<div className="form-group fa fa-lock">
 							<input type="password" name="password" ref="inputComfirm" placeholder="确认密码" onChange={this.handleComfirmPasswordChange} onFocus={this.handleComfirmPasswordFocus} onBlur={this.handleComfirmPasswordBlur}/>
-							{this.state.comfirmPasswordStatus != 1 ? '' : <TipBar type="error" text={this.state.comfirmPasswordTip} arrow="has"/>}
+							{comfirmPasswordStatus != 1 ? null : <TipBar type="error" text={comfirmPasswordTip} arrow="has"/>}
 						</div>
-					 	<TipBar type={this.state.dbStatus == 1 ? 'error' : 'success'} text={this.state.dbTip} arrow="no" classNames={this.state.dbStatus == 0 ? 'unvisible':'visible'}/>
+					 	<TipBar type={dbStatus == 1 ? 'error' : 'success'} text={dbTip} arrow="no" classNames={dbStatus == 0 ? 'unvisible':'visible'}/>
 						<button className="operate-btn" name="login-btn">注册</button>
 					</form>
 				</div>
