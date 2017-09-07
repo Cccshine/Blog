@@ -44,3 +44,18 @@ body{
 		clear: both;
 	}
 }
+.btn-normal{
+	width:$button-normal-width;
+	height: $button-normal-height;
+	color: $button-normal-color;
+	border:1px solid $button-normal-background;
+	background-color: $button-normal-background;
+	margin-right: $button-normal-margin;
+	cursor: pointer;
+	border-radius: $button-normal-border-radius;
+	transition: all $transition-time-normal;
+	&:hover{
+		background-color: $button-normal-hover-background;
+		border-color:$button-normal-hover-background;
+	}
+}

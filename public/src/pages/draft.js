@@ -3,13 +3,9 @@ import marked from 'marked';
 import Tag from '../component/tag/tag';
 import Select from '../component/select/select';
 import CSSModules from 'react-css-modules';
-import style from '../sass/pages/article.scss'
-import blogGlobal from '../data/global';
+import style from '../sass/pages/draft.scss'
 
-const url = blogGlobal.requestBaseUrl+"/article";
-let timer = null;
-
-class Article extends React.Component{
+class Draft extends React.Component{
 	constructor(props){
 		super(props);
 		this.state = {
@@ -23,24 +19,6 @@ class Article extends React.Component{
 	handleEditorChange = (event) => {
 		let value = event.target.value;
 		this.setState({editor:value,previewer:{__html:marked(value)}});
-		if(!timer){
-			timer = setTimeout(() => {
-				let data = {
-					type:
-				}
-				fetch(url,{
-					method:'post',
-			        headers: {
-				        'Accept': 'application/json',
-						'Content-Type': 'application/json'
-			      	},
-				    mode:'cors',
-				    credentials: 'include',
-				    body: JSON.stringify(data)
-				})
-				timer = null;
-			},5000)
-		}
 	}
 
 	handleTagChange = (event) => {
@@ -68,8 +46,6 @@ class Article extends React.Component{
 		
 	}
 
-
-
 	render(){
 		let {editor,previewer,tagString} = this.state;
 		let list = tagString.split(';');
@@ -81,7 +57,7 @@ class Article extends React.Component{
 					<Select list={['原创','转载','翻译']} />
 					<div styleName="tag-bar-wrap">
 						<Tag  {...tagProps}/>
-						<input type="text" placeholder="输入标签,以;分割" onChange={this.handleTagChange}/>
+						<input type="text" onChange={this.handleTagChange}/>
 					</div>
 					<div styleName="btn-group">
 						<button className="btn-normal" onClick={this.handleQuitDraft}>舍弃草稿</button>
@@ -103,4 +79,4 @@ class Article extends React.Component{
 	}
 }
 
-export default CSSModules(Article, style,{handleNotFoundStyleName:'log'});
+export default CSSModules(Draft, style,{handleNotFoundStyleName:'log'});

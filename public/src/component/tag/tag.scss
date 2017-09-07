@@ -2,18 +2,23 @@
 @import "../../sass/mixin/square";
 @import "../../sass/mixin/vertical_center";
 @import "../../sass/global/_center.scss";
+.tag-bar{
+	font-size:$tag-normal-font-size;
+	font-family:$tag-normal-font-family;
+	color:$tag-normal-color;
+}
 .tag{
 	display:inline-block;
 	line-height:1;
-	margin-right:10px;
-	padding:2px 5px;
-	background-color:$theme-main-color;
+	margin-right:$tag-normal-margin-right;
+	padding:$tag-normal-padding;
+	background-color:$tag-normal-background;
 	border-radius:$border-radius-normal;
 	i{
 		cursor: pointer;
-		margin-left:10px;
+		margin-left:$tag-close-icon-margin-left;
 		&:hover{
-			color: $theme-adorn-color;
+			color: $tag-close-icon-hover-color;
 		}
 	}
 }

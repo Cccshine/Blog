@@ -35,19 +35,4 @@
 .modal-footer{
 	@include vCenterLineHeight($modal-footer-height);
 	text-align:center;
-	button{
-		width:$modal-footer-button-width;
-		height: $modal-footer-button-height;
-		color: $modal-footer-button-color;
-		border:1px solid $modal-adorn-background;
-		background-color: $modal-adorn-background;
-		margin-right: $modal-footer-button-margin;
-		cursor: pointer;
-		border-radius: $border-radius-normal;
-		transition: all $transition-time-normal;
-		&:hover{
-			background-color: $modal-footer-button-hover-background;
-			border-color:$modal-footer-button-hover-background;
-		}
-	}
 }

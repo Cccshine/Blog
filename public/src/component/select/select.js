@@ -6,24 +6,47 @@ import style from './select.scss'
 class Select extends React.Component{
 	constructor(props) {
 		super(props);
+		this.state = {
+			isDown:false,
+			text:props.list[0]
+		}
+	}
+
+	componentWillMount = () =>{
+		document.addEventListener('click', this.hideOption, false);
+	}
+
+	componentWillUnmount = () =>{
+		document.removeEventListener('click', this.hideOption, false);
+	}
+
+	hideOption = () => {
+		if(!this.state.isDown){
+			return;
+		}
+		this.setState({isDown:false});
 	}
 
 	handleDown = (event) => {
-		$(this.refs.selectList).toggle();
+		this.setState({isDown:!this.state.isDown});
+		event.nativeEvent.stopImmediatePropagation();
 	}
 
 	handleSelect = (event) => {
-		$(this.refs.showText).text($(event.target).text());
-		$(this.refs.selectList).hide();
+		this.setState({isDown:false,text:event.target.innerText});
 	}
 
 	render(){
 		let {list} = this.props;
+		let {isDown,text} = this.state;
+		let optionStyle ={
+			display: isDown ? 'block' : 'none'
+		}
 		return (
-			<div styleName="type-select">
-				<span ref="showText">{list[0]}</span>
-				<i className="fa fa-caret-down" onClick={this.handleDown}></i>
-				<ul className="hide" ref="selectList" onClick={this.handleSelect}>
+			<div styleName="select">
+				<span ref="showText">{text}</span>
+				<i className={"fa "+ (isDown ? "fa-caret-up" : "fa-caret-down")} onClick={this.handleDown}></i>
+				<ul style={optionStyle} onClick={this.handleSelect}>
 					{
 						list.map((item,index) => (
 							<li key={index}>{item}</li>

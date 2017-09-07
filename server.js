@@ -8,10 +8,12 @@ const session = require('express-session');//session依赖cookieParser
 const mongoStore = require('connect-mongo')(session);//将 session 存储于 mongodb，结合 express-session 使用
 const config = require('config-lite')(__dirname);
 const userModel = require('./models/user');
+const articleModel = require('./models/article');
 const indexRouter = require('./routes/index');
 const registerRouter = require('./routes/register');
 const loginRouter = require('./routes/login');
 const logoutRouter = require('./routes/logout');
+const articleRouter = require('./routes/article');
 
 const app = express();
 
@@ -56,6 +58,7 @@ app.use('/api/', indexRouter);
 app.use('/api/register', registerRouter);
 app.use('/api/login', loginRouter);
 app.use('/api/logout', logoutRouter);
+app.use('/api/articles', articleRouter);
 
 app.listen(port);
 

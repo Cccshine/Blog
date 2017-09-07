@@ -4,10 +4,8 @@ const router = express.Router();
 const UserModel = mongoose.model('User');
 
 
-router.post('/', function(req, res, next) {
-  let username = req.body.username;
-  let password = req.body.password;
-  let email = req.body.email;
+router.post('/', function(req, res) {
+  let {username,password,email} = req.body;
   let _user = {
   	name:username,
   	password:password,
@@ -16,8 +14,7 @@ router.post('/', function(req, res, next) {
   if(username == 'admin'){
     _user.role = 1;
   }
-  UserModel.findOne({name:username})
-  	.then((user) => {
+  UserModel.findOne({name:username}).then((user) => {
   		if(user){
   			//用户名已存在
   			return res.json({"status":0,"msg":"user exsist"});//用户已存在
@@ -34,8 +31,7 @@ router.post('/', function(req, res, next) {
   				return res.json({"status":1,"msg":"register success"});//注册成功
   			})
   		}
-  	})
-  	.catch((err) =>{
+  	}).catch((err) =>{
   		console.log(err);
   		res.status(500).send('Something broke!');
   	});

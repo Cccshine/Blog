@@ -10,7 +10,7 @@ import About from './pages/about';
 import Login from './pages/login.js';
 import Register from './pages/register.js';
 import User from './pages/user.js';
-import New from './pages/new.js';
+import Draft from './pages/draft.js';
 import NoMatch from './pages/nomatch.js';
 
 import 'es5-shim';
@@ -82,14 +82,14 @@ export default class App extends React.Component{
 				<main className="main-content">
 					<Switch>
 				    	<Route exact path='/' component={(props) => <Home {...props} isLogin={isLogin}/>}/>
-					    <Route path="/article-list" component={Article}/>
 						<Route path="/tag" component={Tag}/>
 						<Route path="/archive" component={Archive}/>
 						<Route path="/about" component={About}/>
 						<Route path="/login" component={Login}/>
 						<Route path="/register" component={Register}/>
 						<Route path="/user" component={User}/>
-						<Route path="/new" component={New}/>
+						<Route path="/new" component={Article}/>
+						<Route path="/draft" component={Draft}/>
 						<Route component={NoMatch}/>
 				    </Switch>
 				</main>

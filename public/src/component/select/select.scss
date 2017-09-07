@@ -1,37 +1,36 @@
 @import "../../sass/variables";
-@import "../../sass/mixin/square";
 @import "../../sass/mixin/vertical_center";
 @import "../../sass/global/_center.scss";
-.type-select{
+.select{
 	float:left;
 	position:relative;
-	width:200px;
-	@include vCenterLineHeight(36px);
+	width:$select-normal-width;
+	@include vCenterLineHeight($select-normal-height);
 	background-color:#fff;
-	border:1px solid #ccc;
+	border:$border-normal-gray;
 	border-radius: $border-radius-normal;
 	span{
-		padding-left: 10px;
+		padding-left: $select-show-text-padding-left;
 	}
 	i{
-		position: absolute;
-		right:10px;
-		top:10px;
+		@extend .common-vertical-center-transform;
+		right:$select-dropdown-pos-right;
 		cursor: pointer;
 	}
 	ul{
 		position: absolute;
-		top:36px;
+		top:$select-normal-height;
 		width:100%;
 		background-color:#fff;
-		border:1px solid #ccc;
+		border:$border-normal-gray;
 		border-radius: $border-radius-normal;
 	}
 	li{
-		@include vCenterLineHeight(24px);
-		padding-left: 10px;
+		@include vCenterLineHeight($select-option-item-height);
+		padding-left: $select-option-item-padding-left;
 		border-radius: $border-radius-normal;
 		&:hover{
+			color:#fff;
 			background-color: $theme-adorn-color;
 		}
 	}

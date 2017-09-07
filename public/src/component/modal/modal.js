@@ -32,7 +32,7 @@ class Modal extends React.Component{
 						<footer styleName="modal-footer">
 							{
 								btns.map((btn,index) => (
-									<button key={index} onClick={btn.ref == 'close' ? this.handleClose : btn.handleClick}>{btn.name}</button>
+									<button className="btn-normal" key={index} onClick={btn.ref == 'close' ? this.handleClose : btn.handleClick}>{btn.name}</button>
 								))
 							}
 						</footer>

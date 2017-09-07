@@ -34,11 +34,11 @@ class Header extends React.Component{
 				</div>
 				<nav styleName="header-nav">
 					<NavLink exact to='/' activeClassName="active-nav">首页</NavLink>
-					<NavLink to="/article-list" activeClassName="active-nav">文章列表</NavLink>
 					<NavLink to="/tag" activeClassName="active-nav">标签</NavLink>
 					<NavLink to="/archive" activeClassName="active-nav">归档</NavLink>
 					<NavLink to="/about" activeClassName="active-nav">About Me</NavLink>
 					{role == 1 ? <NavLink to="/new" activeClassName="active-nav">写文章</NavLink> : null}
+					{role == 1 ? <NavLink to="/draft" activeClassName="active-nav">草稿箱</NavLink> : null}
 				</nav>
 				<QuickLink {...quickLinkProps}/>
 				<ContactIcon />

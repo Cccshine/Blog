@@ -5,6 +5,7 @@ $border-radius-small: 3px;
 $border-radius-circle: 50%;
 $border-normal-main:1px solid $theme-main-color;
 $border-normal-adorn:1px solid $theme-adorn-color;
+$border-normal-gray:1px solid #ccc;
 $box-shadow-normal:5px 5px 10px #555;
 $transition-time-normal:1s;
 
@@ -19,8 +20,8 @@ $top-header-n-font:bold $top-header-n-font-size "Microsoft YaHei",sans-serif;;
 $top-header-n-shadow:$box-shadow-normal;
 $logo-size:$top-header-height - $top-header-padding-vertical*2;
 $header-nav-height:30px;
-$header-nav-item-width:120px;
-$header-nav-item-margin:0 10px;
+$header-nav-item-width:100px;
+$header-nav-item-margin:0 5px;
 $header-nav-item-border-radius:0 10px 0 10px;
 $header-nav-item-border-radius-hover:10px 0 10px 0;
 
@@ -87,18 +88,59 @@ $modal-close-pos-right:10px;
 $modal-close-hover-color:$theme-main-color;;
 $modal-body-padding:10px;
 $modal-footer-height:60px;
-$modal-footer-button-width:80px;
-$modal-footer-button-height:30px;
-$modal-footer-button-color:#fff;
-$modal-footer-button-margin:20px;
-$modal-footer-button-hover-background:$theme-main-color;
 
+//select
+$select-normal-width:200px;
+$select-normal-height:36px;
+$select-show-text-padding-left:10px;
+$select-dropdown-pos-right:10px;
+$select-dropdown-font-size:14px;
+$select-option-item-height:24px;
+$select-option-item-padding-left:$select-show-text-padding-left;
 
+//tag
+$tag-normal-font-size:14px;
+$tag-normal-font-family:Consolas;
+$tag-normal-color:#fff;
+$tag-normal-margin-right:10px;
+$tag-normal-padding:2px 5px;
+$tag-normal-background:$theme-main-color;
+$tag-close-icon-margin-left:10px;
+$tag-close-icon-hover-color:$theme-adorn-color;
 
-//register
+//button
+$button-normal-width:80px;
+$button-normal-height:30px;
+$button-normal-color:#fff;
+$button-normal-margin:20px;
+$button-normal-border-radius:$border-radius-normal;
+$button-normal-background:$theme-adorn-color;
+$button-normal-hover-background:$theme-main-color;
+
+//page===register
 $register-tip-bar-left:$form-input-width+20;
 $register-tip-bar-noarrow-margin:0 auto 20px;
 
-//login
+//page===login
 $login-tip-bar-height:$tip-bar-oneline-height;
 $login-tip-bar-margin:0 auto 20px;
+
+//page===new-file
+$new-main-width:1200px;
+$new-main-height:680px;
+$new-oneline-height:36px;
+$new-main-padding-top:10px;
+$new-select-width:$select-normal-width;
+$new-btngroup-width:200px;
+$new-tagbar-wrap-margin-level:20px;
+$new-tagbar-wrap-padding-left:10px;
+$new-tagbar-wrap-width:$new-main-width - $new-select-width - $new-btngroup-width - $new-tagbar-wrap-margin-level*2;
+$new-tagbar-input-width:300px;
+$new-operate-area-margin-top:$new-oneline-height;
+$new-operate-area-gutter:40px;
+$new-operate-area-width:($new-main-width - $new-operate-area-gutter)/2;
+$new-operate-area-height:90%;
+$new-operate-area-header-height:$new-oneline-height;
+$new-operate-area-font:14px/1.5 Consolas;
+
+

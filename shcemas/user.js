@@ -27,10 +27,10 @@ const UserSchema = new mongoose.Schema({
 //保存前执行的函数
 UserSchema.pre('save',function(next){
 	let user = this;//this指之后要保存的user实例
-	if(this.isNew){
-		this.meta.createTime = this.meta.updateTime = Date.now();
+	if(user.isNew){
+		user.meta.createTime = user.meta.updateTime = Date.now();
 	}else{
-		this.meta.updateTime = Date.now();
+		user.meta.updateTime = Date.now();
 	}
 	next();
 })
