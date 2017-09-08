@@ -49,7 +49,7 @@ app.use( bodyParser.urlencoded({ extended: true }) ); // to support URL-encoded 
 app.all('*', function(req, res, next) {
     res.header("Access-Control-Allow-Origin", req.headers.origin);
     res.header('Access-Control-Allow-Headers', 'Origin, No-Cache, X-Requested-With, If-Modified-Since, Pragma, Last-Modified, Cache-Control, Expires, Content-Type, X-E4M-With');
-    res.header("Access-Control-Allow-Methods","PUT,POST,GET,DELETE,OPTIONS");
+    res.header("Access-Control-Allow-Methods","PUT,POST,GET,DELETE,OPTIONS,UPDATE");
     res.header("Access-Control-Allow-Credentials",true);
     next();
 });

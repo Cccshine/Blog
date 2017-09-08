@@ -7,24 +7,29 @@ class Modal extends React.Component{
 	constructor(props) {
 		super(props);
 	    this.state = {
-	    	isOpen:!sessionStorage.getItem('loginTipClose') 
+	    	isOpen:props.isOpen
 	    };
 	}
 
+	componentWillReceiveProps = (nextProps) => {
+		this.setState({isOpen:nextProps.isOpen});
+	}
+
 	handleClose = (event) => {
+		console.log('bbb')
 		this.setState({isOpen:false});
-		sessionStorage.setItem('loginTipClose',true);
 	}
 
 	render(){
-		let {title,modalHtml,btns} = this.props;
+		let {title,modalHtml,btns,handleModalClose} = this.props;
+		console.log(handleModalClose)
 		return (
 			<div>
 				{this.state.isOpen ? 
 					<div styleName="modal" ref="modal">
 						<header styleName="modal-header">
 							<h4>{title}</h4>
-							<i className="fa fa-close" onClick={this.handleClose}></i>
+							<i className="fa fa-close" onClick={handleModalClose ? handleModalClose : this.handleClose}></i>
 						</header>
 						<main styleName="modal-body">
 							{modalHtml}
@@ -32,7 +37,7 @@ class Modal extends React.Component{
 						<footer styleName="modal-footer">
 							{
 								btns.map((btn,index) => (
-									<button className="btn-normal" key={index} onClick={btn.ref == 'close' ? this.handleClose : btn.handleClick}>{btn.name}</button>
+									<button className="btn-normal" key={index} onClick={btn.ref == 'close' ? (handleModalClose ? handleModalClose : this.handleClose) : btn.handleClick}>{btn.name}</button>
 								))
 							}
 						</footer>

@@ -24,6 +24,7 @@
 		background-color:#fff;
 		border:$border-normal-gray;
 		border-radius: $border-radius-normal;
+		z-index:999;
 	}
 	li{
 		@include vCenterLineHeight($select-option-item-height);

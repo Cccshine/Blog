@@ -80,7 +80,7 @@ class Login extends React.Component{
 			classNames:status == 0 ? 'unvisible':'visible'
 		}
 		return(
-			<div>
+			<div styleName="login">
 				<QuickLink pageName="login"/>
 				<div className="form-box">
 					<form onSubmit={this.handleSubmit}>

@@ -1,6 +1,8 @@
 @import "../_variables";
 @import "./_reset.scss";
 @import "./_font-awsome.scss";
+@import "./_center.scss";
+@import "../mixin/_vertical_center.scss";
 html{
 	height:100%;
 }
@@ -58,4 +60,45 @@ body{
 		background-color: $button-normal-hover-background;
 		border-color:$button-normal-hover-background;
 	}
+}
+.input-wrap-normal{
+	width:$input-wrap-normal-width;
+	@include vCenterLineHeight($input-wrap-normal-height);
+	margin:$input-wrap-normal-margin;
+	background-color:#fff;
+	border:$border-normal-gray;
+	border-radius:$border-radius-normal;
+	input{
+		float: left;
+	}
+}
+
+.input-normal{
+	width:$input-normal-width;
+	padding:$input-normal-padding;
+	border:$input-normal-border;
+	border-radius: $border-radius-normal;
+	@include vCenterLineHeight($input-normal-height);
+	&:focus{
+		outline: none;
+	}
+}
+
+.tip-bar-alert{
+	position:absolute;
+	min-width:$tip-bar-alert-min-width;
+	width:auto;
+	text-align: center;
+	@extend .common-l-v-center-transform;
+	i{
+		left:auto;
+		margin-left:$tip-bar-alert-icon-margin-left;
+	}
+	span{
+		font-size:$tip-bar-alert-font-size;
+	}
+}
+
+.no-border{
+	border:none;
 }

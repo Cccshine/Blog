@@ -2,39 +2,34 @@
 @import "../../sass/global/_center.scss";
 @import "../../sass/mixin/_vertical_center.scss";
 .new-file{
-	width:$new-main-width;
-	height:$new-main-height;
-	padding-top:$new-main-padding-top;
+	width:$article-main-width;
+	height:$article-main-height;
+	padding-top:$article-main-padding-top;
 	@extend .common-level-center-transform;
-}
-
-.tag-bar-wrap{
-	float:left;
-	margin:0 $new-tagbar-wrap-margin-level;
-	padding-left: $new-tagbar-wrap-padding-left;
-	width:$new-tagbar-wrap-width;
-	position:relative;
-	@include vCenterLineHeight($new-oneline-height);
-	background-color:#fff;
-	border:$border-normal-gray;
-	border-radius:$border-radius-normal;
-	input{
-		float: left;
-		width:$new-tagbar-input-width;
-		border:none;
-		@include vCenterLineHeight($new-oneline-height - 2);
-		&:focus{
-			outline: none;
-		}
+	[data-role=select]{
+		margin-right:$article-normal-gutter;
 	}
 	[data-role=tag-bar]{
 		float: left;
+		padding-left: $article-normal-padding-level;
+	}
+	[data-role=title]{
+		width:100%;
+		margin-right:0;
+	}
+	.input-wrap{
+		float:left;
+		width:$article-input-wrap-width;
+		position:relative;
+	}
+	[data-role=tag-bar-wrap]{
+		width:$article-tagbar-wrap-width;
 	}
 }
 
 .btn-group{
 	float:left;
-	width:$new-btngroup-width;
+	width:$article-btngroup-width;
 	text-align:right;
 	button:last-child{
 		margin-right:0;
@@ -43,27 +38,43 @@
 
 .editor,.previewer{
 	float:left;
-	width:$new-operate-area-width;
-	height:$new-operate-area-height;
-	border:$border-normal-gray;
-	margin-top:$new-operate-area-margin-top;
+	width:$article-operate-area-width;
+	height:$article-operate-area-height;
+	border:$article-operate-area-border;
+	margin-top:$article-operate-area-margin-top;
 	background-color:#fff;
-	font:$new-operate-area-font;
+	font:$article-operate-area-font;
 }
 
 .editor{
-	margin-right:$new-operate-area-gutter;
+	margin-right:$article-operate-area-gutter;
 	textarea{
-		font:$new-operate-area-font;
+		font:$article-operate-area-font;
 		width:100%;
 		height: 100%;
 		border:none;
 		resize: none;
+		&:focus{
+			outline: none;
+		}
+	}
+}
+.previewer{
+	div{
+		height:100%;
+		overflow:auto;
 	}
 }
 .header{
-	@include vCenterLineHeight($new-operate-area-header-height);
-	margin-top:-$new-operate-area-header-height;
+	width:$article-operate-area-header-width;
+	@include vCenterLineHeight($article-operate-area-header-height);
+	margin-top:-$article-operate-area-header-height;
+	margin-left:-1px;
+	background-color:$article-operate-area-header-background;
+	border-radius:5px 5px 0 0;
+	text-align:center;
+	font-size:$article-operate-area-header-font-size;
+	color:#fff;
 }
 
 

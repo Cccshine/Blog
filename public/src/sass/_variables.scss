@@ -7,6 +7,7 @@ $border-normal-main:1px solid $theme-main-color;
 $border-normal-adorn:1px solid $theme-adorn-color;
 $border-normal-gray:1px solid #ccc;
 $box-shadow-normal:5px 5px 10px #555;
+$none-line-normal:36px;
 $transition-time-normal:1s;
 
 //top-header
@@ -75,6 +76,10 @@ $tip-bar-arrow-color-info:$tip-bar-background-info;
 $tip-bar-arrow-color-error:$tip-bar-background-error;
 $tip-bar-arrow-color-success:$tip-bar-background-success;
 
+$tip-bar-alert-min-width:200px;
+$tip-bar-alert-icon-margin-left:-20px;
+$tip-bar-alert-font-size:14px;
+
 //modal
 $modal-normal-width:400px;
 $modal-pos-top:20%;
@@ -117,6 +122,16 @@ $button-normal-border-radius:$border-radius-normal;
 $button-normal-background:$theme-adorn-color;
 $button-normal-hover-background:$theme-main-color;
 
+//input
+$input-normal-width:300px;
+$input-normal-height:$none-line-normal - 2;
+$input-normal-border:$border-normal-main;
+$input-normal-padding:0 10px;
+$input-wrap-normal-width:$input-normal-width;
+$input-wrap-normal-height:$none-line-normal;
+$input-wrap-normal-margin:0 20px 10px 0;
+
+
 //page===register
 $register-tip-bar-left:$form-input-width+20;
 $register-tip-bar-noarrow-margin:0 auto 20px;
@@ -125,22 +140,27 @@ $register-tip-bar-noarrow-margin:0 auto 20px;
 $login-tip-bar-height:$tip-bar-oneline-height;
 $login-tip-bar-margin:0 auto 20px;
 
-//page===new-file
-$new-main-width:1200px;
-$new-main-height:680px;
-$new-oneline-height:36px;
-$new-main-padding-top:10px;
-$new-select-width:$select-normal-width;
-$new-btngroup-width:200px;
-$new-tagbar-wrap-margin-level:20px;
-$new-tagbar-wrap-padding-left:10px;
-$new-tagbar-wrap-width:$new-main-width - $new-select-width - $new-btngroup-width - $new-tagbar-wrap-margin-level*2;
-$new-tagbar-input-width:300px;
-$new-operate-area-margin-top:$new-oneline-height;
-$new-operate-area-gutter:40px;
-$new-operate-area-width:($new-main-width - $new-operate-area-gutter)/2;
-$new-operate-area-height:90%;
-$new-operate-area-header-height:$new-oneline-height;
-$new-operate-area-font:14px/1.5 Consolas;
+//page===article
+$article-main-width:1200px;
+$article-main-height:580px;
+$article-oneline-height:36px;
+$article-normal-gutter:20px;
+$article-normal-padding-level:10px;
+$article-main-padding-top:10px;
+$article-select-width:$select-normal-width;
+$article-btngroup-width:300px;
+$article-input-wrap-width:$article-main-width - $article-select-width - $article-normal-gutter*2;
+$article-tagbar-wrap-width:$article-main-width - $article-btngroup-width - $article-normal-gutter*2;
+$article-tagbar-input-width:300px;
+$article-operate-area-margin-top:$article-oneline-height;
+$article-operate-area-border:$border-normal-adorn;
+$article-operate-area-header-background:$theme-adorn-color;
+$article-operate-area-header-width:100px;
+$article-operate-area-header-font-size:16px;
+$article-operate-area-gutter:40px;
+$article-operate-area-width:($article-main-width - $article-operate-area-gutter)/2;
+$article-operate-area-height:90%;
+$article-operate-area-header-height:$article-oneline-height;
+$article-operate-area-font:14px/1.5 Consolas;
 
 

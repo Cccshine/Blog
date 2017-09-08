@@ -88,7 +88,7 @@ export default class App extends React.Component{
 						<Route path="/login" component={Login}/>
 						<Route path="/register" component={Register}/>
 						<Route path="/user" component={User}/>
-						<Route path="/new" component={Article}/>
+						<Route path="/article" component={Article}/>
 						<Route path="/draft" component={Draft}/>
 						<Route component={NoMatch}/>
 				    </Switch>

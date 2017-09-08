@@ -263,7 +263,7 @@ class Register extends React.Component{
 		}[passwordStatus];
 		let passwordTipText = passwordTip;
 		return(
-			<div>
+			<div styleName="register">
 				<QuickLink pageName="register"/>
 				<div className="form-box">
 					<form onSubmit={this.handleSubmit}>

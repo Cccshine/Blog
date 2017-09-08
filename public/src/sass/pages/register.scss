@@ -1,11 +1,14 @@
 @import "../../sass/variables";
 @import "../../sass/global/_center.scss";
-[data-role*="tip-has"]{
-	@extend .common-vertical-center-transform;
-	left:$register-tip-bar-left;
+.register{
+	[data-role*="tip-has"]{
+		@extend .common-vertical-center-transform;
+		left:$register-tip-bar-left;
+	}
+	[data-role*="tip-no"]{
+		position:relative;
+		margin: $register-tip-bar-noarrow-margin;
+		height:$tip-bar-oneline-height;
+	}
 }
-[data-role*="tip-no"]{
-	position:relative;
-	margin: $register-tip-bar-noarrow-margin;
-	height:$tip-bar-oneline-height;
-}
+

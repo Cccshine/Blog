@@ -7,8 +7,9 @@ class Select extends React.Component{
 	constructor(props) {
 		super(props);
 		this.state = {
-			isDown:false,
-			text:props.list[0]
+			isDown:props.isDown,
+			text:props.showText,
+			value:props.showValue
 		}
 	}
 
@@ -18,6 +19,10 @@ class Select extends React.Component{
 
 	componentWillUnmount = () =>{
 		document.removeEventListener('click', this.hideOption, false);
+	}
+
+	componentWillReceiveProps = (nextProps) => {
+		this.setState({isDown:nextProps.isDown,text:nextProps.showText,value:nextProps.showValue});
 	}
 
 	hideOption = () => {
@@ -33,23 +38,23 @@ class Select extends React.Component{
 	}
 
 	handleSelect = (event) => {
-		this.setState({isDown:false,text:event.target.innerText});
+		this.setState({isDown:false,text:event.target.innerText,value:event.target.dataset.value});
 	}
 
 	render(){
-		let {list} = this.props;
-		let {isDown,text} = this.state;
+		let {showText,showValue,list,handleSelect} = this.props;
+		let {isDown,text,value} = this.state;
 		let optionStyle ={
 			display: isDown ? 'block' : 'none'
 		}
 		return (
-			<div styleName="select">
-				<span ref="showText">{text}</span>
+			<div styleName="select" data-role="select">
+				<span ref="showText" data-value={value}>{text}</span>
 				<i className={"fa "+ (isDown ? "fa-caret-up" : "fa-caret-down")} onClick={this.handleDown}></i>
-				<ul style={optionStyle} onClick={this.handleSelect}>
+				<ul style={optionStyle} onClick={handleSelect ? handleSelect : this.handleSelect}>
 					{
 						list.map((item,index) => (
-							<li key={index}>{item}</li>
+							<li key={index} data-value={item.value}>{item.name}</li>
 						))
 					}
 				</ul>
