@@ -1,7 +1,9 @@
 @import "../../sass/variables";
 @import "../../sass/global/_center.scss";
 @import "../../sass/mixin/_vertical_center.scss";
-.login{
+.root{
+	height:100%;
+	background: linear-gradient(#fff,#22C3AA);
 	[data-role*="tip-no"]{
 		position:relative;
 		margin: $login-tip-bar-margin;

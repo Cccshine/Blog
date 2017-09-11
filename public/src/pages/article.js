@@ -174,7 +174,7 @@ class Article extends React.Component{
 		let {editor,previewer,tagString,selectIsDown,selectText,selectValue,showTip,tipType,tipText,showModal} = this.state;
 		let list = tagString.split(';');
 		list.splice(list.length - 1,1);
-		let tagProps = {list:list,hasClose:true,handleTagDelete:this.handleTagDelete};
+		let tagProps = {list:list,isLink:false,hasClose:true,handleTagDelete:this.handleTagDelete};
 		let selectProps = {
 			isDown:selectIsDown,
 			showText:selectText,
@@ -196,7 +196,7 @@ class Article extends React.Component{
 			handleModalClose:this.handleModalClose
 		}
 		return(
-			<div styleName="new-file">
+			<div styleName="root">
 				<div className="clearfix">
 					<Select {...selectProps}/>
 					<div className="input-wrap-normal" styleName="input-wrap">

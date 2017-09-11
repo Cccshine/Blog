@@ -1,11 +1,11 @@
 @import "../../sass/variables";
 @import "../../sass/global/_center.scss";
 @import "../../sass/mixin/_vertical_center.scss";
-.new-file{
+.root{
 	width:$article-main-width;
 	height:$article-main-height;
 	padding-top:$article-main-padding-top;
-	@extend .common-level-center-transform;
+	margin: 0 auto;
 	[data-role=select]{
 		margin-right:$article-normal-gutter;
 	}

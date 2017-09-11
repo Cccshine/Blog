@@ -1,6 +1,6 @@
 import React from 'react';
 import blogGlobal from '../../data/global';
-import {NavLink,Link} from 'react-router-dom';
+import {NavLink} from 'react-router-dom';
 import CSSModules from 'react-css-modules';
 import QuickLink from '../quickLink/quick-link';
 import ContactIcon from '../contactIcon/contact-icon';

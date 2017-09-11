@@ -1,0 +1,76 @@
+@import "../../sass/variables";
+@import "../../sass/mixin/square";
+@import "../../sass/mixin/vertical_center";
+@import "../../sass/global/_center.scss";
+.root{
+	position:relative;
+	width:960px;
+	min-height:700px;
+	margin:0 auto;
+	padding:20px 20px 20px 100px;
+	background:#fff;
+	[data-role=tag]{
+		transition: all $transition-time-normal;
+		&:hover{
+			background-color: $theme-adorn-color;
+		}
+	}
+	.null-tip{
+		width:200px;
+		font-size: 24px;
+		margin: 30px auto;
+		color:$theme-adorn-color;
+	}
+}
+.summary-section{
+	margin-bottom:20px;
+	position:relative;
+	h3{
+		@include vCenterLineHeight(36px);
+		font-size:20px;
+		a{
+			color:$theme-adorn-color;
+			&:hover{
+				color:$theme-adorn-color;
+			}
+		}
+	}
+}
+.tag-panel{
+	margin: 10px 0;
+	.tag{
+		background:black;
+	}
+}
+.summary{
+
+}
+.timeline-circle{
+	@include square(20px);
+	position:absolute;
+	top:(36px - 20px)/2;
+	left:-(100px + (20px - 10px));
+	background:$theme-adorn-color;
+	border-radius:50%;
+	z-index:99;
+}
+
+.timeline-date{
+	width:120px;
+	@include vCenterLineHeight(20px);
+	position:absolute;
+	text-align:right;
+	font-weight:bold;
+	top:(36px - 20px)/2;
+	left:-(120px + 100px + 20px);
+	color:$theme-adorn-color;
+}
+
+.timeline-bar{
+	width:10px;
+	height:100%;
+	position:absolute;
+	top:0;
+	left:-5px;
+	background:$theme-main-color;
+}
