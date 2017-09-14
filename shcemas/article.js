@@ -7,6 +7,7 @@ const ArticleSchema = new mongoose.Schema({
 		type:Number,
 		default:0
 	},
+	order:Number,
 	title:String,
 	tag:String,
 	content:String,

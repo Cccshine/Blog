@@ -16,7 +16,7 @@ module.exports = {
 		inline:true,
 		//设定webpack-dev-server伺服的directory。如果不进行设定的话，默认是在当前目录下
 		contentBase:'./public',
-		port:3000
+		port:3030
 	},
 	//在控制台的sources下，点开可以看到webpack://目录，里面可以直接看到我们开发态的源代码，这样方便我们直接在浏览器中打断点调试
 	devtool:"inline-source-map",  
@@ -27,7 +27,7 @@ module.exports = {
 	},
 	output:{
 		// path:__dirname+'/dist',
-		publicPath:'dist/',
+		publicPath:'/dist/',
 		filename:'js/bundle.js'
 	},
 	module:{
@@ -143,6 +143,6 @@ module.exports = {
 		new extractTextPlugin({filename:'css/bundle.css'}),
 		new webpack.ProvidePlugin({$:'jquery'}),
 		new webpack.HotModuleReplacementPlugin(),
-		new openBrowserPlugin({url:'http://localhost:3000/'}),
+		new openBrowserPlugin({url:'http://localhost:3030/'}),
 	]
 };

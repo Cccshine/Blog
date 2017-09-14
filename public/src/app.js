@@ -3,7 +3,7 @@ import {Route,Switch} from 'react-router-dom';
 import blogGlobal from './data/global';
 import Header from './component/header/header';
 import Home from './pages/home';
-import Article from './pages/article';
+import Write from './pages/write';
 import Tag from './pages/tag';
 import Archive from './pages/archive';
 import About from './pages/about';
@@ -11,6 +11,7 @@ import Login from './pages/login.js';
 import Register from './pages/register.js';
 import User from './pages/user.js';
 import Draft from './pages/draft.js';
+import Article from './pages/article.js';
 import NoMatch from './pages/nomatch.js';
 
 import 'es5-shim';
@@ -28,7 +29,7 @@ export default class App extends React.Component{
 			role:0
 		}
 	}
-	componentWillMount = () => {
+	componentDidMount = () => {
 		let url = blogGlobal.requestBaseUrl;
 		fetch(url,{
 			method:'GET',
@@ -37,14 +38,13 @@ export default class App extends React.Component{
 		}).then((response) => {
 			return response.json();
 		}).then((json) => {
-			console.log(json,json.isLogin)
-			this.setState({isLogin:json.isLogin});
 			if(json.username){
-				this.setState({username:json.username,role:json.role});
+				this.setState({isLogin:json.isLogin,username:json.username,role:json.role});
 				sessionStorage.setItem('username',json.username);
+			}else{
+				this.setState({isLogin:json.isLogin});
 			}
 			sessionStorage.setItem('isLogin',json.isLogin);
-
 		}).catch((err) => {
 			console.log(err)
 		})
@@ -88,8 +88,9 @@ export default class App extends React.Component{
 						<Route path="/login" component={Login}/>
 						<Route path="/register" component={Register}/>
 						<Route path="/user" component={User}/>
-						<Route path="/article" component={Article}/>
+						<Route path="/write" component={Write}/>
 						<Route path="/draft" component={Draft}/>
+						<Route path="/articles/:order" component={Article}/>
 						<Route component={NoMatch}/>
 				    </Switch>
 				</main>

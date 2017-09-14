@@ -37,7 +37,7 @@ class Header extends React.Component{
 					<NavLink to="/tag" activeClassName="active-nav">标签</NavLink>
 					<NavLink to="/archive" activeClassName="active-nav">归档</NavLink>
 					<NavLink to="/about" activeClassName="active-nav">About Me</NavLink>
-					{role == 1 ? <NavLink to="/article" activeClassName="active-nav">写文章</NavLink> : null}
+					{role == 1 ? <NavLink to="/write" activeClassName="active-nav">写文章</NavLink> : null}
 					{role == 1 ? <NavLink to="/draft" activeClassName="active-nav">草稿箱</NavLink> : null}
 				</nav>
 				<QuickLink {...quickLinkProps}/>

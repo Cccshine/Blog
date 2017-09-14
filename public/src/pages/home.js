@@ -1,4 +1,6 @@
 import React from 'react';
+import moment from 'moment';
+import marked from 'marked';
 import {Link} from 'react-router-dom';
 import Modal from '../component/modal/modal';
 import Tag from '../component/tag/tag';
@@ -7,27 +9,6 @@ import style from '../sass/pages/home.scss';
 import blogGlobal from '../data/global';
 
 const url = blogGlobal.requestBaseUrl+"/article-list";
-
-// let summaryList = [
-// 	{
-// 		title:"你不知道的z-index",
-// 		tagString:"html;css;",
-// 		summary:"text-align 会对块元素(或者display:block的元素）中的所有内联内容水平居中，可以继承，它里面所有的文字或者图片，都会相对于最靠近自己的块状父元素来实现居中。但对块状子元素是没用的，不能实现块状子元素在块状父元素中整体居中。该属性只能在块元素上设置，在内联元素上不起作用",
-// 		date:"2017-9-11"
-// 	},
-// 	{
-// 		title:"你不知道的z-index",
-// 		tagString:"html;css;",
-// 		summary:"text-align 会对块元素(或者display:block的元素）中的所有内联内容水平居中，可以继承，它里面所有的文字或者图片，都会相对于最靠近自己的块状父元素来实现居中。但对块状子元素是没用的，不能实现块状子元素在块状父元素中整体居中。该属性只能在块元素上设置，在内联元素上不起作用",
-// 		date:"2017-9-11"
-// 	},
-// 	{
-// 		title:"你不知道的z-index",
-// 		tagString:"html;css;",
-// 		summary:"text-align 会对块元素(或者display:block的元素）中的所有内联内容水平居中，可以继承，它里面所有的文字或者图片，都会相对于最靠近自己的块状父元素来实现居中。但对块状子元素是没用的，不能实现块状子元素在块状父元素中整体居中。该属性只能在块元素上设置，在内联元素上不起作用",
-// 		date:"2017-9-11"
-// 	},
-// ]
 
 class Home extends React.Component{
 	constructor(props){
@@ -51,9 +32,9 @@ class Home extends React.Component{
 			console.log(json);
 			let {status,articleList} = json;
 			if(status == 0){
-				// this.setState({status:2});
+				this.setState({status:2});
 			}else if(status == 1){
-				// this.setState({status:1,summaryList:articleList});
+				this.setState({status:1,summaryList:articleList});
 			}
 		}).catch((err) => {
 			console.log(err);
@@ -86,34 +67,36 @@ class Home extends React.Component{
 					(() => {
 						switch (status) {
 							case 1:
-								summaryList.map((item,index) => {
-									let list = item.tag.split(';');
-									list = list.slice(0,list.length - 1);
-									return (
-										<section styleName="summary-section" key={index}>
-											<h3><Link to="/">{item.title}</Link></h3>
-											<div styleName="tag-panel">
-												<Tag {...tagProps} list={list}/>
-											</div>
-											<div styleName="summary">
-												<p>{item.content}</p>
-											</div>
-											<span styleName="timeline-circle"></span>
-											<span styleName="timeline-date">{item.publicTime}</span>
-										</section>
-									)
-								});
-								<div styleName="timeline-bar"></div>
+								return (
+									summaryList.map((item,index) => {
+										let list = item.tag.split(';');
+										list = list.slice(0,list.length - 1);
+										return (
+											<section styleName="summary-section" key={index}>
+												<h3><Link to={"/articles/" + item.order}>{item.title}</Link></h3>
+												<div styleName="tag-panel">
+													<Tag {...tagProps} list={list}/>
+												</div>
+												<div styleName="summary">
+													<p dangerouslySetInnerHTML={{__html:marked(item.content)}}></p>
+												</div>
+												<span styleName="timeline-circle"></span>
+												<span styleName="timeline-date">{moment(item.publicTime).format('YYYY-MM-DD')}</span>
+											</section>
+										)
+									})
+								)
 								break;
-						case 2:
-								<h3 styleName="null-tip">暂无文章</h3>
+							case 2:
+								return <h3 styleName="null-tip">暂无文章</h3>
 								break;
-						default:
-								<div styleName="loading">正在加载</div>
+							default:
+								return <div styleName="loading"><i className="fa fa-spinner fa-pulse"></i><span>正在加载...</span></div>
 								break;
 						}
 					})()
 				}
+				{status == 1 ? <div styleName="timeline-bar"></div> : null}
 				{isLogin ? null : <Modal {...modalProps} />}
 			</div>
 		)
