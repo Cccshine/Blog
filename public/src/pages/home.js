@@ -73,7 +73,7 @@ class Home extends React.Component{
 										list = list.slice(0,list.length - 1);
 										return (
 											<section styleName="summary-section" key={index}>
-												<h3><Link to={"/articles/" + item.order}>{item.title}</Link></h3>
+												<h3><Link target="_blank" to={"/articles/" + item.order}>{item.title}</Link></h3>
 												<div styleName="tag-panel">
 													<Tag {...tagProps} list={list}/>
 												</div>
