@@ -45,6 +45,12 @@ body{
 		clear: both;
 	}
 }
+.fl{
+	float:left;
+}
+.fr{
+	float:right;
+}
 .btn-normal{
 	width:$button-normal-width;
 	height: $button-normal-height;

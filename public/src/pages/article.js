@@ -5,9 +5,9 @@ import Tag from '../component/tag/tag';
 import CSSModules from 'react-css-modules';
 import style from '../sass/pages/article.scss';
 import blogGlobal from '../data/global';
-
  
-const content = `[TOC]
+
+const content = `
 
 # Header 1
 
@@ -38,8 +38,28 @@ class Article extends React.Component{
 		let {catalog} = this.state;
 		let tagProps = {isLink:true,hasClose:false,list:['html','css']};
 		return(
-			<div styleName="root">
-				<aside styleName="sidemenu" ref="catalog">
+			<article styleName="root" className="clearfix">
+				<header styleName="header" className="clearfix">
+					<div className="fl">
+						<h1 styleName="title">first article</h1>
+						<div styleName="tag-panel">
+							<Tag {...tagProps}/>
+						</div>
+					</div>
+					<div className="fr" styleName="extra-info">
+						<div styleName="browse-times"><strong>1k</strong>&nbsp;次浏览</div>
+						<div styleName="date">2017-9-4</div>
+					</div>
+				</header>
+				<section styleName="content-container" className="fl">
+					<div ref="content" styleName="content" dangerouslySetInnerHTML={{__html:marked(content)}}></div>
+					<div styleName="comment">
+						<li>1</li>
+						<li>2</li>
+						<li>3</li>
+					</div>
+				</section>
+				<aside styleName="sidebar" className="fl" ref="catalog">
 					<ul>
 						{
 							catalog.map((item,index) => {
@@ -54,16 +74,7 @@ class Article extends React.Component{
 						}
 					</ul>
 				</aside>
-				<article styleName="content-box">
-					<h1 styleName="title">first article</h1>
-					<div styleName="tag-panel">
-						<Tag {...tagProps}/>
-					</div>
-					<div styleName="date">2017-9-4</div>
-					<div ref="content" styleName="content" dangerouslySetInnerHTML={{__html:marked(content)}}></div>
-				</article>
-				<div styleName="comment-box"></div>
-			</div>
+			</article>
 		)
 	}
 }
