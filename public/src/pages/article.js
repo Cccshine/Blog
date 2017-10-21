@@ -5,19 +5,18 @@ import Tag from '../component/tag/tag';
 import CSSModules from 'react-css-modules';
 import style from '../sass/pages/article.scss';
 import blogGlobal from '../data/global';
- 
 
-const content = `
-
-# Header 1
-
-## Header 2`
-
+let pathArr = window.location.pathname.split('/');
+let order = pathArr[pathArr.length - 1];
+const url = blogGlobal.requestBaseUrl+"/articles?mode=public&order="+order;
+let content = null;
+let catalog = null;
 class Article extends React.Component{
 	constructor(props){
 		super(props);
 		this.state = {
-			catalog:[]
+			catalog:[],
+			content:""
 		}
 	}
 	createCatalog = (html) => {
@@ -31,11 +30,32 @@ class Article extends React.Component{
 		});
 		this.setState({catalog:newTitle});
 	}
+	componentWillMount = () => {
+		fetch(url,{
+			method:'get',
+		    mode:'cors',
+		    credentials: 'include',
+		}).then((response) => {
+			return response.json();
+		}).then((json) => {
+			console.log(json);
+			this.setState({content:json.article.content});
+			this.createCatalog(this.refs.content.innerHTML)
+			// let {status,articleList} = json;
+			// if(status == 0){
+			// 	this.setState({status:2});
+			// }else if(status == 1){
+			// 	this.setState({status:1,summaryList:articleList});
+			// }
+		}).catch((err) => {
+			console.log(err);
+		});
+	}
 	componentDidMount = () => {
-		this.createCatalog(this.refs.content.innerHTML)
+		// this.createCatalog(this.refs.content.innerHTML)
 	}
 	render(){
-		let {catalog} = this.state;
+		let {catalog,content} = this.state;
 		let tagProps = {isLink:true,hasClose:false,list:['html','css']};
 		return(
 			<article styleName="root" className="clearfix">

@@ -117,8 +117,10 @@ class Write extends React.Component{
 			articleId:articleID,
 			todo:0//保存草稿
 		}
+		console.log(articleID)
 		this.sendRequest('post',data,(json) => {
-			let articleId = json.article.articleId;
+			let articleId = json.article._id;
+			console.log(json.article)
 			if(!articleID)
 				articleID = articleId;
 			if(!isAuto){

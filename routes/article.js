@@ -17,8 +17,9 @@ router.post('/',function(req,res){
 
 	if(articleId){//非新建
 		console.log('更新')
-		ArticleModel.update({_id:articleId},{$set:_article}).then((article) => {
-			return res.json({"status":1,articleId:article._id,"msg":"save success"});
+		ArticleModel.findOneAndUpdate({_id:articleId},{$set:_article}).then((article) => {
+			console.log(article)
+			return res.json({"status":1,article:article,"msg":"save success"});
 		}).catch((err) => {
 			console.log(err);
 			res.status(500).send('Something broke!');
@@ -50,6 +51,20 @@ router.delete('/',function(req,res){
 		res.status(500).send('Something broke!');
 	})
 });
+
+router.get('/',(req,res) => {
+	let mode = req.query.mode;
+	if(mode == 'public'){
+		let order = Number(req.query.order);
+		ArticleModel.findOne({order:order}).then((article) => {
+			console.log(article)
+			return res.json({"status":1,article:article,"msg":"success"});
+		}).catch((err) => {
+			console.log(err);
+			res.status(500).send('Something broke!');
+		})
+	}
+})
 
 
 module.exports = router;
