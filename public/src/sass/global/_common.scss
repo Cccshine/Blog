@@ -66,6 +66,10 @@ body{
 		border-color:$button-normal-hover-background;
 	}
 }
+.btn-sm{
+	width: 60px;
+	height: 24px;
+}
 .input-wrap-normal{
 	width:$input-wrap-normal-width;
 	@include vCenterLineHeight($input-wrap-normal-height);

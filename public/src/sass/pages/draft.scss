@@ -1,3 +1,25 @@
 @import "../../sass/variables";
 @import "../../sass/global/_center.scss";
 @import "../../sass/mixin/_vertical_center.scss";
+.draft-list{
+    width: 960px;
+    margin: 20px auto;
+    .draft-item{
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid $theme-main-color;
+        h3 a{
+            color: $theme-adorn-color;
+            &:hover{
+                color: $theme-main-color;
+            }
+        }
+        .save-time{
+            font-size: 12px;
+            color: #999;
+            height: 24px;
+            line-height: 24px;
+            padding-top: 5px;
+        }
+    }
+}

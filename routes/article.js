@@ -63,7 +63,22 @@ router.get('/',(req,res) => {
 			console.log(err);
 			res.status(500).send('Something broke!');
 		})
+	}else{
+
 	}
+})
+
+router.get('/draft-list',(req,res) => {
+	ArticleModel.find({isPublic:false}).then((draftList) => {
+		if(draftList.length > 0){
+			return res.json({"status":1,"draftList":draftList,"msg":"get success"});
+		}else{
+			return res.json({"status":0,"draftList":draftList,"msg":"no draft"});
+		}
+	}).catch((err) => {
+		console.log(err);
+		res.status(500).send('Something broke!');
+	})
 })
 
 

@@ -1,82 +1,164 @@
 import React from 'react';
-import marked from 'marked';
+import moment from 'moment';
 import Tag from '../component/tag/tag';
 import Select from '../component/select/select';
+import { Link } from 'react-router-dom';
+import TipBar from '../component/tipBar/tip-bar';
+import Modal from '../component/modal/modal';
+import blogGlobal from '../data/global';
 import CSSModules from 'react-css-modules';
 import style from '../sass/pages/draft.scss'
 
-class Draft extends React.Component{
-	constructor(props){
+class Draft extends React.Component {
+	constructor(props) {
 		super(props);
 		this.state = {
-			editor:'',
-			previewer:{__html:''},
-			tagString:'',
-			list:[]
+			status: 0,//0--正在获取 1--获取成功 2--暂无草稿
+			draftList: null,
+			showModal: false,
+			tipType: '',
+			showTip: false,
+			tipText: '',
+			articalId: null
 		}
 	}
 
-	handleEditorChange = (event) => {
-		let value = event.target.value;
-		this.setState({editor:value,previewer:{__html:marked(value)}});
+	componentWillMount = () => {
+		this.fetchList();
 	}
 
-	handleTagChange = (event) => {
-		let value = event.target.value;
-		if(value.indexOf(';') > 0){
-			this.setState({tagString:this.state.tagString + value});
-			event.target.value = '';
-		}
+	fetchList(){
+		let url = blogGlobal.requestBaseUrl + "/articles/draft-list";
+		fetch(url, {
+			method: 'get',
+			mode: 'cors',
+			credentials: 'include',
+		}).then((response) => {
+			return response.json();
+		}).then((json) => {
+			console.log(json);
+			let { status, draftList } = json;
+			if (status == 0) {
+				this.setState({ status: 2 });
+			} else if (status == 1) {
+				this.setState({ status: 1, draftList: draftList });
+			}
+		}).catch((err) => {
+			console.log(err);
+		});
 	}
 
-	//传给子组件Tag的回调函数
-	handleTagDelete = (event) => {
-		let index  = event.target.parentNode.dataset.index;
-		let list = this.state.tagString.split(';');
-		list.splice(index,1);
-		let newTagSting = list.join(';');
-		this.setState({tagString:newTagSting});
+	handleEdit = () => {
+
 	}
 
-	handleQuitDraft = () => {
-
+	handleQuitDraft = (articalId, e) => {
+		this.setState({ showModal: true, articalId: articalId });
 	}
 
 	handlePublic = () => {
-		
+
 	}
 
-	render(){
-		let {editor,previewer,tagString} = this.state;
-		let list = tagString.split(';');
-		list.splice(list.length - 1,1);
-		let tagProps ={list:list,hasClose:true,handleTagDelete:this.handleTagDelete};
-		return(
-			<div styleName="new-file">
-				<div className="clearfix">
-					<Select list={['原创','转载','翻译']} />
-					<div styleName="tag-bar-wrap">
-						<Tag  {...tagProps}/>
-						<input type="text" onChange={this.handleTagChange}/>
-					</div>
-					<div styleName="btn-group">
-						<button className="btn-normal" onClick={this.handleQuitDraft}>舍弃草稿</button>
-						<button className="btn-normal" onClick={this.handlePublic}>发布文章</button>
-					</div>
-				</div>
-				<div styleName="editor">
-					<header styleName="header">编辑区</header>
-					<textarea onChange={this.handleEditorChange} placeholder="请在此开始你的文章">
+	comfirmQuit = () => {
+		this.setState({ showModal: false });
+		let articalId = this.state.articalId;
+		let data = {
+			articleId: articalId
+		}
+		this.sendRequest('delete', data, (json) => {
+			this.setState({ showTip: true, tipType: 'success', tipText: '舍弃成功' });
+			this.fetchList();
+			this.hideTip();
+		});
+	}
 
-					</textarea>
-				</div>
-				<div styleName="previewer">
-					<header styleName="header">预览区</header>
-					<div dangerouslySetInnerHTML={this.state.previewer}></div>
-				</div>
+	handleModalClose = () => {
+		this.setState({ showModal: false });
+	}
+
+	hideTip = () => {
+		setTimeout(() => this.setState({ showTip: false }), 1000);
+	}
+
+
+	//发送请求mode: post--新建/保存草稿/发布文章 delete--舍弃草稿
+	sendRequest = (mode, data, callback) => {
+		fetch(blogGlobal.requestBaseUrl + "/articles", {
+			method: mode,
+			headers: {
+				'Accept': 'application/json',
+				'Content-Type': 'application/json'
+			},
+			mode: 'cors',
+			credentials: 'include',
+			body: JSON.stringify(data)
+		}).then((response) => {
+			return response.json();
+		}).then((json) => {
+			callback && callback(json);
+		}).catch((err) => {
+			console.log(err);
+		});
+	}
+
+	render() {
+		let { status, draftList, showModal, showTip, tipType, tipText } = this.state;
+		let tipProps = {
+			arrow: 'no',
+			type: tipType,
+			text: tipText,
+			classNames: 'tip-bar-alert'
+		}
+		let modalProps = {
+			isOpen: showModal,
+			title: '舍弃草稿提醒',
+			modalHtml: <p className="tips-in-modal">确定舍弃已保存的草稿吗？</p>,
+			btns: [{ name: '确定', ref: 'ok', handleClick: this.comfirmQuit }, { name: '取消', ref: 'close' }],
+			handleModalClose: this.handleModalClose
+		}
+		return (
+			<div styleName="root">
+				<ul styleName="draft-list">
+					{
+						(() => {
+							switch (status) {
+								case 1:
+									return (
+										draftList.map((item, index) => {
+											let list = item.tag.split(';');
+											list = list.slice(0, list.length - 1);
+											return (
+												<li styleName="draft-item" key={index}>
+													<h3><Link target="_blank" to={"/articles/" + item.order}>{item.title}</Link></h3>
+													<div className="clearfix">
+														<div styleName="save-time" className="fl">保存于{moment(item.updateTime).format('YYYY-MM-DD')}</div>
+														<div styleName="btn-group" className="fr">
+															<button className="btn-normal btn-sm" onClick={this.handleEdit}>编辑</button>
+															<button className="btn-normal btn-sm" onClick={this.handlePublic}>发布</button>
+															<button className="btn-normal btn-sm" onClick={this.handleQuitDraft.bind(this, item._id)}>舍弃</button>
+														</div>
+													</div>
+												</li>
+											)
+										})
+									)
+									break;
+								case 2:
+									return <h3 styleName="null-tip">暂无草稿</h3>
+									break;
+								default:
+									return <div styleName="loading"><i className="fa fa-spinner fa-pulse"></i><span>正在加载...</span></div>
+									break;
+							}
+						})()
+					}
+				</ul>
+				{showTip ? <TipBar {...tipProps} /> : null}
+				{showModal ? <Modal {...modalProps} /> : null}
 			</div>
 		)
 	}
 }
 
-export default CSSModules(Draft, style,{handleNotFoundStyleName:'log'});
+export default CSSModules(Draft, style, { handleNotFoundStyleName: 'log' });

@@ -41,12 +41,6 @@ class Article extends React.Component{
 			console.log(json);
 			this.setState({content:json.article.content});
 			this.createCatalog(this.refs.content.innerHTML)
-			// let {status,articleList} = json;
-			// if(status == 0){
-			// 	this.setState({status:2});
-			// }else if(status == 1){
-			// 	this.setState({status:1,summaryList:articleList});
-			// }
 		}).catch((err) => {
 			console.log(err);
 		});
