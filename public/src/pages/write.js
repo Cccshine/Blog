@@ -9,6 +9,8 @@ import style from '../sass/pages/write.scss'
 import blogGlobal from '../data/global';
 
 const url = blogGlobal.requestBaseUrl+"/articles";
+let pathArr = window.location.pathname.split('/');
+let order = pathArr.length == 3 ? pathArr[pathArr.length - 1] : null;
 let timer = null;
 let articleID = null;
 
@@ -26,8 +28,27 @@ class Write extends React.Component{
 			tipType:'',
 			showTip:false,
 			tipText:'',
-			showModal:false
+			showModal:false,
+			isPublic: false //是否已发表（true--已发表的文章再来编辑  false--新建的文章或者草稿来编辑）
 		}
+	}
+
+	componentWillMount = () => {
+		if (!order)
+			return;
+		fetch(url+'?mode=edit&order='+order, {
+			method: 'get',
+			mode: 'cors',
+			credentials: 'include',
+		}).then((response) => {
+			return response.json();
+		}).then((json) => {
+			console.log(json);
+			let { status, article } = json;
+			this.setState({isPublic:article.isPublic});
+		}).catch((err) => {
+			console.log(err);
+		});
 	}
 
 	handleEditorChange = (event) => {
@@ -142,7 +163,7 @@ class Write extends React.Component{
 	      	},
 		    mode:'cors',
 		    credentials: 'include',
-		    body: JSON.stringify(data)
+		    body: data ? JSON.stringify(data) : null
 		}).then((response) => {
 			return response.json();
 		}).then((json) => {
@@ -175,7 +196,7 @@ class Write extends React.Component{
 
 
 	render(){
-		let {editor,previewer,tagString,selectIsDown,selectText,selectValue,showTip,tipType,tipText,showModal} = this.state;
+		let {editor,previewer,tagString,selectIsDown,selectText,selectValue,showTip,tipType,tipText,showModal,isPublic} = this.state;
 		let list = tagString.split(';');
 		list.splice(list.length - 1,1);
 		let tagProps = {list:list,isLink:false,hasClose:true,handleTagDelete:this.handleTagDelete};
@@ -210,11 +231,15 @@ class Write extends React.Component{
 						<Tag  {...tagProps}/>
 						<input className="input-normal no-border" type="text" placeholder="输入标签,以;分割" onChange={this.handleTagChange}/>
 					</div>
-					<div styleName="btn-group">
-						<button className="btn-normal" onClick={this.handleSaveAsDraft}>保存草稿</button>
-						<button className="btn-normal" onClick={this.handleQuitDraft}>舍弃草稿</button>
-						<button className="btn-normal" onClick={this.handlePublic}>发布文章</button>
-					</div>
+					{
+						isPublic  ? <div styleName="btn-group"><button className="btn-normal" onClick={this.handleSave}>保存</button></div> : 
+									<div styleName="btn-group">
+										<button className="btn-normal" onClick={this.handleSaveAsDraft}>保存草稿</button>
+										<button className="btn-normal" onClick={this.handleQuitDraft}>舍弃草稿</button>
+										<button className="btn-normal" onClick={this.handlePublic}>发布文章</button>
+									</div>
+					}
+					
 				</div>
 				<div styleName="editor">
 					<header styleName="header">编辑区</header>

@@ -56,6 +56,26 @@ router.get('/',(req,res) => {
 	let mode = req.query.mode;
 	if(mode == 'public'){
 		let order = Number(req.query.order);
+		ArticleModel.findOne({isPublic:true, order:order}).then((article) => {
+			console.log(article)
+			return res.json({"status":1,article:article,"msg":"success"});
+		}).catch((err) => {
+			console.log(err);
+			res.status(500).send('Something broke!');
+		})
+	}else if(mode == 'draft'){
+		ArticleModel.find({isPublic:false}).then((draftList) => {
+			if(draftList.length > 0){
+				return res.json({"status":1,"draftList":draftList,"msg":"get success"});
+			}else{
+				return res.json({"status":0,"draftList":draftList,"msg":"no draft"});
+			}
+		}).catch((err) => {
+			console.log(err);
+			res.status(500).send('Something broke!');
+		})
+	}else{
+		let order = Number(req.query.order);
 		ArticleModel.findOne({order:order}).then((article) => {
 			console.log(article)
 			return res.json({"status":1,article:article,"msg":"success"});
@@ -63,22 +83,7 @@ router.get('/',(req,res) => {
 			console.log(err);
 			res.status(500).send('Something broke!');
 		})
-	}else{
-
 	}
-})
-
-router.get('/draft-list',(req,res) => {
-	ArticleModel.find({isPublic:false}).then((draftList) => {
-		if(draftList.length > 0){
-			return res.json({"status":1,"draftList":draftList,"msg":"get success"});
-		}else{
-			return res.json({"status":0,"draftList":draftList,"msg":"no draft"});
-		}
-	}).catch((err) => {
-		console.log(err);
-		res.status(500).send('Something broke!');
-	})
 })
 
 
