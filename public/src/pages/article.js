@@ -6,9 +6,6 @@ import CSSModules from 'react-css-modules';
 import style from '../sass/pages/article.scss';
 import blogGlobal from '../data/global';
 
-let pathArr = window.location.pathname.split('/');
-let order = pathArr[pathArr.length - 1];
-const url = blogGlobal.requestBaseUrl+"/articles?mode=public&order="+order;
 let content = null;
 let catalog = null;
 class Article extends React.Component{
@@ -31,6 +28,7 @@ class Article extends React.Component{
 		this.setState({catalog:newTitle});
 	}
 	componentWillMount = () => {
+		let url = blogGlobal.requestBaseUrl+"/articles?mode=public&order="+this.props.match.params.order;
 		fetch(url,{
 			method:'get',
 		    mode:'cors',

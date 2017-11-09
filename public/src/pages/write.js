@@ -9,8 +9,6 @@ import style from '../sass/pages/write.scss'
 import blogGlobal from '../data/global';
 
 const url = blogGlobal.requestBaseUrl+"/articles";
-let pathArr = window.location.pathname.split('/');
-let order = pathArr.length == 3 ? pathArr[pathArr.length - 1] : null;
 let timer = null;
 let articleID = null;
 
@@ -34,6 +32,7 @@ class Write extends React.Component{
 	}
 
 	componentWillMount = () => {
+		let order = this.props.match.params.order || null;
 		if (!order)
 			return;
 		fetch(url+'?mode=edit&order='+order, {
@@ -45,7 +44,15 @@ class Write extends React.Component{
 		}).then((json) => {
 			console.log(json);
 			let { status, article } = json;
-			this.setState({isPublic:article.isPublic});
+			articleID = article._id;
+			this.setState({
+				isPublic:article.isPublic,
+				editor:article.content,
+				previewer:{__html:marked(article.content)},
+				title:article.title,
+				tagString:article.tag,
+				selectValue:article.type
+			});
 		}).catch((err) => {
 			console.log(err);
 		});
@@ -196,7 +203,7 @@ class Write extends React.Component{
 
 
 	render(){
-		let {editor,previewer,tagString,selectIsDown,selectText,selectValue,showTip,tipType,tipText,showModal,isPublic} = this.state;
+		let {title,editor,previewer,tagString,selectIsDown,selectText,selectValue,showTip,tipType,tipText,showModal,isPublic} = this.state;
 		let list = tagString.split(';');
 		list.splice(list.length - 1,1);
 		let tagProps = {list:list,isLink:false,hasClose:true,handleTagDelete:this.handleTagDelete};
@@ -225,7 +232,7 @@ class Write extends React.Component{
 				<div className="clearfix">
 					<Select {...selectProps}/>
 					<div className="input-wrap-normal" styleName="input-wrap">
-						<input ref="title" className="input-normal no-border" type="text" placeholder="输入文章标题" data-role="title" onChange={this.handleTitleChange}/>
+						<input ref="title" className="input-normal no-border" type="text" value={title} placeholder="输入文章标题" data-role="title" onChange={this.handleTitleChange}/>
 					</div>
 					<div className="input-wrap-normal" styleName="input-wrap" data-role="tag-bar-wrap">
 						<Tag  {...tagProps}/>
@@ -243,8 +250,7 @@ class Write extends React.Component{
 				</div>
 				<div styleName="editor">
 					<header styleName="header">编辑区</header>
-					<textarea onChange={this.handleEditorChange} placeholder="请在此开始你的文章">
-
+					<textarea onChange={this.handleEditorChange} value={editor} placeholder="请在此开始你的文章">
 					</textarea>
 				</div>
 				<div styleName="previewer">

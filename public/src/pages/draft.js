@@ -126,11 +126,11 @@ class Draft extends React.Component {
 											list = list.slice(0, list.length - 1);
 											return (
 												<li styleName="draft-item" key={index}>
-													<h3><Link target="_blank" to={"/write/" + item.order}>{item.title}</Link></h3>
+													<h3><Link target="_self" to={"/write/" + item.order}>{item.title}</Link></h3>
 													<div className="clearfix">
 														<div styleName="save-time" className="fl">保存于{moment(item.updateTime).format('YYYY-MM-DD')}</div>
 														<div styleName="btn-group" className="fr">
-															<button className="btn-normal btn-sm" onClick={this.handleEdit.bind(this, item.order)}>编辑</button>
+															<button className="btn-normal btn-sm"><Link target="_self" to={"/write/" + item.order}>编辑</Link></button>
 															<button className="btn-normal btn-sm" onClick={this.handleQuitDraft.bind(this, item._id)}>舍弃</button>
 														</div>
 													</div>

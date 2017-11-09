@@ -88,6 +88,7 @@ export default class App extends React.Component{
 						<Route path="/login" component={Login}/>
 						<Route path="/register" component={Register}/>
 						<Route path="/user" component={User}/>
+						<Route path="/write/:order" component={Write}/>
 						<Route path="/write" component={Write}/>
 						<Route path="/draft" component={Draft}/>
 						<Route path="/articles/:order" component={Article}/>
