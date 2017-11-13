@@ -48,6 +48,14 @@
     	background-color: #f9f2f4;
 	    border-radius: 4px;
 	}
+	pre{
+	    padding: 1em;
+	    border: none;
+	    overflow: auto;
+	    line-height: 1.45;
+	    max-height: 35em;
+	    background: #000;
+	}
 }
 .catalog{
 	h1,h2{

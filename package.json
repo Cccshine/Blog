@@ -69,6 +69,7 @@
     "express": "^4.15.4",
     "express-session": "^1.15.5",
     "font-awesome": "^4.7.0",
+    "highlight": "^0.2.4",
     "i5ting_toc": "^1.1.4",
     "jquery": "^3.2.1",
     "marked": "^0.3.6",

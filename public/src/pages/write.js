@@ -7,10 +7,13 @@ import Modal from '../component/modal/modal';
 import CSSModules from 'react-css-modules';
 import style from '../sass/pages/write.scss'
 import blogGlobal from '../data/global';
+import highlight from 'highlight';
 
 const url = blogGlobal.requestBaseUrl+"/articles";
 let timer = null;
 let articleID = null;
+
+highlight.initHighlightingOnLoad();
 
 class Write extends React.Component{
 	constructor(props){
@@ -255,7 +258,7 @@ class Write extends React.Component{
 				</div>
 				<div styleName="previewer">
 					<header styleName="header">预览区</header>
-					<div dangerouslySetInnerHTML={this.state.previewer}></div>
+					<div className="markdown" dangerouslySetInnerHTML={this.state.previewer}></div>
 				</div>
 				{showTip ? <TipBar {...tipProps} /> : null}
 				{showModal ? <Modal {...modalProps} /> : null}
