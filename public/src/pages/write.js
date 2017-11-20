@@ -1,5 +1,6 @@
 import React from 'react';
 import marked from 'marked';
+import Highlight from 'highlight.js';
 import Tag from '../component/tag/tag';
 import Select from '../component/select/select';
 import TipBar from '../component/tipBar/tip-bar';
@@ -7,13 +8,27 @@ import Modal from '../component/modal/modal';
 import CSSModules from 'react-css-modules';
 import style from '../sass/pages/write.scss'
 import blogGlobal from '../data/global';
-import highlight from 'highlight';
+require('highlight.js/styles/monokai-sublime.css')
+
 
 const url = blogGlobal.requestBaseUrl+"/articles";
 let timer = null;
 let articleID = null;
-
-highlight.initHighlightingOnLoad();
+let rendererMD = new marked.Renderer();
+Highlight.initHighlightingOnLoad();
+marked.setOptions({
+  renderer: rendererMD,
+  gfm: true,
+  tables: true,
+  breaks: false,
+  pedantic: false,
+  sanitize: false,
+  smartLists: true,
+  smartypants: false,
+  highlight: function (code) {
+    return Highlight.highlightAuto(code).value;
+  }
+});
 
 class Write extends React.Component{
 	constructor(props){
@@ -71,6 +86,7 @@ class Write extends React.Component{
 			},5000)
 		}
 	}
+
 	handleTitleChange = (event) =>{
 		this.setState({title:event.target.value});
 	}

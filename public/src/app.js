@@ -18,7 +18,7 @@ import 'es5-shim';
 //为当前环境提供一个垫片babel-polyfill,来转换JavaScript新的API
 import 'babel-polyfill';
 
-import './sass/main.scss'
+import './sass/main.scss';
 
 export default class App extends React.Component{
 	constructor(props){

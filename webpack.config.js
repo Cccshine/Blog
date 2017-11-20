@@ -144,5 +144,11 @@ module.exports = {
 		new webpack.ProvidePlugin({$:'jquery'}),
 		new webpack.HotModuleReplacementPlugin(),
 		new openBrowserPlugin({url:'http://localhost:3030/'}),
+		new webpack.ContextReplacementPlugin(
+	      // 需要被处理的文件目录位置
+	      /highlight\.js/,
+	      // 正则匹配需要被包括进来的文件
+	      /(lib[\/\\](index|highlight|languages[\/\\](basic|css|cpp|http|java|javascript|json|less|markdown|php|scss|stylus))\.js|styles[\/\\]monokai-sublime.css)/
+	    )
 	]
 };

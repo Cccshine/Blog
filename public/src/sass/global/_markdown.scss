@@ -26,6 +26,9 @@
 	    margin-top: 10px;
 	    margin-bottom: 10px;
 	}
+	p{
+		margin: 5px 0;
+	}
 	blockquote{
 	    padding: 10px 20px;
 	    font-size: 1em;
@@ -55,6 +58,10 @@
 	    line-height: 1.45;
 	    max-height: 35em;
 	    background: #000;
+	    code{
+	    	background-color: transparent;
+	    	border-radius: 0;
+	    }
 	}
 }
 .catalog{
