@@ -1,5 +1,6 @@
 .markdown{
 	font: 14px/1 Verdana,"Microsoft Yahei",sans-serif;
+	padding: 1em;
 	h1{
 		font-size: 2.5em;
 	}
@@ -27,7 +28,7 @@
 	    margin-bottom: 10px;
 	}
 	p{
-		margin: 5px 0;
+		margin: 1em 0;
 	}
 	blockquote{
 	    padding: 10px 20px;
@@ -62,6 +63,29 @@
 	    	background-color: transparent;
 	    	border-radius: 0;
 	    }
+	}
+	&>ul,&>ol{
+		margin-top: 1em;
+		margin-bottom: 1em;
+	}
+	ul,ol{
+		margin-left:3em;
+	}
+	ul li{
+		list-style-type: circle;
+	}
+	ol li{
+		list-style-type: decimal;
+	}
+	table{
+		width: 80%;
+		margin: 10px auto;
+		th,td{
+			height: 30px;
+			line-height: 30px;
+			border: 1px solid #22C3AA;
+			text-align: center;
+		}
 	}
 }
 .catalog{
