@@ -89,15 +89,28 @@ class Write extends React.Component {
 
 	handleTabDown = (event) => {
 		let target = event.target;
-		console.log(event.keyCode,event.shiftKey)
+		let reg = /(\s{4}|\s{2}(\*|-){1}\s{1}|\s{3}(\*|-){1}|\s{1}\d\.\s{1}|\s{2}\d\.)/;
 		if (event.shiftKey && event.keyCode == 9) {
 			event.preventDefault();
-			let position = target.selectionStart - 4;//此处我用了4个空格表示缩进，其实无所谓几个，只要和下面保持一致就好了。
-			target.value = target.value.substr(0, target.selectionStart - 4) + target.value.substr(target.selectionStart);
+			console.log([target.value.substr(target.selectionStart - 4, 4)])
+			let judge = target.value.substr(target.selectionStart - 4, 4);
+			if (!reg.test(judge)) {
+				return;
+			}
+			let position = 0;
+			if (/\s{4}/.test(judge)) {
+				position = target.selectionStart - 4;//此处我用了4个空格表示缩进，其实无所谓几个，只要和下面保持一致就好了。
+				target.value = target.value.substr(0, target.selectionStart - 4) + target.value.substr(target.selectionStart);
+			}else if(/\s{2}(\*|-){1}\s{1}/.test(judge)){
+				position = target.selectionStart - 6;
+				target.value = target.value.substr(0, target.selectionStart - 6) + target.value.substr(target.selectionStart-2);
+			}
+
+
 			target.selectionStart = position;
 			target.selectionEnd = position;
 			target.focus();
-		}else if(event.keyCode == 9){
+		} else if (event.keyCode == 9) {
 			event.preventDefault();
 			let position = target.selectionStart + 4;//此处我用了4个空格表示缩进，其实无所谓几个，只要和下面保持一致就好了。
 			target.value = target.value.substr(0, target.selectionStart) + '    ' + target.value.substr(target.selectionStart);
