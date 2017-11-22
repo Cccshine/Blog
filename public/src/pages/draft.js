@@ -19,7 +19,7 @@ class Draft extends React.Component {
 			tipType: '',
 			showTip: false,
 			tipText: '',
-			articalId: null
+			articleId: null
 		}
 	}
 
@@ -52,15 +52,15 @@ class Draft extends React.Component {
 		this.props.history.push({ pathname: '/write/'+order})
 	}
 
-	handleQuitDraft = (articalId, e) => {
-		this.setState({ showModal: true, articalId: articalId });
+	handleQuitDraft = (articleId, e) => {
+		this.setState({ showModal: true, articleId: articleId });
 	}
 
 	comfirmQuit = () => {
 		this.setState({ showModal: false });
-		let articalId = this.state.articalId;
+		let articleId = this.state.articleId;
 		let data = {
-			articleId: articalId
+			articleId: articleId
 		}
 		this.sendRequest('delete', data, (json) => {
 			this.setState({ showTip: true, tipType: 'success', tipText: '舍弃成功' });

@@ -89,35 +89,37 @@ class Write extends React.Component {
 
 	handleTabDown = (event) => {
 		let target = event.target;
-		let reg = /(\s{4}|\s{2}(\*|-){1}\s{1}|\s{3}(\*|-){1}|\s{1}\d\.\s{1}|\s{2}\d\.)/;
+		let reg = /((.|\n){3}\s{2}|(.|\n)\s{2}(\*|-){1}\s{1}|(.|\n){2}\s{2}(\*|-){1}|\s{2}\d\.\s{1}|(.|\n)\s{2}\d\.)/;
 		if (event.shiftKey && event.keyCode == 9) {
 			event.preventDefault();
-			console.log([target.value.substr(target.selectionStart - 4, 4)])
-			let judge = target.value.substr(target.selectionStart - 4, 4);
+			let judge = target.value.substr(target.selectionStart - 5, 5);
 			if (!reg.test(judge)) {
 				return;
 			}
-			let position = 0;
-			if (/\s{4}/.test(judge)) {
-				position = target.selectionStart - 4;//此处我用了4个空格表示缩进，其实无所谓几个，只要和下面保持一致就好了。
-				target.value = target.value.substr(0, target.selectionStart - 4) + target.value.substr(target.selectionStart);
-			}else if(/\s{2}(\*|-){1}\s{1}/.test(judge)){
-				position = target.selectionStart - 6;
-				target.value = target.value.substr(0, target.selectionStart - 6) + target.value.substr(target.selectionStart-2);
+			let position = target.selectionStart - 2;
+			if(/(.|\n)\s{2}(\*|-){1}\s{1}/.test(judge)){
+				target.value = target.value.substr(0, target.selectionStart - 4) + target.value.substr(target.selectionStart-2);
+			}else if(/(.|\n){2}\s{2}(\*|-){1}/.test(judge)){
+				target.value = target.value.substr(0, target.selectionStart - 3) + target.value.substr(target.selectionStart-1);
+			}else if(/\s{2}\d\.\s{1}/.test(judge)){
+				target.value = target.value.substr(0, target.selectionStart - 5) + target.value.substr(target.selectionStart-3);
+			}else if(/(.|\n)\s{2}\d\./.test(judge)){
+				target.value = target.value.substr(0, target.selectionStart - 4) + target.value.substr(target.selectionStart-2);
+			}else{
+				target.value = target.value.substr(0, target.selectionStart - 2) + target.value.substr(target.selectionStart);				
 			}
-
-
 			target.selectionStart = position;
 			target.selectionEnd = position;
 			target.focus();
 		} else if (event.keyCode == 9) {
 			event.preventDefault();
-			let position = target.selectionStart + 4;//此处我用了4个空格表示缩进，其实无所谓几个，只要和下面保持一致就好了。
-			target.value = target.value.substr(0, target.selectionStart) + '    ' + target.value.substr(target.selectionStart);
+			let position = target.selectionStart + 2;//此处我用了4个空格表示缩进，其实无所谓几个，只要和下面保持一致就好了。
+			target.value = target.value.substr(0, target.selectionStart) + '  ' + target.value.substr(target.selectionStart);
 			target.selectionStart = position;
 			target.selectionEnd = position;
 			target.focus();
 		}
+		this.setState({ editor: target.value, previewer: { __html: marked(target.value) } });
 	}
 
 	handleTitleChange = (event) => {

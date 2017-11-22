@@ -40,6 +40,12 @@
 			}
 		}
 	}
+	.btn-group{
+		@include vCenterLineHeight(36px);
+		a{
+			color: #fff;
+		}
+	}
 }
 .tag-panel{
 	margin: 10px 0;
