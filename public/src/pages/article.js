@@ -28,7 +28,7 @@ class Article extends React.Component{
 		this.setState({catalog:newTitle});
 	}
 	componentWillMount = () => {
-		let url = blogGlobal.requestBaseUrl+"/articles?mode=public&order="+this.props.match.params.order;
+		let url = blogGlobal.requestBaseUrl+"/articles?mode=detail&articleId="+this.props.match.params.articleId;
 		fetch(url,{
 			method:'get',
 		    mode:'cors',

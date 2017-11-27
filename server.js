@@ -9,6 +9,7 @@ const mongoStore = require('connect-mongo')(session);//将 session 存储于 mon
 const config = require('config-lite')(__dirname);
 const userModel = require('./models/user');
 const articleModel = require('./models/article');
+const tagModel = require('./models/article_tag');
 const indexRouter = require('./routes/index');
 const registerRouter = require('./routes/register');
 const loginRouter = require('./routes/login');

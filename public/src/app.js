@@ -82,16 +82,17 @@ export default class App extends React.Component{
 				<main className="main-content">
 					<Switch>
 				    	<Route exact path='/' component={(props) => <Home {...props} isLogin={isLogin}/>}/>
-						<Route path="/tag" component={Tag}/>
+						<Route path="/tags/:tagName" component={Tag}/>
+						<Route path="/tags/" component={Tag}/>
 						<Route path="/archive" component={Archive}/>
 						<Route path="/about" component={About}/>
 						<Route path="/login" component={Login}/>
 						<Route path="/register" component={Register}/>
 						<Route path="/user" component={User}/>
-						<Route path="/write/:order" component={Write}/>
+						<Route path="/write/:articleId" component={Write}/>
 						<Route path="/write" component={Write}/>
 						<Route path="/draft" component={Draft}/>
-						<Route path="/articles/:order" component={Article}/>
+						<Route path="/articles/:articleId" component={Article}/>
 						<Route component={NoMatch}/>
 				    </Switch>
 				</main>

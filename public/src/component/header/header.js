@@ -34,7 +34,7 @@ class Header extends React.Component{
 				</div>
 				<nav styleName="header-nav">
 					<NavLink exact to='/' activeClassName="active-nav">首页</NavLink>
-					<NavLink to="/tag" activeClassName="active-nav">标签</NavLink>
+					<NavLink to="/tags" activeClassName="active-nav">标签</NavLink>
 					<NavLink to="/archive" activeClassName="active-nav">归档</NavLink>
 					<NavLink to="/about" activeClassName="active-nav">About Me</NavLink>
 					{role == 1 ? <NavLink to="/write" activeClassName="active-nav">写文章</NavLink> : null}

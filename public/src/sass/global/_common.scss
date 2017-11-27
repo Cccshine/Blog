@@ -58,7 +58,7 @@ body{
 	color: $button-normal-color;
 	border:1px solid $button-normal-background;
 	background-color: $button-normal-background;
-	margin-right: $button-normal-margin;
+	margin-left: $button-normal-margin;
 	cursor: pointer;
 	border-radius: $button-normal-border-radius;
 	transition: all $transition-time-normal;
@@ -68,8 +68,8 @@ body{
 	}
 }
 .btn-sm{
-	width: 60px;
-	height: 24px;
+	width: $button-small-width;
+	height: $button-small-height;
 }
 .input-wrap-normal{
 	width:$input-wrap-normal-width;

@@ -50,10 +50,10 @@ class Write extends React.Component {
 	}
 
 	componentWillMount = () => {
-		let order = this.props.match.params.order || null;
-		if (!order)
+		let articleId = this.props.match.params.articleId || null;
+		if (!articleId)
 			return;
-		fetch(url + '?mode=edit&order=' + order, {
+		fetch(url + '?mode=edit&articleId=' + articleId, {
 			method: 'get',
 			mode: 'cors',
 			credentials: 'include',
@@ -128,8 +128,19 @@ class Write extends React.Component {
 
 	handleTagChange = (event) => {
 		let value = event.target.value;
+		//标签去重
+		let reg = new RegExp('(^'+value+'|;'+value+')');
 		if (value.indexOf(';') > 0) {
-			this.setState({ tagString: this.state.tagString + value });
+			if(!reg.test(this.state.tagString)){
+				this.setState({ tagString: this.state.tagString + value });
+			}
+			event.target.value = '';
+		}
+	}
+
+	handleTagBlur = (event) => {
+		let value = event.target.value;
+		if (value.indexOf(';') <= 0) {
 			event.target.value = '';
 		}
 	}
@@ -147,6 +158,10 @@ class Write extends React.Component {
 		this.setState({ selectIsDown: false, selectText: event.target.innerText, selectValue: event.target.dataset.value });
 	}
 
+	handleSave = (event) => {
+
+	}
+
 	handleSaveAsDraft = (event) => {
 		this.saveAsDraft(false);
 	}
@@ -162,7 +177,7 @@ class Write extends React.Component {
 
 	}
 
-	handlePublic = (event) => {
+	handlePublic = (mode, event) => {
 		let { editor, title, tagString, selectValue } = this.state;
 		if (title.trim() === '') {
 			this.setState({ showTip: true, tipType: 'error', tipText: '标题不能为空' });
@@ -182,10 +197,12 @@ class Write extends React.Component {
 			todo: 1//发布文章
 		}
 		this.sendRequest('post', data, (json) => {
-			let order = json.article.order;
-			this.setState({ showTip: true, tipType: 'success', tipText: '发布成功' });
-			this.hideTip();
-			this.props.history.push('/articles/' + order);
+			let articleId = json.article._id;
+			let tipText = mode == 'save' ? '保存成功' : '发布成功';
+			this.setState({ showTip: true, tipType: 'success', tipText: tipText });
+			this.hideTip(() => {
+				this.props.history.push('/articles/' + articleId);
+			});
 		});
 	}
 
@@ -250,8 +267,11 @@ class Write extends React.Component {
 		this.setState({ showModal: false });
 	}
 
-	hideTip = () => {
-		setTimeout(() => this.setState({ showTip: false }), 1000);
+	hideTip = (callback) => {
+		setTimeout(() => {
+			this.setState({ showTip: false });
+			Object.prototype.toString.call(callback) == "[object Function]" && callback();
+		}, 1000);
 	}
 
 
@@ -290,14 +310,14 @@ class Write extends React.Component {
 					</div>
 					<div className="input-wrap-normal" styleName="input-wrap" data-role="tag-bar-wrap">
 						<Tag  {...tagProps} />
-						<input className="input-normal no-border" type="text" placeholder="输入标签,以;分割" onChange={this.handleTagChange} />
+						<input className="input-normal no-border" type="text" placeholder="输入标签,以;分割" onChange={this.handleTagChange} onBlur={this.handleTagBlur}/>
 					</div>
 					{
-						isPublic ? <div styleName="btn-group"><button className="btn-normal" onClick={this.handleSave}>保存</button></div> :
+						isPublic ? <div styleName="btn-group"><button className="btn-normal" onClick={this.handlePublic.bind(this,'save')}>保存</button></div> :
 							<div styleName="btn-group">
 								<button className="btn-normal" onClick={this.handleSaveAsDraft}>保存草稿</button>
 								<button className="btn-normal" onClick={this.handleQuitDraft}>舍弃草稿</button>
-								<button className="btn-normal" onClick={this.handlePublic}>发布文章</button>
+								<button className="btn-normal" onClick={this.handlePublic.bind(this,'public')}>发布文章</button>
 							</div>
 					}
 
