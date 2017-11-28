@@ -30,7 +30,7 @@ class Tag extends React.Component{
 				{
 					tagList.map((item,index) => (
 						<div styleName="tag" key={index} data-index={index} data-role="tag">
-							{isLink ? <Link to={"" + item}>{item}</Link> : <span>{item}</span>} 
+							{isLink ? <Link to={"/tags/" + item}>{item}</Link> : <span>{item}</span>} 
 							{hasClose ? <i className="fa fa-close" onClick={handleTagDelete ? handleTagDelete : this.handleClose}></i> : null}
 						</div>
 					))

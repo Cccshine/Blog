@@ -28,7 +28,6 @@ router.post('/',function(req,res){
 	if(articleId){//非新建
 		console.log('更新')
 		ArticleModel.findOneAndUpdate({_id:articleId},{$set:_article}).then((article) => {
-			console.log(article)
 			return res.json({"status":1,article:article,"msg":"save success"});
 		}).catch((err) => {
 			console.log(err);
@@ -48,7 +47,11 @@ router.post('/',function(req,res){
 	for (let tagName of tagArr){
 		TagModel.findOne({name:tagName}).then((tag) => {
 			if(tag){
-				tag.articles.push(articleId || newArticle._id);
+				let id = articleId || newArticle._id;
+				if(!tag.articles.includes(id)){
+					tag.articles.push(id);	
+					console.log('标签：'+id)				
+				}
 				tag.save((err) => {
 					console.log(err);
 				})
@@ -70,18 +73,41 @@ router.post('/',function(req,res){
 
 router.delete('/',function(req,res){
 	let {articleId} = req.body;
+	let tagArr = [];
 	console.log('delete:'+articleId)
-	ArticleModel.remove({_id:articleId}).then(() => {
+	ArticleModel.findOneAndRemove({_id:articleId}).then((article) => {
+		tagArr = article.tag.split(';');
+		tagArr.pop();
+		for(let tagName of tagArr){
+			TagModel.find({name:tagName}).then((tag) => {
+				tag.articles = tag.articles.filter((ele,index) => {
+					console.log(ele,articleId)
+					return ele !== articleId;
+				});
+				tag.save((err) => {
+					console.log(err);
+				})
+			}).catch((err) => {
+				console.log(err);
+				res.status(500).send('Something broke!');
+			});
+		}
 		return res.json({"status":1,"msg":"delete success"});
 	}).catch((err) => {
 		console.log(err);
 		res.status(500).send('Something broke!');
-	})
+	});
+	// ArticleModel.remove({_id:articleId}).then(() => {
+	// 	return res.json({"status":1,"msg":"delete success"});
+	// }).catch((err) => {
+	// 	console.log(err);
+	// 	res.status(500).send('Something broke!');
+	// });
 });
 
 router.get('/',(req,res) => {
-	console.log(req.query)
 	let mode = req.query.mode;
+	let tagName = req.query.tagName;
 	if(mode == 'detail'){//文章详情页
 		let articleId = req.query.articleId;
 		ArticleModel.findOne({isPublic:true, _id:articleId}).then((article) => {
@@ -102,7 +128,7 @@ router.get('/',(req,res) => {
 			console.log(err);
 			res.status(500).send('Something broke!');
 		})
-	}else if(mode == 'public') {//首页文章列表
+	}else if(mode == 'public' && !tagName) {//首页文章列表
 		ArticleModel.find({isPublic:true}).then((articleList) => {
 			if(articleList.length > 0){
 				return res.json({"status":1,"articleList":articleList,"msg":"get success"});
@@ -113,6 +139,11 @@ router.get('/',(req,res) => {
 			console.log(err);
 			res.status(500).send('Something broke!');
 		})
+	}else if(mode == 'public' && tagName){//标签分类文章列表
+		TagModel.find({name:tagName}).then((tag) => {
+			console.log(tag)
+		})
+	
 	}else{//编辑页
 		let articleId = req.query.articleId;
 		ArticleModel.findOne({_id:articleId}).then((article) => {
