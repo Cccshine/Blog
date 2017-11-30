@@ -48,9 +48,11 @@ router.post('/',function(req,res){
 		TagModel.findOne({name:tagName}).then((tag) => {
 			if(tag){
 				let id = articleId || newArticle._id;
-				if(!tag.articles.includes(id)){
+				let strArticles = tag.articles.map((value) => {
+					return value.toString();
+				})
+				if(!strArticles.includes(id)){
 					tag.articles.push(id);	
-					console.log('标签：'+id)				
 				}
 				tag.save((err) => {
 					console.log(err);
@@ -58,7 +60,7 @@ router.post('/',function(req,res){
 			}else{
 				let newTag = new TagModel({
 					name:tagName,
-					articles: articleId || newArticle._id
+					articles: [articleId || newArticle._id]
 				});
 				newTag.save((err) => {
 					console.log(err);
@@ -79,10 +81,10 @@ router.delete('/',function(req,res){
 		tagArr = article.tag.split(';');
 		tagArr.pop();
 		for(let tagName of tagArr){
-			TagModel.find({name:tagName}).then((tag) => {
+			console.log('tagName'+tagName)
+			TagModel.findOne({name:tagName}).then((tag) => {
 				tag.articles = tag.articles.filter((ele,index) => {
-					console.log(ele,articleId)
-					return ele !== articleId;
+					return ele.toString() !== articleId;
 				});
 				tag.save((err) => {
 					console.log(err);

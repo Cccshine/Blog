@@ -76,6 +76,10 @@ class Write extends React.Component {
 		});
 	}
 
+	componentWillUnmount = () => {
+		articleID = null;
+	}
+
 	handleEditorChange = (event) => {
 		let value = event.target.value;
 		this.setState({ editor: value, previewer: { __html: marked(value) } });
@@ -208,6 +212,7 @@ class Write extends React.Component {
 
 	saveAsDraft = (isAuto) => {
 		let { editor, title, tagString, selectValue } = this.state;
+		console.log('articlID'+articleID)
 		let data = {
 			type: selectValue,
 			title: title,
