@@ -44,32 +44,34 @@ router.post('/',function(req,res){
 		});
 	}
 	//存储标签分类
-	for (let tagName of tagArr){
-		TagModel.findOne({name:tagName}).then((tag) => {
-			if(tag){
-				let id = articleId || newArticle._id;
-				let strArticles = tag.articles.map((value) => {
-					return value.toString();
-				})
-				if(!strArticles.includes(id)){
-					tag.articles.push(id);	
+	if(_article.isPublic){
+		for (let tagName of tagArr){
+			TagModel.findOne({name:tagName}).then((tag) => {
+				if(tag){
+					let id = articleId || newArticle._id;
+					let strArticles = tag.articles.map((value) => {
+						return value.toString();
+					})
+					if(!strArticles.includes(id)){
+						tag.articles.push(id);	
+					}
+					tag.save((err) => {
+						console.log(err);
+					})
+				}else{
+					let newTag = new TagModel({
+						name:tagName,
+						articles: [articleId || newArticle._id]
+					});
+					newTag.save((err) => {
+						console.log(err);
+					})
 				}
-				tag.save((err) => {
-					console.log(err);
-				})
-			}else{
-				let newTag = new TagModel({
-					name:tagName,
-					articles: [articleId || newArticle._id]
-				});
-				newTag.save((err) => {
-					console.log(err);
-				})
-			}
-		}).catch((err) => {
-			console.log(err);
-			res.status(500).send('Something broke!');
-		});
+			}).catch((err) => {
+				console.log(err);
+				res.status(500).send('Something broke!');
+			});
+		}
 	}
 });
 
@@ -86,9 +88,16 @@ router.delete('/',function(req,res){
 				tag.articles = tag.articles.filter((ele,index) => {
 					return ele.toString() !== articleId;
 				});
-				tag.save((err) => {
-					console.log(err);
-				})
+				if(tag.articles.length > 0){
+					tag.save((err) => {
+						console.log(err);
+					})
+				}else{
+					tag.remove((err) => {
+						console.log(err)
+					});
+				}
+				
 			}).catch((err) => {
 				console.log(err);
 				res.status(500).send('Something broke!');
@@ -99,12 +108,6 @@ router.delete('/',function(req,res){
 		console.log(err);
 		res.status(500).send('Something broke!');
 	});
-	// ArticleModel.remove({_id:articleId}).then(() => {
-	// 	return res.json({"status":1,"msg":"delete success"});
-	// }).catch((err) => {
-	// 	console.log(err);
-	// 	res.status(500).send('Something broke!');
-	// });
 });
 
 router.get('/',(req,res) => {
@@ -142,8 +145,16 @@ router.get('/',(req,res) => {
 			res.status(500).send('Something broke!');
 		})
 	}else if(mode == 'public' && tagName){//标签分类文章列表
-		TagModel.find({name:tagName}).then((tag) => {
-			console.log(tag)
+		ArticleModel.find({tag:eval("/"+tagName+"/i"),isPublic:true}).then((articleList) => {
+			console.log(articleList)
+			if(articleList.length > 0){
+				return res.json({"status":1,"articleList":articleList,"msg":"get success"});
+			}else{
+				return res.json({"status":0,"articleList":articleList,"msg":"no article"});
+			}
+		}).catch((err) => {
+			console.log(err);
+			res.status(500).send('Something broke!');
 		})
 	
 	}else{//编辑页

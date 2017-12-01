@@ -6,6 +6,10 @@ const TagSchema = new mongoose.Schema({
 		type: mongoose.Schema.Types.ObjectId,
 		ref: 'Article'
 	}],
+	total: {
+		type: Number,
+		default: 0
+	},
 	meta: {
 		createAt: {
 			type: Date,
@@ -25,6 +29,7 @@ TagSchema.pre('save', function(next) {
 	} else {
 		this.meta.updateAt = Date.now();
 	}
+	this.total = this.articles.length;
 	next();
 })
 

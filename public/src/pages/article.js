@@ -19,6 +19,7 @@ class Article extends React.Component{
 	createCatalog = (html) => {
 		let originTitle = html.match(/<(h[1-6]{1})[^>]*>(.*?)<\/h[1-6]{1}>/g);
 		let newTitle = [];
+		//todo --- originTitle为null的处理
 		originTitle.map((item, index) => {
 			let level = item.substr(2,1);
 			let id = item.match(/id="(.*?)"/)[1];

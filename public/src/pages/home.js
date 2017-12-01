@@ -19,7 +19,8 @@ class Home extends React.Component {
 			status: 0,//0--正在获取 1--获取成功 2--暂无文章
 			summaryList: null,
 			articleId: null,
-			showTip: false
+			showTip: false,
+			role: props.role
 		}
 	}
 
@@ -96,7 +97,7 @@ class Home extends React.Component {
 	}
 
 	render() {
-		let { status, summaryList, isLogin, loginModalShow, delModalShow ,showTip} = this.state;
+		let { status, summaryList, isLogin, loginModalShow, delModalShow ,showTip, role} = this.state;
 		let modalHtml = <p className="tips-in-modal">您还未登录，是否前往登录？<span className="small-tip">(登录后可评论)</span></p>;
 		let modalProps = {
 			isOpen: loginModalShow,
@@ -133,10 +134,12 @@ class Home extends React.Component {
 											<section styleName="summary-section" key={index}>
 												<div className="clearfix">
 													<h3 className="fl"><Link target="_blank" to={"/articles/" + item._id}>{item.title}</Link></h3>
-													<div styleName="btn-group" className="fr">
+													{
+														role === 0 ? null : <div styleName="btn-group" className="fr">
 														<button className="btn-normal btn-sm"><Link target="_self" to={"/write/" + item._id}>编辑</Link></button>
 														<button className="btn-normal btn-sm" onClick={this.handleDelete.bind(this,item._id)}>删除</button>
 													</div>
+													}
 												</div>
 												<div styleName="tag-panel">
 													<Tag {...tagProps} list={list} />

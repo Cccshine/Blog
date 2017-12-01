@@ -41,6 +41,7 @@ export default class App extends React.Component{
 			if(json.username){
 				this.setState({isLogin:json.isLogin,username:json.username,role:json.role});
 				sessionStorage.setItem('username',json.username);
+				sessionStorage.setItem('role',json.role);
 			}else{
 				this.setState({isLogin:json.isLogin});
 			}
@@ -63,6 +64,7 @@ export default class App extends React.Component{
 			this.setState({isLogin:false,role:0});
 			sessionStorage.setItem('isLogin',false);
 			sessionStorage.removeItem('username');
+			sessionStorage.removeItem('role');
 			sessionStorage.removeItem('loginTipClose');
 		}).catch((err) => {
 			console.log(err)
@@ -71,19 +73,19 @@ export default class App extends React.Component{
 
 	render(){
 		let {isLogin,username,role} = this.state;
-		let headerProps = {
+		let userProps = {
 			isLogin:isLogin,
 			username:username,
 			role:role
 		}
 		return(
 			<div id="root">
-				<Header {...headerProps} handleLogout={this.handleLogout}/>
+				<Header {...userProps} handleLogout={this.handleLogout}/>
 				<main className="main-content">
 					<Switch>
-				    	<Route exact path='/' component={(props) => <Home {...props} isLogin={isLogin}/>}/>
-						<Route path="/tags/:tagName" component={Tag}/>
-						<Route path="/tags/" component={Tag}/>
+				    	<Route exact path='/' component={(props) => <Home {...props} isLogin={isLogin} role={role}/>}/>
+						<Route path="/tags/:tagName" component={(props) => <Tag {...props} role={role}/>}/>
+						<Route path="/tags/" component={(props) => <Tag {...props} role={role}/>}/>
 						<Route path="/archive" component={Archive}/>
 						<Route path="/about" component={About}/>
 						<Route path="/login" component={Login}/>

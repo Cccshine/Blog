@@ -15,6 +15,7 @@ const registerRouter = require('./routes/register');
 const loginRouter = require('./routes/login');
 const logoutRouter = require('./routes/logout');
 const articleRouter = require('./routes/article');
+const tagRouter = require('./routes/tag');
 
 const app = express();
 
@@ -60,6 +61,7 @@ app.use('/api/register', registerRouter);
 app.use('/api/login', loginRouter);
 app.use('/api/logout', logoutRouter);
 app.use('/api/articles', articleRouter);
+app.use('/api/tags', tagRouter);
 
 app.listen(port);
 
