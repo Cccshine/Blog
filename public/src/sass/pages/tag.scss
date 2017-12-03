@@ -27,6 +27,16 @@
 		}
 	}
 }
+.tag-title{
+    position: relative;
+    @include vCenterLineHeight(36px);
+    margin-bottom: 30px;
+    .timeline-circle{
+        @include square(30px);
+        top:(36px - 30px)/2;
+        left:-(100px + (30px - 15px));
+    }
+}
 .summary-section{
 	margin-bottom:20px;
 	position:relative;
@@ -98,4 +108,26 @@
 	top:0;
 	left:-5px;
 	background:$theme-main-color;
+}
+
+.tag-ball{
+    width: 500px;
+    height: 500px;
+    margin: 50px auto;
+    position: relative;
+    .tag{
+        display: block;
+        position: absolute;
+        left: 0px;
+        top: 0px;
+        padding: 0 5px;
+        color: #000;
+        text-decoration: none;
+        font-size: 14px;
+    }
+    .tag:hover{
+        color: #fff !important;
+        background:$theme-adorn-color;
+        border-radius: 5px;
+    }
 }

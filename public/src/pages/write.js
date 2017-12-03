@@ -94,7 +94,7 @@ class Write extends React.Component {
 	handleTabDown = (event) => {
 		let target = event.target;
 		let reg = /((.|\n){3}\s{2}|(.|\n)\s{2}(\*|-){1}\s{1}|(.|\n){2}\s{2}(\*|-){1}|\s{2}\d\.\s{1}|(.|\n)\s{2}\d\.)/;
-		if (event.shiftKey && event.keyCode == 9) {
+		if (event.shiftKey && event.keyCode === 9) {
 			event.preventDefault();
 			let judge = target.value.substr(target.selectionStart - 5, 5);
 			if (!reg.test(judge)) {
@@ -115,10 +115,53 @@ class Write extends React.Component {
 			target.selectionStart = position;
 			target.selectionEnd = position;
 			target.focus();
-		} else if (event.keyCode == 9) {
+		} else if (event.keyCode === 9) {
 			event.preventDefault();
-			let position = target.selectionStart + 2;//此处我用了4个空格表示缩进，其实无所谓几个，只要和下面保持一致就好了。
+			let position = target.selectionStart + 2;//此处用了2个空格表示缩进，其实无所谓几个，只要和下面保持一致就好了。
 			target.value = target.value.substr(0, target.selectionStart) + '  ' + target.value.substr(target.selectionStart);
+			target.selectionStart = position;
+			target.selectionEnd = position;
+			target.focus();
+		}
+		//注释快捷键
+		if((event.metaKey && event.keyCode === 191) || (event.ctrlKey && event.keyCode === 191)){
+			event.preventDefault();
+			let reg = /\n/g;
+			let temp = reg.exec(target.value);
+			let begin = temp;
+			let end = temp;
+			let beginIndex = 0;
+			let endIndex = 0;
+			while(temp && temp.index < target.selectionStart){
+				begin = temp;
+				temp = reg.exec(target.value);
+				end = temp
+			}
+			if(!begin){
+				beginIndex = -1;
+				endIndex = target.value.length;
+			}else{
+				if(!end){
+					beginIndex = begin.index;
+					endIndex = target.value.length;
+				}else{
+					if(begin.index === end.index){
+						beginIndex = -1;
+					}else{
+						beginIndex = begin.index;
+					}
+					endIndex = end.index;
+				}
+			}
+			let activeLine = target.value.slice(beginIndex+1,endIndex);
+			let position = target.selectionStart
+			if(/<!-- .+ -->/.test(activeLine)){
+				position = target.selectionStart;
+				target.value = target.value.slice(0, beginIndex + 1) + target.value.slice(beginIndex + 6, endIndex - 4) + target.value.slice(endIndex);				
+			}else{
+				position = endIndex + 5;
+				target.value = target.value.slice(0, beginIndex + 1) + '<!-- ' + target.value.slice(beginIndex + 1, endIndex) + ' -->'+target.value.slice(endIndex);
+			}
 			target.selectionStart = position;
 			target.selectionEnd = position;
 			target.focus();
