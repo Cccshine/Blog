@@ -20,7 +20,10 @@
 }
 .content-container{
 	width:900px;
-	border-bottom:5px dotted #22C3AA;
+}
+.comment{
+	margin-top: 10px;
+	border-top:5px dotted #22C3AA;
 }
 .sidebar{
 	width:240px;
@@ -28,7 +31,7 @@
 .title{
     text-shadow: 1px 1px #22C3AA;
     color: #555;
-    margin-bottom: 10px;
+    margin-bottom: 6px;
 }
 .date,.browse-times strong{
 	color:#22C3AA;
