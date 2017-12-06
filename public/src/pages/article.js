@@ -10,7 +10,7 @@ import blogGlobal from '../data/global';
 
 let rendererMD = new marked.Renderer();
 rendererMD.heading = function (text, level) {
-    return '<h' + level + ' id='+ text +'>'+ text +'</h' + level + '>';
+	return '<h' + level + ' id=' + text + '>' + text + '</h' + level + '>';
 }
 Highlight.initHighlightingOnLoad();
 marked.setOptions({
@@ -27,63 +27,86 @@ marked.setOptions({
 	}
 });
 
-class Article extends React.Component{
-	constructor(props){
+class Article extends React.Component {
+	constructor(props) {
 		super(props);
 		this.state = {
-			catalog:[],
-			content:"",
+			catalog: [],
+			content: "",
 			sidebarShow: true,
 			article: null,
-			activeCatalog: 0
+			activeCatalog: ""
 		}
 	}
 	createCatalog = (html) => {
 		let originTitle = html.match(/<(h[1-3]{1})[^>]*>(.*?)<\/h[1-3]{1}>/g);
-		originTitle = ['<h1 id="一级标题1">一级标题1</h1>','<h2 id="二级标题1">二级标题1</h2>','<h1 id="一级标题2">一级标题2</h1>','<h2 id="二级标题2">二级标题2</h2>','<h3 id="三级标题2">三级标题2</h3>','<h1 id="一级标题3">一级标题3</h1>','<h2 id="二级标题3">二级标题3</h2>','<h1 id="一级标题4">一级标题4</h1>']
-		if(!originTitle){
-			this.setState({sidebarShow:false});
+		originTitle = ['<h1 id="一级标题1">一级标题1</h1>', '<h2 id="二级标题1">二级标题1</h2>', '<h1 id="一级标题2">一级标题2</h1>', '<h2 id="二级标题2">二级标题2</h2>', '<h3 id="三级标题2">三级标题2</h3>', '<h1 id="一级标题3">一级标题3</h1>', '<h2 id="二级标题3">二级标题3</h2>', '<h1 id="一级标题4">一级标题4</h1>']
+		if (!originTitle) {
+			this.setState({ sidebarShow: false });
 			return;
 		}
 		let newTitle = [];
 		let levelArr = [];
 		//获得含有父子级关系的数组
 		originTitle.map((item, index) => {
-			let level = item.substr(2,1);//标题级别
+			let level = item.substr(2, 1);//标题级别
 			let id = level + index;//标识符
 			let eleId = item.match(/id="(.*?)"/)[1];//标题元素要设的id值
 			let label = item.match(/>(.*?)</)[1];//标题内容
 			let length = levelArr.length;
 			//对应的父级标识符，顶级标题的pid为""
 			let pid = length > 0 ? (Number(levelArr[length - 1].level) < Number(level) ? levelArr[length - 1].id : '') : '';
-			levelArr.push({level:level,id:id,eleId:eleId,label:label,pid:pid})
+			levelArr.push({ level: level, id: id, eleId: eleId, label: label, pid: pid })
 		});
 
 		//将含有父子级关系的数组数据转换为树状数据
-	    function getTreeData(data,pid){
-	    	let treeData = [];
-	    	for(let i = 0;i<data.length;i++){
-	    		let item = data[i];
-	    		if(item.pid === pid){
-	    			treeData.push({level:item.level,eleId:item.eleId,label:item.label,childs:getTreeData(data,item.id)})
-	    		}
-	    	}
-	    	return treeData;
-	    }
-	    newTitle = getTreeData(levelArr,"");
-		this.setState({catalog:newTitle});
+		function getTreeData(data, pid) {
+			let treeData = [];
+			for (let i = 0; i < data.length; i++) {
+				let item = data[i];
+				if (item.pid === pid) {
+					treeData.push({ level: item.level, eleId: item.eleId, label: item.label, childs: getTreeData(data, item.id) })
+				}
+			}
+			return treeData;
+		}
+		newTitle = getTreeData(levelArr, "");
+		this.setState({ catalog: newTitle,activeCatalog: newTitle[0].eleId});
+	}
+	renderMenu = (menuList) => {
+		let vdom = [];
+		if (Object.prototype.toString.call(menuList) === "[object Array]") {
+			let list = [];
+			for (let item of menuList) {
+				list.push(this.renderMenu(item));
+			}
+			vdom.push(
+				<ol key="single">{list}</ol>
+			)
+		} else {
+			vdom.push(
+				<li key={menuList.eleId} styleName={('title-level-' + menuList.level) + (this.state.activeCatalog ===  menuList.eleId ? ' active' : '')}>
+					<a href={'#' + menuList.eleId} onClick={this.handleCatalogClick}>
+						<i className="fa fa-star"></i>
+						<span>{menuList.label}</span>
+					</a>
+					{this.renderMenu(menuList.childs)}
+				</li>
+			)
+		}
+		return vdom;
 	}
 	componentWillMount = () => {
-		let url = blogGlobal.requestBaseUrl+"/articles?mode=detail&articleId="+this.props.match.params.articleId;
-		fetch(url,{
-			method:'get',
-		    mode:'cors',
-		    credentials: 'include',
+		let url = blogGlobal.requestBaseUrl + "/articles?mode=detail&articleId=" + this.props.match.params.articleId;
+		fetch(url, {
+			method: 'get',
+			mode: 'cors',
+			credentials: 'include',
 		}).then((response) => {
 			return response.json();
 		}).then((json) => {
 			console.log(json);
-			this.setState({article:json.article,content:json.article.content});
+			this.setState({ article: json.article, content: json.article.content });
 			this.createCatalog(this.refs.content.innerHTML)
 			console.log(this.state.article)
 		}).catch((err) => {
@@ -93,18 +116,27 @@ class Article extends React.Component{
 	componentDidMount = () => {
 		// this.createCatalog(this.refs.content.innerHTML)
 	}
-	render(){
-		let {catalog,article,content,sidebarShow,activeCatalog} = this.state;
+	handleCatalogClick = (event) => {
+		let target = event.target;
+		console.log(event.target.nodeName)
+		if(event.target.nodeName.toLowerCase() !== 'a'){
+			target = event.target.parentNode;
+		}
+		this.setState({activeCatalog:target.getAttribute('href').slice(1)});
+	}
+
+	render() {
+		let { catalog, article, content, sidebarShow, activeCatalog } = this.state;
 		let tagArr = article ? article.tag.split(';') : [];
 		tagArr.pop();
-		let tagProps = {isLink:true,hasClose:false,list:tagArr};
-		return(
+		let tagProps = { isLink: true, hasClose: false, list: tagArr };
+		return (
 			<article styleName="root" className="clearfix">
 				<header styleName="header" className="clearfix">
 					<div className="fl">
 						<h1 styleName="title">{article ? article.title : ''}</h1>
 						<div styleName="tag-panel">
-							<Tag {...tagProps}/>
+							<Tag {...tagProps} />
 						</div>
 					</div>
 					<div className="fr" styleName="extra-info">
@@ -113,22 +145,10 @@ class Article extends React.Component{
 					</div>
 				</header>
 				<section styleName="content-container" className="clearfix">
-					<div ref="content" styleName="content" className="fl markdown" style={{width: sidebarShow ? '900px' : '100%'}} dangerouslySetInnerHTML={{__html:marked(content)}}></div>
-					<aside styleName="sidebar" className="fl" ref="catalog" style={{display:sidebarShow ? 'block' : 'none'}}>
+					<div ref="content" styleName="content" className="fl markdown" style={{ width: sidebarShow ? '900px' : '100%' }} dangerouslySetInnerHTML={{ __html: marked(content) }}></div>
+					<aside styleName="sidebar" className="fl" ref="catalog" style={{ display: sidebarShow ? 'block' : 'none' }}>
 						<h2>目录</h2>
-						<ol>
-							{
-								catalog.map((item,index) => {
-									return (
-										<li key={index} styleName={('title-level-' + item.level) + (activeCatalog === index ? ' active' : '')}>
-											<a href={'#'+item.eleId}>
-												<span>{item.label}</span>
-											</a>
-										</li>
-									)
-								})
-							}
-						</ol>
+						{this.renderMenu(catalog, activeCatalog)}
 					</aside>
 				</section>
 				<div styleName="comment">
@@ -140,17 +160,4 @@ class Article extends React.Component{
 		)
 	}
 }
-
-function renderMenu(menuList,html){
-	menuList.map((item,index) => {
-		html += `<li key={index} styleName={('title-level-' + item.level) + (activeCatalog === index ? ' active' : '')}>
-					<a href={'#'+item.eleId}>
-						<span>{item.label}</span>
-					</a>
-				</li>`;
-		if(item.childs.length > 0){
-			renderMenu(item.childs,html);
-		}
-	});
-}
-export default CSSModules(Article, style,{allowMultiple:true,handleNotFoundStyleName:'log'});
+export default CSSModules(Article, style, { allowMultiple: true, handleNotFoundStyleName: 'log' });
