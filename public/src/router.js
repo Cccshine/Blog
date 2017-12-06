@@ -8,6 +8,7 @@ import Register from './pages/register.js';
 import App from './app';
 
 import './sass/global/_common.scss';
+import 'highlight.js/styles/monokai-sublime.css';
 
 //配置路由，将路由注入到id为blog的DOM中
 ReactDOM.render(

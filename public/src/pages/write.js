@@ -8,8 +8,6 @@ import Modal from '../component/modal/modal';
 import CSSModules from 'react-css-modules';
 import style from '../sass/pages/write.scss'
 import blogGlobal from '../data/global';
-require('highlight.js/styles/monokai-sublime.css')
-
 
 const url = blogGlobal.requestBaseUrl + "/articles";
 let timer = null;

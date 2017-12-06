@@ -116,7 +116,10 @@ router.get('/',(req,res) => {
 	if(mode == 'detail'){//文章详情页
 		let articleId = req.query.articleId;
 		ArticleModel.findOne({isPublic:true, _id:articleId}).then((article) => {
-			console.log(article)
+			article.scan++;
+			article.save((err)=>{
+				console.log(err);
+			})
 			return res.json({"status":1,article:article,"msg":"success"});
 		}).catch((err) => {
 			console.log(err);

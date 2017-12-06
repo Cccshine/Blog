@@ -11,7 +11,10 @@ const ArticleSchema = new mongoose.Schema({
 	tag:String,
 	content:String,
 	summary:String,
-	scan:Number,
+	scan:{
+		type:Number,
+		default:0
+	},
 	isPublic:{
 		type:Boolean,
 		default:false

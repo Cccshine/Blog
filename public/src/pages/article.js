@@ -1,5 +1,6 @@
 import React from 'react';
 import marked from 'marked';
+import Highlight from 'highlight.js';
 import moment from 'moment';
 import Modal from '../component/modal/modal';
 import Tag from '../component/tag/tag';
@@ -7,8 +8,25 @@ import CSSModules from 'react-css-modules';
 import style from '../sass/pages/article.scss';
 import blogGlobal from '../data/global';
 
-let content = null;
-let catalog = null;
+let rendererMD = new marked.Renderer();
+rendererMD.heading = function (text, level) {
+    return '<h' + level + ' id='+ text +'>'+ text +'</h' + level + '>';
+}
+Highlight.initHighlightingOnLoad();
+marked.setOptions({
+	renderer: rendererMD,
+	gfm: true,
+	tables: true,
+	breaks: false,
+	pedantic: false,
+	sanitize: false,
+	smartLists: true,
+	smartypants: false,
+	highlight: function (code) {
+		return Highlight.highlightAuto(code).value;
+	}
+});
+
 class Article extends React.Component{
 	constructor(props){
 		super(props);
@@ -16,23 +34,43 @@ class Article extends React.Component{
 			catalog:[],
 			content:"",
 			sidebarShow: true,
-			article: null
+			article: null,
+			activeCatalog: 0
 		}
 	}
 	createCatalog = (html) => {
-		let originTitle = html.match(/<(h[1-6]{1})[^>]*>(.*?)<\/h[1-6]{1}>/g);
-		let newTitle = [];
-		//todo --- originTitle为null的处理
+		let originTitle = html.match(/<(h[1-3]{1})[^>]*>(.*?)<\/h[1-3]{1}>/g);
+		originTitle = ['<h1 id="一级标题1">一级标题1</h1>','<h2 id="二级标题1">二级标题1</h2>','<h1 id="一级标题2">一级标题2</h1>','<h2 id="二级标题2">二级标题2</h2>','<h3 id="三级标题2">三级标题2</h3>','<h1 id="一级标题3">一级标题3</h1>','<h2 id="二级标题3">二级标题3</h2>','<h1 id="一级标题4">一级标题4</h1>']
 		if(!originTitle){
 			this.setState({sidebarShow:false});
 			return;
 		}
+		let newTitle = [];
+		let levelArr = [];
+		//获得含有父子级关系的数组
 		originTitle.map((item, index) => {
-			let level = item.substr(2,1);
-			let id = item.match(/id="(.*?)"/)[1];
-			let label = item.match(/>(.*?)</)[1];
-			newTitle.push({level:level,id:id,label:label});
+			let level = item.substr(2,1);//标题级别
+			let id = level + index;//标识符
+			let eleId = item.match(/id="(.*?)"/)[1];//标题元素要设的id值
+			let label = item.match(/>(.*?)</)[1];//标题内容
+			let length = levelArr.length;
+			//对应的父级标识符，顶级标题的pid为""
+			let pid = length > 0 ? (Number(levelArr[length - 1].level) < Number(level) ? levelArr[length - 1].id : '') : '';
+			levelArr.push({level:level,id:id,eleId:eleId,label:label,pid:pid})
 		});
+
+		//将含有父子级关系的数组数据转换为树状数据
+	    function getTreeData(data,pid){
+	    	let treeData = [];
+	    	for(let i = 0;i<data.length;i++){
+	    		let item = data[i];
+	    		if(item.pid === pid){
+	    			treeData.push({level:item.level,eleId:item.eleId,label:item.label,childs:getTreeData(data,item.id)})
+	    		}
+	    	}
+	    	return treeData;
+	    }
+	    newTitle = getTreeData(levelArr,"");
 		this.setState({catalog:newTitle});
 	}
 	componentWillMount = () => {
@@ -56,7 +94,7 @@ class Article extends React.Component{
 		// this.createCatalog(this.refs.content.innerHTML)
 	}
 	render(){
-		let {catalog,article,content,sidebarShow} = this.state;
+		let {catalog,article,content,sidebarShow,activeCatalog} = this.state;
 		let tagArr = article ? article.tag.split(';') : [];
 		tagArr.pop();
 		let tagProps = {isLink:true,hasClose:false,list:tagArr};
@@ -70,35 +108,49 @@ class Article extends React.Component{
 						</div>
 					</div>
 					<div className="fr" styleName="extra-info">
-						<div styleName="browse-times"><strong>1k</strong>&nbsp;次浏览</div>
+						<div styleName="browse-times"><strong>{article ? article.scan : 1}</strong>&nbsp;次浏览</div>
 						<div styleName="date">{article ? moment(article.publicTime).format('YYYY-MM-DD') : ''}</div>
 					</div>
 				</header>
-				<section styleName="content-container" className="fl" style={{width: sidebarShow ? '900px' : '100%'}}>
-					<div ref="content" styleName="content" dangerouslySetInnerHTML={{__html:marked(content)}}></div>
-					<div styleName="comment">
-						<li>1</li>
-						<li>2</li>
-						<li>3</li>
-					</div>
+				<section styleName="content-container" className="clearfix">
+					<div ref="content" styleName="content" className="fl markdown" style={{width: sidebarShow ? '900px' : '100%'}} dangerouslySetInnerHTML={{__html:marked(content)}}></div>
+					<aside styleName="sidebar" className="fl" ref="catalog" style={{display:sidebarShow ? 'block' : 'none'}}>
+						<h2>目录</h2>
+						<ol>
+							{
+								catalog.map((item,index) => {
+									return (
+										<li key={index} styleName={('title-level-' + item.level) + (activeCatalog === index ? ' active' : '')}>
+											<a href={'#'+item.eleId}>
+												<span>{item.label}</span>
+											</a>
+										</li>
+									)
+								})
+							}
+						</ol>
+					</aside>
 				</section>
-				<aside styleName="sidebar" className="fl" ref="catalog" style={{display:sidebarShow ? 'block' : 'none'}}>
-					<ul>
-						{
-							catalog.map((item,index) => {
-								return (
-									<li key={index} className={'title-level-' + item.level}>
-										<a href={'#'+item.id}>
-											<span>{item.label}</span>
-										</a>
-									</li>
-								)
-							})
-						}
-					</ul>
-				</aside>
+				<div styleName="comment">
+					<li>1</li>
+					<li>2</li>
+					<li>3</li>
+				</div>
 			</article>
 		)
 	}
 }
-export default CSSModules(Article, style,{handleNotFoundStyleName:'log'});
+
+function renderMenu(menuList,html){
+	menuList.map((item,index) => {
+		html += `<li key={index} styleName={('title-level-' + item.level) + (activeCatalog === index ? ' active' : '')}>
+					<a href={'#'+item.eleId}>
+						<span>{item.label}</span>
+					</a>
+				</li>`;
+		if(item.childs.length > 0){
+			renderMenu(item.childs,html);
+		}
+	});
+}
+export default CSSModules(Article, style,{allowMultiple:true,handleNotFoundStyleName:'log'});
