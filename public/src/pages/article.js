@@ -40,7 +40,6 @@ class Article extends React.Component {
 	}
 	createCatalog = (html) => {
 		let originTitle = html.match(/<(h[1-3]{1})[^>]*>(.*?)<\/h[1-3]{1}>/g);
-		originTitle = ['<h1 id="一级标题1">一级标题1</h1>', '<h2 id="二级标题1">二级标题1</h2>', '<h1 id="一级标题2">一级标题2</h1>', '<h2 id="二级标题2">二级标题2</h2>', '<h3 id="三级标题2">三级标题2</h3>', '<h1 id="一级标题3">一级标题3</h1>', '<h2 id="二级标题3">二级标题3</h2>', '<h1 id="一级标题4">一级标题4</h1>']
 		if (!originTitle) {
 			this.setState({ sidebarShow: false });
 			return;
@@ -118,7 +117,6 @@ class Article extends React.Component {
 	}
 	handleCatalogClick = (event) => {
 		let target = event.target;
-		console.log(event.target.nodeName)
 		if(event.target.nodeName.toLowerCase() !== 'a'){
 			target = event.target.parentNode;
 		}
@@ -152,6 +150,7 @@ class Article extends React.Component {
 					</aside>
 				</section>
 				<div styleName="comment">
+					
 					<li>1</li>
 					<li>2</li>
 					<li>3</li>

@@ -32,6 +32,11 @@
     right: 0;
     width:240px;
 	border-left: 1px solid #ccc;
+	h2{
+		text-align: center;
+		letter-spacing: 1em;
+		margin: 10px 0;
+	}
 	&>ol{
 		padding-left:3px;
 	}
