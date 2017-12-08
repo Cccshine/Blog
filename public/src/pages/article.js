@@ -157,6 +157,21 @@ class Article extends React.Component {
 		this.setState({activeCatalog:target.getAttribute('href').slice(1)});
 	}
 
+	handleComment = (mode, event) => {
+		let data = {
+			fromUsername:sessionStorage.getItem('username'),
+			fromUid:sessionStorage.getItem('uid'),
+			articleId:this.props.match.params.articleId
+		}
+		if(mode === 'comment'){
+			data.content = this.refs.comment.value;
+			console.log(data)
+			// todo ajax
+		}else{
+			
+		}
+	}
+
 	getOffset = (obj) => {
 		let top = 0,left = 0;
 		while (obj) {
@@ -215,9 +230,7 @@ class Article extends React.Component {
 												<span onClick={this.handleReply}><i className="fa fa-reply"></i>回复</span>
 											</div>
 										</div>
-										<div styleName="comment-detail">
-											从业十余年仍然能保持一份对技术的初心
-										</div>
+										<div styleName="comment-detail">从业十余年仍然能保持一份对技术的初心</div>
 										<ul styleName="replay-list">
 											<li styleName="replay-item">
 												<div className="fl"><img src={require('../images/logo.jpg')} className="avatar"/></div>
@@ -235,21 +248,28 @@ class Article extends React.Component {
 															<span onClick={this.handleReply}><i className="fa fa-reply"></i>回复</span>
 														</div>
 													</div>
-													<div styleName="comment-detail">
-														谢谢夸奖
-													</div>
+													<div styleName="comment-detail">谢谢夸奖</div>
 												</div>
 											</li>
 										</ul>
 										<div styleName="comment-form">
-											<textarea name="" id="" cols="30" rows="10"></textarea>
-											<button>回复</button>
+											<button className="btn-normal fr">回复</button>
+											<div className="over-hidden">
+												<textarea placeholder="在此输入回复，请文明用语"></textarea>
+											</div>
 										</div>
 									</div>
 								</li>
-								<li>2</li>
-								<li>3</li>
 							</ul>
+							<div styleName="add-comment">
+								<div className="fl" styleName="avatar"><img src={require('../images/logo.jpg')} className="avatar"/></div>
+								<div styleName="comment-form">
+								<button className="btn-normal fr" onClick={this.handleComment.bind(this,'comment')}>评论</button>
+								<div className="over-hidden">
+									<textarea ref="comment" placeholder="在此输入评论，请文明用语"></textarea>
+								</div>
+							</div>
+							</div>
 						</div>
 					</div>
 					<aside styleName="sidebar" className={fixed ? 'fl' : 'fl absolute'} style={{ display: sidebarShow ? 'block' : 'none' }}>

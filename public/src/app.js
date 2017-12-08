@@ -42,6 +42,7 @@ export default class App extends React.Component{
 				this.setState({isLogin:json.isLogin,username:json.username,role:json.role});
 				sessionStorage.setItem('username',json.username);
 				sessionStorage.setItem('role',json.role);
+				sessionStorage.setItem('uid',json.uid);
 			}else{
 				this.setState({isLogin:json.isLogin});
 			}
@@ -65,6 +66,7 @@ export default class App extends React.Component{
 			sessionStorage.setItem('isLogin',false);
 			sessionStorage.removeItem('username');
 			sessionStorage.removeItem('role');
+			sessionStorage.removeItem('uid');
 			sessionStorage.removeItem('loginTipClose');
 		}).catch((err) => {
 			console.log(err)

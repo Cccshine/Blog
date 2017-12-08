@@ -1,9 +1,11 @@
 const mongoose = require('mongoose');
 
 const CommentSchema = new mongoose.Schema({
-	username: String,
+	formUsername: String,
+	toUsername: String,
 	articleId: mongoose.Schema.Types.ObjectId,
 	formUid:mongoose.Schema.Types.ObjectId,
+	toUid:mongoose.Schema.Types.ObjectId,
 	content:String,
 	meta: {
 		createAt: {
