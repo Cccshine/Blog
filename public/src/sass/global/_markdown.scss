@@ -30,6 +30,9 @@
 	p{
 		margin: 1em 0;
 	}
+	img{
+		max-width:100%;
+	}
 	blockquote{
 	    padding: 10px 20px;
 	    font-size: 1em;
@@ -39,7 +42,7 @@
 	}
 	a{
 		color: #22C3AA;
-		border-bottom: 1p solid #22C3AA;
+		border-bottom: 1px solid #22C3AA;
 		&:hover,&:focus{
 			color:#009a61;
 			border-bottom-color:#009a61;

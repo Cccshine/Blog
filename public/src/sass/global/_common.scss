@@ -52,6 +52,12 @@ body{
 .fr{
 	float:right;
 }
+.fixed{
+	position:fixed;
+}
+.absolute{
+	position:absolute;
+}
 .btn-normal{
 	width:$button-normal-width;
 	height: $button-normal-height;
@@ -111,4 +117,10 @@ body{
 
 .no-border{
 	border:none;
+}
+
+.avatar{
+	width: 40px;
+    height: 40px;
+    border-radius: 50%;
 }

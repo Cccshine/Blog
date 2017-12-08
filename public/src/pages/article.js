@@ -8,9 +8,12 @@ import CSSModules from 'react-css-modules';
 import style from '../sass/pages/article.scss';
 import blogGlobal from '../data/global';
 
+let eHeadings = null,headingsOffset=[];//存储所有的h1,h2,h3标签及其距离顶部的距离
+let catalogChangeDis = 0;
 let rendererMD = new marked.Renderer();
 rendererMD.heading = function (text, level) {
-	return '<h' + level + ' id=' + text + '>' + text + '</h' + level + '>';
+	let className = Number(level) <= 3 ? 'heading' : '';
+	return '<h' + level + ' id=' + text + ' class=' + className + '>' + text + '</h' + level + '>';
 }
 Highlight.initHighlightingOnLoad();
 marked.setOptions({
@@ -35,7 +38,8 @@ class Article extends React.Component {
 			content: "",
 			sidebarShow: true,
 			article: null,
-			activeCatalog: ""
+			activeCatalog: "",
+			fixed: false
 		}
 	}
 	createCatalog = (html) => {
@@ -106,15 +110,45 @@ class Article extends React.Component {
 		}).then((json) => {
 			console.log(json);
 			this.setState({ article: json.article, content: json.article.content });
-			this.createCatalog(this.refs.content.innerHTML)
-			console.log(this.state.article)
+			this.createCatalog(this.refs.content.innerHTML);
+			eHeadings = document.getElementsByClassName('heading');
+			for(let ele of eHeadings){
+				let item = {
+					"top":this.getOffset(ele).top,
+					"anchorId":ele.getAttribute('id')
+				}
+				headingsOffset.push(item);
+			}
+			headingsOffset.reverse();
+			catalogChangeDis = this.getOffset(this.refs.content).top;
 		}).catch((err) => {
 			console.log(err);
 		});
+		window.addEventListener('scroll', this.changeCatalog, false);
 	}
-	componentDidMount = () => {
-		// this.createCatalog(this.refs.content.innerHTML)
+
+	componentWillUnmount = () => {
+		window.removeEventListener('scroll', this.changeCatalog, false);
 	}
+
+	changeCatalog = (event) => {
+		let scroll = document.documentElement.scrollTop || document.body.scrollTop;
+		if(scroll > catalogChangeDis){
+			this.setState({fixed:true});
+		}else{
+			this.setState({fixed:false});
+		}
+		for(let item of headingsOffset){
+			if(scroll >= item.top){
+				if(this.state.activeCatalog != item.anchorId){
+					console.log('yy')
+					this.setState({activeCatalog:item.anchorId});
+				}
+				break;
+			}
+		}
+	}
+
 	handleCatalogClick = (event) => {
 		let target = event.target;
 		if(event.target.nodeName.toLowerCase() !== 'a'){
@@ -123,8 +157,18 @@ class Article extends React.Component {
 		this.setState({activeCatalog:target.getAttribute('href').slice(1)});
 	}
 
+	getOffset = (obj) => {
+		let top = 0,left = 0;
+		while (obj) {
+			top += obj.offsetTop;
+			left += obj.offsetLeft;
+			obj = obj.offsetParent;
+		}
+		return {"top":top,"left":left};
+	}
+
 	render() {
-		let { catalog, article, content, sidebarShow, activeCatalog } = this.state;
+		let { catalog, article, content, sidebarShow, activeCatalog, fixed } = this.state;
 		let tagArr = article ? article.tag.split(';') : [];
 		tagArr.pop();
 		let tagProps = { isLink: true, hasClose: false, list: tagArr };
@@ -139,22 +183,82 @@ class Article extends React.Component {
 					</div>
 					<div className="fr" styleName="extra-info">
 						<div styleName="browse-times"><strong>{article ? article.scan : 1}</strong>&nbsp;次浏览</div>
-						<div styleName="date">{article ? moment(article.publicTime).format('YYYY-MM-DD') : ''}</div>
+						<time styleName="date">{article ? moment(article.publicTime).format('YYYY-MM-DD') : ''}</time>
 					</div>
 				</header>
 				<section styleName="content-container" className="clearfix">
-					<div ref="content" styleName="content" className="fl markdown" style={{ width: sidebarShow ? '900px' : '100%' }} dangerouslySetInnerHTML={{ __html: marked(content) }}></div>
-					<aside styleName="sidebar" className="fl" ref="catalog" style={{ display: sidebarShow ? 'block' : 'none' }}>
-						<h2>目录</h2>
-						{this.renderMenu(catalog, activeCatalog)}
+					<div className="fl" style={{ width: sidebarShow ? '900px' : '100%' }} >
+						<div ref="content" styleName="content" className="markdown" dangerouslySetInnerHTML={{ __html: marked(content) }}></div>
+						<div styleName="relative-info">
+							<div styleName="reward">
+								<p>如果觉得我的文章对你有用，请随意扫码赞赏</p>
+								<img href="#" />
+							</div>
+							<div styleName="relative-link" className="clearfix">
+								<a className="fl"><i className="fa fa-chevron-left"></i>&nbsp;上一篇</a>
+								<a className="fr">下一篇&nbsp;<i className="fa fa-chevron-right"></i></a>
+							</div>
+						</div>
+						<div styleName="comment">
+							<ul>
+								<li styleName="comment-item" className="clearfix">
+									<div className="fl"><img src={require('../images/logo.jpg')} className="avatar"/></div>
+									<div styleName="comment-content">
+										<div styleName="comment-info" className="clearfix">
+											<div className="fl" styleName="user-info">
+												<strong>cshine</strong>
+												<span>作者</span>
+												<time>一天前</time>
+											</div>
+											<div className="fr" styleName="operate">
+												<span onClick={this.handlePraise}><i className="fa fa-thumbs-o-up"></i>赞<em>+6</em></span>
+												<span onClick={this.handleReply}><i className="fa fa-reply"></i>回复</span>
+											</div>
+										</div>
+										<div styleName="comment-detail">
+											从业十余年仍然能保持一份对技术的初心
+										</div>
+										<ul styleName="replay-list">
+											<li styleName="replay-item">
+												<div className="fl"><img src={require('../images/logo.jpg')} className="avatar"/></div>
+												<div styleName="comment-content">
+													<div styleName="comment-info" className="clearfix">
+														<div className="fl" styleName="user-info">
+															<strong>cc</strong>
+															<span>作者</span>
+															<i>@</i>
+															<strong>cc</strong>
+															<time>一天前</time>
+														</div>
+														<div className="fr" styleName="operate">
+															<span onClick={this.handlePraise}><i className="fa fa-thumbs-o-up"></i>赞<em>+6</em></span>
+															<span onClick={this.handleReply}><i className="fa fa-reply"></i>回复</span>
+														</div>
+													</div>
+													<div styleName="comment-detail">
+														谢谢夸奖
+													</div>
+												</div>
+											</li>
+										</ul>
+										<div styleName="comment-form">
+											<textarea name="" id="" cols="30" rows="10"></textarea>
+											<button>回复</button>
+										</div>
+									</div>
+								</li>
+								<li>2</li>
+								<li>3</li>
+							</ul>
+						</div>
+					</div>
+					<aside styleName="sidebar" className={fixed ? 'fl' : 'fl absolute'} style={{ display: sidebarShow ? 'block' : 'none' }}>
+						<div styleName="catalog" className={fixed ? 'fixed' : ''} ref="catalog">
+							<h2>目录</h2>
+							{this.renderMenu(catalog, activeCatalog)}
+						</div>
 					</aside>
 				</section>
-				<div styleName="comment">
-					
-					<li>1</li>
-					<li>2</li>
-					<li>3</li>
-				</div>
 			</article>
 		)
 	}

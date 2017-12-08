@@ -4,8 +4,11 @@
 .root{
 	position:relative;
     width: 1140px;
-    position: relative;
+    height: 100%;
     margin: auto;
+}
+.content-container{
+	position:relative;
 }
 .header{
 	position:relative;
@@ -18,24 +21,26 @@
     text-align: right;
     height:60px;
 }
-.content-container{
-	position:relative;
-}
 .comment{
-	margin-top: 10px;
+	margin: 10px 10px 0;
 	border-top:5px dotted #22C3AA;
 }
 .sidebar{
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    right: 0;
-    width:240px;
+	width:240px;
+	top: 0;
+	right: 0;
+	bottom:0;
+}
+.catalog{
+	width:240px;
+	height:100%;
+	padding-top: 10px;
+	top:0;
 	border-left: 1px solid #ccc;
 	h2{
 		text-align: center;
 		letter-spacing: 1em;
-		margin: 10px 0;
+		margin-bottom: 10px;
 	}
 	&>ol{
 		padding-left:3px;
@@ -73,4 +78,74 @@
 .date,.browse-times strong{
 	color:#22C3AA;
 	font-weight:bold;
+}
+.relative-info{
+	padding: 10px;
+	.reward{
+		text-align: center;
+	}
+	.relative-link{
+		a{
+			color: #22C3AA;
+			border-bottom: 1px solid #22C3AA;
+			&:hover,&:focus{
+				color:#009a61;
+				border-bottom-color:#009a61;
+			} 
+		}
+	}
+}
+.comment-item{
+	font-size: 14px;
+	.comment-info{
+		@include vCenterLineHeight(30px);
+	}
+	.user-info{
+		strong{
+			color: $theme-adorn-color;
+		}
+		span{
+			margin-left: 5px;
+			padding: 0 5px;
+			color:#fff;
+		    font-size: 12px;
+			background: $theme-main-color;
+		    border-radius: 4px;
+		}
+		time{
+			margin-left: 5px;
+			color:#999;
+			font-size: 12px;
+		}
+		i{
+			color: blue;
+			margin: 0 5px;
+		}
+	}
+	.operate{
+		span{
+			margin-right: 10px;
+			color: #666;
+			cursor: pointer;
+			&:hover{
+				i{
+					color: $theme-adorn-color;
+				}
+				color: $theme-adorn-color;
+			}
+		}
+		i{
+			color: $theme-main-color;
+			margin-right: 5px;
+		}
+		em{
+			color: #666;
+		}
+	}
+	.replay-list{
+		margin-left:40px;
+	}
+	.comment-form{
+		margin-left:40px;
+	}
 }
