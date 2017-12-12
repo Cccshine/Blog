@@ -39,7 +39,9 @@ class Article extends React.Component {
 			sidebarShow: true,
 			article: null,
 			activeCatalog: "",
-			fixed: false
+			fixed: false,
+			commentList:[],
+			replyIndex: -1
 		}
 	}
 	createCatalog = (html) => {
@@ -124,6 +126,7 @@ class Article extends React.Component {
 		}).catch((err) => {
 			console.log(err);
 		});
+		this.fetchComments();
 		window.addEventListener('scroll', this.changeCatalog, false);
 	}
 
@@ -157,6 +160,31 @@ class Article extends React.Component {
 		this.setState({activeCatalog:target.getAttribute('href').slice(1)});
 	}
 
+	handleReply = (index,event) => {
+		this.setState({replyIndex:index});
+	}
+
+	fetchComments = () => {
+		let url = blogGlobal.requestBaseUrl + '/comments?articleId='+this.props.match.params.articleId;
+		this.sendRequest(url, 'get', null, (json) => {
+			console.log(json);
+			let { commentList } = json;
+			let newCommentList = [];
+			for(let comment of commentList){
+				if(!comment.parentId){
+					comment.replyList = [];
+					for(let item of commentList){
+						if(item.parentId == comment._id){
+							comment.replyList.push(item);
+						}
+					}
+					newCommentList.push(comment);
+				}
+			}
+			this.setState({ commentList: newCommentList });
+		})
+	}
+
 	comfirmComment = (mode, event) => {
 		let data = {
 			fromUsername:sessionStorage.getItem('username'),
@@ -167,18 +195,21 @@ class Article extends React.Component {
 			data.content = this.refs.comment.value;
 			console.log(data)
 		}else{
-			data.toUsername = 
-			data.toUid = 
-			data.content = this.refs.replay.value;
+			// data.toUsername = "admin";
+			// data.toUid = "5a2a9a4e56c5b312b676c17d";
+			// data.parentId = "5a2fe8ad7bf7560b6201f1a0";
+			console.log(this.refs.reply)
+			data.content = this.refs.reply.value;
 			console.log(data)
 		}
-		this.sendRequest('post',data, (json) => {
+		let url = blogGlobal.requestBaseUrl + '/comments';
+		this.sendRequest(url, 'post',data, (json) => {
 			console.log(json);
 		})
 	}
 
 	//发送请求mode: post--新建评论
-	sendRequest = (mode, data, callback) => {
+	sendRequest = (url, mode, data, callback) => {
 		fetch(url, {
 			method: mode,
 			headers: {
@@ -208,7 +239,7 @@ class Article extends React.Component {
 	}
 
 	render() {
-		let { catalog, article, content, sidebarShow, activeCatalog, fixed } = this.state;
+		let { catalog, article, content, sidebarShow, activeCatalog, fixed, commentList, replyIndex } = this.state;
 		let tagArr = article ? article.tag.split(';') : [];
 		tagArr.pop();
 		let tagProps = { isLink: true, hasClose: false, list: tagArr };
@@ -241,50 +272,64 @@ class Article extends React.Component {
 						</div>
 						<div styleName="comment">
 							<ul>
-								<li styleName="comment-item" className="clearfix">
-									<div className="fl"><img src={require('../images/logo.jpg')} className="avatar"/></div>
-									<div styleName="comment-content">
-										<div styleName="comment-info" className="clearfix">
-											<div className="fl" styleName="user-info">
-												<strong>cshine</strong>
-												<span>作者</span>
-												<time>一天前</time>
-											</div>
-											<div className="fr" styleName="operate">
-												<span onClick={this.handlePraise}><i className="fa fa-thumbs-o-up"></i>赞<em>+6</em></span>
-												<span onClick={this.handleReply}><i className="fa fa-reply"></i>回复</span>
-											</div>
-										</div>
-										<div styleName="comment-detail">从业十余年仍然能保持一份对技术的初心</div>
-										<ul styleName="replay-list">
-											<li styleName="replay-item">
-												<div className="fl"><img src={require('../images/logo.jpg')} className="avatar"/></div>
+								{
+									commentList.map((item,index) => {
+										return (
+											<li styleName="comment-item" className="clearfix" key={index}>
+												<div className="fl" data-userid={item.fromUid} data-username={item.fromUsername}><img src={require('../images/logo.jpg')} className="avatar"/></div>
 												<div styleName="comment-content">
 													<div styleName="comment-info" className="clearfix">
 														<div className="fl" styleName="user-info">
-															<strong>cc</strong>
-															<span>作者</span>
-															<i>@</i>
-															<strong>cc</strong>
-															<time>一天前</time>
+															<strong>{item.fromUsername}</strong>
+															{item.fromUsername === 'admin' ? <span>作者</span> : null}
+															<time>{moment(item.createTime).startOf('day').fromNow()}</time>
 														</div>
 														<div className="fr" styleName="operate">
 															<span onClick={this.handlePraise}><i className="fa fa-thumbs-o-up"></i>赞<em>+6</em></span>
-															<span onClick={this.handleReply}><i className="fa fa-reply"></i>回复</span>
+															<span onClick={this.handleReply.bind(this,index)}><i className="fa fa-reply"></i>回复</span>
 														</div>
 													</div>
-													<div styleName="comment-detail">谢谢夸奖</div>
+													<div styleName="comment-detail">{item.content}</div>
+													<ul styleName="replay-list">
+														{
+															item.replyList.map((ritem,rindex) => {
+																return (
+																	<li styleName="replay-item" key={rindex+'r'}>
+																		<div className="fl" data-userid={ritem.fromUid} data-username={ritem.fromUsername}><img src={require('../images/logo.jpg')} className="avatar"/></div>
+																		<div styleName="comment-content">
+																			<div styleName="comment-info" className="clearfix">
+																				<div className="fl" styleName="user-info">
+																					<strong>{ritem.fromUsername}</strong>
+																					{ritem.fromUsername === 'admin' ? <span>作者</span> : null}
+																					<i>@</i>
+																					<strong>{ritem.toUsername}</strong>
+																					<time>{moment(ritem.createTime).startOf('day').fromNow()}</time>
+																				</div>
+																				<div className="fr" styleName="operate">
+																					<span onClick={this.handlePraise}><i className="fa fa-thumbs-o-up"></i>赞<em>+6</em></span>
+																					<span onClick={this.handleReply.bind(this,index)}><i className="fa fa-reply"></i>回复</span>
+																				</div>
+																			</div>
+																			<div styleName="comment-detail">{ritem.content}</div>
+																		</div>
+																	</li>
+																)
+															})
+														}
+													</ul>
+													{
+														replyIndex === index ? <div styleName="comment-form">
+														<button className="btn-normal fr" onClick={this.comfirmComment.bind(this,'reply')}>回复</button>
+														<div className="over-hidden">
+															<textarea ref="reply" placeholder="在此输入回复，请文明用语"></textarea>
+														</div>
+													</div> : null
+													}
 												</div>
 											</li>
-										</ul>
-										<div styleName="comment-form">
-											<button className="btn-normal fr">回复</button>
-											<div className="over-hidden">
-												<textarea ref="replay" placeholder="在此输入回复，请文明用语"></textarea>
-											</div>
-										</div>
-									</div>
-								</li>
+										)
+									})
+								}
 							</ul>
 							<div styleName="add-comment">
 								<div className="fl" styleName="avatar"><img src={require('../images/logo.jpg')} className="avatar"/></div>

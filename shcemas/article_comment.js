@@ -3,29 +3,21 @@ const mongoose = require('mongoose');
 const CommentSchema = new mongoose.Schema({
 	articleId: mongoose.Schema.Types.ObjectId,
 	parentId:mongoose.Schema.Types.ObjectId,
-	formUid:mongoose.Schema.Types.ObjectId,
+	fromUid:mongoose.Schema.Types.ObjectId,
 	toUid:mongoose.Schema.Types.ObjectId,
-	formUsername: String,
+	fromUsername: String,
 	toUsername: String,
 	content:String,
-	meta: {
-		createAt: {
-			type: Date,
-			default: Date.now()
-		},
-		updateAt: {
-			type: Date,
-			default: Date.now()
-		}
+	createTime:{
+		type:Date,
+		default:Date.now()
 	}
 });
 
 //保存前执行的函数
 CommentSchema.pre('save', function(next) {
 	if (this.isNew) {
-		this.meta.createAt = this.meta.updateAt = Date.now();
-	} else {
-		this.meta.updateAt = Date.now();
+		this.createTime = Date.now();
 	}
 	next();
 })
