@@ -157,7 +157,7 @@ class Article extends React.Component {
 		this.setState({activeCatalog:target.getAttribute('href').slice(1)});
 	}
 
-	handleComment = (mode, event) => {
+	comfirmComment = (mode, event) => {
 		let data = {
 			fromUsername:sessionStorage.getItem('username'),
 			fromUid:sessionStorage.getItem('uid'),
@@ -166,10 +166,35 @@ class Article extends React.Component {
 		if(mode === 'comment'){
 			data.content = this.refs.comment.value;
 			console.log(data)
-			// todo ajax
 		}else{
-			
+			data.toUsername = 
+			data.toUid = 
+			data.content = this.refs.replay.value;
+			console.log(data)
 		}
+		this.sendRequest('post',data, (json) => {
+			console.log(json);
+		})
+	}
+
+	//发送请求mode: post--新建评论
+	sendRequest = (mode, data, callback) => {
+		fetch(url, {
+			method: mode,
+			headers: {
+				'Accept': 'application/json',
+				'Content-Type': 'application/json'
+			},
+			mode: 'cors',
+			credentials: 'include',
+			body: data ? JSON.stringify(data) : null
+		}).then((response) => {
+			return response.json();
+		}).then((json) => {
+			callback && callback(json);
+		}).catch((err) => {
+			console.log(err);
+		});
 	}
 
 	getOffset = (obj) => {
@@ -255,7 +280,7 @@ class Article extends React.Component {
 										<div styleName="comment-form">
 											<button className="btn-normal fr">回复</button>
 											<div className="over-hidden">
-												<textarea placeholder="在此输入回复，请文明用语"></textarea>
+												<textarea ref="replay" placeholder="在此输入回复，请文明用语"></textarea>
 											</div>
 										</div>
 									</div>
@@ -264,7 +289,7 @@ class Article extends React.Component {
 							<div styleName="add-comment">
 								<div className="fl" styleName="avatar"><img src={require('../images/logo.jpg')} className="avatar"/></div>
 								<div styleName="comment-form">
-								<button className="btn-normal fr" onClick={this.handleComment.bind(this,'comment')}>评论</button>
+								<button className="btn-normal fr" onClick={this.comfirmComment.bind(this,'comment')}>评论</button>
 								<div className="over-hidden">
 									<textarea ref="comment" placeholder="在此输入评论，请文明用语"></textarea>
 								</div>
