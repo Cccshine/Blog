@@ -8,7 +8,7 @@ import CSSModules from 'react-css-modules';
 import style from '../sass/pages/article.scss';
 import blogGlobal from '../data/global';
 
-let eHeadings = null,headingsOffset=[];//存储所有的h1,h2,h3标签及其距离顶部的距离
+let eHeadings = null, headingsOffset = [];//存储所有的h1,h2,h3标签及其距离顶部的距离
 let catalogChangeDis = 0;
 let rendererMD = new marked.Renderer();
 rendererMD.heading = function (text, level) {
@@ -40,8 +40,11 @@ class Article extends React.Component {
 			article: null,
 			activeCatalog: "",
 			fixed: false,
-			commentList:[],
-			replyIndex: -1
+			commentList: [],
+			replyIndex: -1,
+			replayUser:'',
+			isCommentError: false,
+			isReplyError: false,
 		}
 	}
 	createCatalog = (html) => {
@@ -76,7 +79,7 @@ class Article extends React.Component {
 			return treeData;
 		}
 		newTitle = getTreeData(levelArr, "");
-		this.setState({ catalog: newTitle,activeCatalog: newTitle[0].eleId});
+		this.setState({ catalog: newTitle, activeCatalog: newTitle[0].eleId });
 	}
 	renderMenu = (menuList) => {
 		let vdom = [];
@@ -90,7 +93,7 @@ class Article extends React.Component {
 			)
 		} else {
 			vdom.push(
-				<li key={menuList.eleId} styleName={('title-level-' + menuList.level) + (this.state.activeCatalog ===  menuList.eleId ? ' active' : '')}>
+				<li key={menuList.eleId} styleName={('title-level-' + menuList.level) + (this.state.activeCatalog === menuList.eleId ? ' active' : '')}>
 					<a href={'#' + menuList.eleId} onClick={this.handleCatalogClick}>
 						<i className="fa fa-star"></i>
 						<span>{menuList.label}</span>
@@ -114,10 +117,10 @@ class Article extends React.Component {
 			this.setState({ article: json.article, content: json.article.content });
 			this.createCatalog(this.refs.content.innerHTML);
 			eHeadings = document.getElementsByClassName('heading');
-			for(let ele of eHeadings){
+			for (let ele of eHeadings) {
 				let item = {
-					"top":this.getOffset(ele).top,
-					"anchorId":ele.getAttribute('id')
+					"top": this.getOffset(ele).top,
+					"anchorId": ele.getAttribute('id')
 				}
 				headingsOffset.push(item);
 			}
@@ -136,16 +139,16 @@ class Article extends React.Component {
 
 	changeCatalog = (event) => {
 		let scroll = document.documentElement.scrollTop || document.body.scrollTop;
-		if(scroll > catalogChangeDis){
-			this.setState({fixed:true});
-		}else{
-			this.setState({fixed:false});
+		if (scroll > catalogChangeDis) {
+			this.setState({ fixed: true });
+		} else {
+			this.setState({ fixed: false });
 		}
-		for(let item of headingsOffset){
-			if(scroll >= item.top){
-				if(this.state.activeCatalog != item.anchorId){
+		for (let item of headingsOffset) {
+			if (scroll >= item.top) {
+				if (this.state.activeCatalog != item.anchorId) {
 					console.log('yy')
-					this.setState({activeCatalog:item.anchorId});
+					this.setState({ activeCatalog: item.anchorId });
 				}
 				break;
 			}
@@ -154,27 +157,47 @@ class Article extends React.Component {
 
 	handleCatalogClick = (event) => {
 		let target = event.target;
-		if(event.target.nodeName.toLowerCase() !== 'a'){
+		if (event.target.nodeName.toLowerCase() !== 'a') {
 			target = event.target.parentNode;
 		}
-		this.setState({activeCatalog:target.getAttribute('href').slice(1)});
+		this.setState({ activeCatalog: target.getAttribute('href').slice(1) });
 	}
 
-	handleReply = (index,event) => {
-		this.setState({replyIndex:index});
+	handleReply = (index, item, event) => {
+		this.setState({ replyIndex: index });
+		console.log(item)
+		setTimeout(() => {
+			this.setState({replayUser:item.fromUsername})
+			this.refs.reply.focus();
+			this.refs.reply.dataset.touid = item.fromUid;
+			this.refs.reply.dataset.touname = item.fromUsername;
+			if(item.parentId){
+				this.refs.reply.dataset.pid = item.parentId;
+			}else{
+				this.refs.reply.dataset.pid = item._id;
+			}
+		}, 200)
+	}
+
+	handleCommentChange = () => {
+		this.setState({isCommentError:false});
+	}
+
+	handleReplyChange = () => {
+		this.setState({isReplyError:false});
 	}
 
 	fetchComments = () => {
-		let url = blogGlobal.requestBaseUrl + '/comments?articleId='+this.props.match.params.articleId;
+		let url = blogGlobal.requestBaseUrl + '/comments?articleId=' + this.props.match.params.articleId;
 		this.sendRequest(url, 'get', null, (json) => {
 			console.log(json);
 			let { commentList } = json;
 			let newCommentList = [];
-			for(let comment of commentList){
-				if(!comment.parentId){
+			for (let comment of commentList) {
+				if (!comment.parentId) {
 					comment.replyList = [];
-					for(let item of commentList){
-						if(item.parentId == comment._id){
+					for (let item of commentList) {
+						if (item.parentId == comment._id) {
 							comment.replyList.push(item);
 						}
 					}
@@ -187,24 +210,36 @@ class Article extends React.Component {
 
 	comfirmComment = (mode, event) => {
 		let data = {
-			fromUsername:sessionStorage.getItem('username'),
-			fromUid:sessionStorage.getItem('uid'),
-			articleId:this.props.match.params.articleId
+			fromUsername: sessionStorage.getItem('username'),
+			fromUid: sessionStorage.getItem('uid'),
+			articleId: this.props.match.params.articleId
 		}
-		if(mode === 'comment'){
+		let reg = /^\s*$/
+		if (mode === 'comment') {
 			data.content = this.refs.comment.value;
+			if(reg.test(data.content)){
+				this.setState({isCommentError:true});
+				this.refs.comment.focus();
+				return;
+			}
 			console.log(data)
-		}else{
-			// data.toUsername = "admin";
-			// data.toUid = "5a2a9a4e56c5b312b676c17d";
-			// data.parentId = "5a2fe8ad7bf7560b6201f1a0";
-			console.log(this.refs.reply)
+		} else {
 			data.content = this.refs.reply.value;
+			if(reg.test(data.content)){
+				this.setState({isReplyError:true});
+				this.refs.reply.focus();
+				return;
+			}
+			data.toUsername = this.refs.reply.dataset.touname;
+			data.toUid = this.refs.reply.dataset.touid;
+			data.parentId = this.refs.reply.dataset.pid || null;
 			console.log(data)
 		}
 		let url = blogGlobal.requestBaseUrl + '/comments';
-		this.sendRequest(url, 'post',data, (json) => {
+		this.sendRequest(url, 'post', data, (json) => {
 			console.log(json);
+			this.fetchComments();
+			this.setState({replyIndex:-1});
 		})
 	}
 
@@ -229,17 +264,60 @@ class Article extends React.Component {
 	}
 
 	getOffset = (obj) => {
-		let top = 0,left = 0;
+		let top = 0, left = 0;
 		while (obj) {
 			top += obj.offsetTop;
 			left += obj.offsetLeft;
 			obj = obj.offsetParent;
 		}
-		return {"top":top,"left":left};
+		return { "top": top, "left": left };
 	}
 
+	getDateDiff(date) {
+		let timestamp = moment(date).format('x');
+		let minute = 1000 * 60;
+		let hour = minute * 60;
+		let day = hour * 24;
+		let halfamonth = day * 15;
+		let month = day * 30;
+		let year = month * 12;
+		let now = new Date().getTime();
+		let diffValue = now - timestamp;
+		if (diffValue < 0) {
+			return '未知';
+		}
+		let yearC = diffValue / year;
+		let monthC = diffValue / month;
+		let weekC = diffValue / (7 * day);
+		let dayC = diffValue / day;
+		let hourC = diffValue / hour;
+		let minC = diffValue / minute;
+		let result = '';
+		if(yearC >= 1){
+			result = "" + parseInt(yearC) + "年前";
+		}
+		else if (monthC >= 1) {
+			result = "" + parseInt(monthC) + "月前";
+		}
+		else if (weekC >= 1) {
+			result = "" + parseInt(weekC) + "周前";
+		}
+		else if (dayC >= 1) {
+			result = "" + parseInt(dayC) + "天前";
+		}
+		else if (hourC >= 1) {
+			result = "" + parseInt(hourC) + "小时前";
+		}
+		else if (minC >= 1) {
+			result = "" + parseInt(minC) + "分钟前";
+		} else
+			result = "刚刚";
+		return result;
+	}
+
+
 	render() {
-		let { catalog, article, content, sidebarShow, activeCatalog, fixed, commentList, replyIndex } = this.state;
+		let { catalog, article, content, sidebarShow, activeCatalog, fixed, commentList, replyIndex, replayUser, isCommentError, isReplyError} = this.state;
 		let tagArr = article ? article.tag.split(';') : [];
 		tagArr.pop();
 		let tagProps = { isLink: true, hasClose: false, list: tagArr };
@@ -273,42 +351,53 @@ class Article extends React.Component {
 						<div styleName="comment">
 							<ul>
 								{
-									commentList.map((item,index) => {
+									commentList.map((item, index) => {
 										return (
 											<li styleName="comment-item" className="clearfix" key={index}>
-												<div className="fl" data-userid={item.fromUid} data-username={item.fromUsername}><img src={require('../images/logo.jpg')} className="avatar"/></div>
+												<div className="fl" data-userid={item.fromUid} data-username={item.fromUsername}><img src={require('../images/logo.jpg')} className="avatar" /></div>
 												<div styleName="comment-content">
 													<div styleName="comment-info" className="clearfix">
 														<div className="fl" styleName="user-info">
-															<strong>{item.fromUsername}</strong>
+															<strong>{item.fromUid === sessionStorage.getItem('uid') ? '我' : item.fromUsername}</strong>
 															{item.fromUsername === 'admin' ? <span>作者</span> : null}
-															<time>{moment(item.createTime).startOf('day').fromNow()}</time>
+															<time>{this.getDateDiff(item.createTime)}</time>
 														</div>
 														<div className="fr" styleName="operate">
 															<span onClick={this.handlePraise}><i className="fa fa-thumbs-o-up"></i>赞<em>+6</em></span>
-															<span onClick={this.handleReply.bind(this,index)}><i className="fa fa-reply"></i>回复</span>
+															<span onClick={this.handleReply.bind(this, index, item)}><i className="fa fa-reply"></i>回复</span>
 														</div>
 													</div>
 													<div styleName="comment-detail">{item.content}</div>
 													<ul styleName="replay-list">
 														{
-															item.replyList.map((ritem,rindex) => {
+															item.replyList.map((ritem, rindex) => {
 																return (
-																	<li styleName="replay-item" key={rindex+'r'}>
-																		<div className="fl" data-userid={ritem.fromUid} data-username={ritem.fromUsername}><img src={require('../images/logo.jpg')} className="avatar"/></div>
+																	<li styleName="replay-item" key={rindex + 'r'}>
+																		<div className="fl" data-userid={ritem.fromUid} data-username={ritem.fromUsername}><img src={require('../images/logo.jpg')} className="avatar" /></div>
 																		<div styleName="comment-content">
 																			<div styleName="comment-info" className="clearfix">
-																				<div className="fl" styleName="user-info">
-																					<strong>{ritem.fromUsername}</strong>
-																					{ritem.fromUsername === 'admin' ? <span>作者</span> : null}
-																					<i>@</i>
-																					<strong>{ritem.toUsername}</strong>
-																					<time>{moment(ritem.createTime).startOf('day').fromNow()}</time>
-																				</div>
-																				<div className="fr" styleName="operate">
-																					<span onClick={this.handlePraise}><i className="fa fa-thumbs-o-up"></i>赞<em>+6</em></span>
-																					<span onClick={this.handleReply.bind(this,index)}><i className="fa fa-reply"></i>回复</span>
-																				</div>
+																				{
+																					ritem.fromUid === ritem.toUid ? 
+																					<div className="fl" styleName="user-info">
+																						<strong>{ritem.fromUid === sessionStorage.getItem('uid') ? '我' : ritem.fromUsername}</strong>
+																						{ritem.fromUsername === 'admin' ? <span>作者</span> : null}
+																						<time>{this.getDateDiff(ritem.createTime)}</time>
+																					</div> : 
+																					<div className="fl" styleName="user-info">
+																						<strong>{ritem.fromUid === sessionStorage.getItem('uid') ? '我' : ritem.fromUsername}</strong>
+																						{ritem.fromUsername === 'admin' ? <span>作者</span> : null}
+																						<i>@</i>
+																						<strong>{ritem.toUid === sessionStorage.getItem('uid') ? '我' : ritem.toUsername}</strong>
+																						{ritem.toUsername === 'admin' ? <span>作者</span> : null}
+																						<time>{this.getDateDiff(ritem.createTime)}</time>
+																					</div>
+																				}
+																				{
+																					ritem.fromUid === sessionStorage.getItem('uid') ? null : <div className="fr" styleName="operate">
+																						<span onClick={this.handlePraise}><i className="fa fa-thumbs-o-up"></i>赞<em>+6</em></span>
+																						<span onClick={this.handleReply.bind(this, index, ritem)}><i className="fa fa-reply"></i>回复</span>
+																					</div>
+																				}
 																			</div>
 																			<div styleName="comment-detail">{ritem.content}</div>
 																		</div>
@@ -318,12 +407,15 @@ class Article extends React.Component {
 														}
 													</ul>
 													{
-														replyIndex === index ? <div styleName="comment-form">
-														<button className="btn-normal fr" onClick={this.comfirmComment.bind(this,'reply')}>回复</button>
-														<div className="over-hidden">
-															<textarea ref="reply" placeholder="在此输入回复，请文明用语"></textarea>
-														</div>
-													</div> : null
+														replyIndex === index ? <div styleName="comment-form-wrap">
+															<div styleName="replay-userinfo">{'@'+replayUser}</div>
+															<div styleName="comment-form">
+																<button className="btn-normal fr" onClick={this.comfirmComment.bind(this, 'reply')}>回复</button>
+																<div className="over-hidden">
+																	<textarea ref="reply" placeholder="在此输入回复，请文明用语" styleName={isReplyError && 'error'} onChange={this.handleReplyChange}></textarea>
+																</div>
+															</div>
+														</div> : null
 													}
 												</div>
 											</li>
@@ -332,13 +424,13 @@ class Article extends React.Component {
 								}
 							</ul>
 							<div styleName="add-comment">
-								<div className="fl" styleName="avatar"><img src={require('../images/logo.jpg')} className="avatar"/></div>
+								<div className="fl" styleName="avatar"><img src={require('../images/logo.jpg')} className="avatar" /></div>
 								<div styleName="comment-form">
-								<button className="btn-normal fr" onClick={this.comfirmComment.bind(this,'comment')}>评论</button>
-								<div className="over-hidden">
-									<textarea ref="comment" placeholder="在此输入评论，请文明用语"></textarea>
+									<button className="btn-normal fr" onClick={this.comfirmComment.bind(this, 'comment')}>评论</button>
+									<div className="over-hidden">
+										<textarea ref="comment" placeholder="在此输入评论，请文明用语" styleName={isCommentError && 'error'} onChange={this.handleCommentChange}></textarea>
+									</div>
 								</div>
-							</div>
 							</div>
 						</div>
 					</div>

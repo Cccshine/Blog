@@ -99,6 +99,7 @@
 }
 .comment-item{
 	font-size: 14px;
+	margin-bottom: 20px;
 	.comment-content{
 		margin-left:50px;
 	}
@@ -153,9 +154,10 @@
 		padding: 10px;
 		background: #f0f0f0;
 	}
-	.replay-list{
+	.replay-info{
+		color: #999;
 	}
-	.comment-form{
+	.comment-form-wrap{
 		margin-left: 50px;
 		margin-top: 20px;
 	}
@@ -171,6 +173,13 @@
 			outline: none;
 			border-color: #3b99fc;
 			box-shadow: 0 0 3px 0px #3b99fc;
+		}
+	}
+	.error{
+		&:focus{
+			outline: none;
+			border-color: red;
+			box-shadow: 0 0 3px 0px red;
 		}
 	}
 }
