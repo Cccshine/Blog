@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const CommentSchema = require('../shcemas/article_comment');
+const CommentSchema = require('../shcemas/comment');
 
 const Comment = mongoose.model('Comment',CommentSchema);
 

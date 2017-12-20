@@ -9,8 +9,9 @@ const mongoStore = require('connect-mongo')(session);//将 session 存储于 mon
 const config = require('config-lite')(__dirname);
 const userModel = require('./models/user');
 const articleModel = require('./models/article');
-const tagModel = require('./models/article_tag');
-const commentModel = require('./models/article_comment');
+const tagModel = require('./models/tag');
+const commentModel = require('./models/comment');
+// const praiseModel = require('./models/praise');
 const indexRouter = require('./routes/index');
 const registerRouter = require('./routes/register');
 const loginRouter = require('./routes/login');
@@ -18,6 +19,7 @@ const logoutRouter = require('./routes/logout');
 const articleRouter = require('./routes/article');
 const tagRouter = require('./routes/tag');
 const commentRouter = require('./routes/comment');
+const praiseRouter = require('./routes/praise');
 
 const app = express();
 
@@ -65,6 +67,7 @@ app.use('/api/logout', logoutRouter);
 app.use('/api/articles', articleRouter);
 app.use('/api/tags', tagRouter);
 app.use('/api/comments', commentRouter);
+app.use('/api/praise', praiseRouter);
 
 app.listen(port);
 

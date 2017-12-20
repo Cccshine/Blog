@@ -1,6 +1,7 @@
 @import "../../sass/variables";
 @import "../../sass/global/_center.scss";
 @import "../../sass/mixin/_vertical_center.scss";
+@import "../../sass/mixin/_square.scss";
 .root{
 	position:relative;
     width: 1140px;
@@ -36,7 +37,7 @@
 	width:240px;
 	height:100%;
 	padding-top: 10px;
-	top:0;
+	top:60px;
 	border-left: 1px solid #ccc;
 	h2{
 		text-align: center;
@@ -193,5 +194,62 @@
 	textarea{
 		font-size: 14px;
 		height: 80px;
+	}
+}
+.toolbar{
+	position: fixed;
+	top: 40%;
+	left: 5px;
+	.toolbar-item{
+		@include square(40px);
+		line-height: 40px;
+		margin-bottom: 30px;
+		color: $theme-adorn-color;
+		text-align: center;
+		border-radius: 50%;
+		cursor: pointer;
+		box-shadow: 5px 5px 10px #555;
+		position: relative;
+		transition: all $transition-time-normal;
+		.operated{
+			display: none;
+		}
+		&:hover{
+			.pre-operate{
+				display: none;
+			}
+			.operated{
+				display: inline-block;
+			}
+		}
+	}
+	span{
+		@include square(15px);
+		line-height: 15px;
+	    position: absolute;
+	    top: -5px;
+	    right: -5px;
+	    color: #fff;
+	    font-size: 12px;
+	    font-weight: bold;
+	    background: $theme-adorn-color;;
+	    border-radius: 50%;
+	}
+}
+.root .backtop{
+	position: fixed;
+	bottom: 10px;
+	right: 5px;
+	@include square(40px);
+	line-height: 40px;
+	color: $theme-adorn-color;
+	text-align: center;
+	border-radius: 50%;
+	cursor: pointer;
+	box-shadow: 5px 5px 10px #555;
+	transition: all $transition-time-normal;
+	&:hover{
+		background-color: $theme-adorn-color;
+		color:#fff;
 	}
 }

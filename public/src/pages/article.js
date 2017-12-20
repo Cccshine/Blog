@@ -9,7 +9,6 @@ import style from '../sass/pages/article.scss';
 import blogGlobal from '../data/global';
 
 let eHeadings = null, headingsOffset = [];//存储所有的h1,h2,h3标签及其距离顶部的距离
-let catalogChangeDis = 0;
 let rendererMD = new marked.Renderer();
 rendererMD.heading = function (text, level) {
 	let className = Number(level) <= 3 ? 'heading' : '';
@@ -105,6 +104,7 @@ class Article extends React.Component {
 		return vdom;
 	}
 	componentWillMount = () => {
+		document.body.className = 'article-detail';
 		let url = blogGlobal.requestBaseUrl + "/articles?mode=detail&articleId=" + this.props.match.params.articleId;
 		fetch(url, {
 			method: 'get',
@@ -119,13 +119,12 @@ class Article extends React.Component {
 			eHeadings = document.getElementsByClassName('heading');
 			for (let ele of eHeadings) {
 				let item = {
-					"top": this.getOffset(ele).top,
+					"top": this.getOffset(ele).top - 60,//减去60的padding-top
 					"anchorId": ele.getAttribute('id')
 				}
 				headingsOffset.push(item);
 			}
 			headingsOffset.reverse();
-			catalogChangeDis = this.getOffset(this.refs.content).top;
 		}).catch((err) => {
 			console.log(err);
 		});
@@ -135,11 +134,12 @@ class Article extends React.Component {
 
 	componentWillUnmount = () => {
 		window.removeEventListener('scroll', this.changeCatalog, false);
+		document.body.className = '';
 	}
 
 	changeCatalog = (event) => {
 		let scroll = document.documentElement.scrollTop || document.body.scrollTop;
-		if (scroll > catalogChangeDis) {
+		if (scroll > 70) {//70为header的高度
 			this.setState({ fixed: true });
 		} else {
 			this.setState({ fixed: false });
@@ -147,7 +147,6 @@ class Article extends React.Component {
 		for (let item of headingsOffset) {
 			if (scroll >= item.top) {
 				if (this.state.activeCatalog != item.anchorId) {
-					console.log('yy')
 					this.setState({ activeCatalog: item.anchorId });
 				}
 				break;
@@ -163,9 +162,25 @@ class Article extends React.Component {
 		this.setState({ activeCatalog: target.getAttribute('href').slice(1) });
 	}
 
+	handlePraise = (type,subjectId,event) => {
+		let data = {
+			uid: sessionStorage.getItem('uid'),
+			type: type,
+			subjectId:subjectId
+		}
+		let url = blogGlobal.requestBaseUrl + '/praise';
+		if(type === 0){//文章点赞
+
+		}else{//评论点赞
+
+		}
+		this.sendRequest(url, 'post', data, (json) => {
+			console.log(json);
+		})
+	}
+
 	handleReply = (index, item, event) => {
 		this.setState({ replyIndex: index });
-		console.log(item)
 		setTimeout(() => {
 			this.setState({replayUser:item.fromUsername})
 			this.refs.reply.focus();
@@ -223,6 +238,7 @@ class Article extends React.Component {
 				return;
 			}
 			console.log(data)
+			this.refs.comment.value = '';
 		} else {
 			data.content = this.refs.reply.value;
 			if(reg.test(data.content)){
@@ -234,6 +250,7 @@ class Article extends React.Component {
 			data.toUid = this.refs.reply.dataset.touid;
 			data.parentId = this.refs.reply.dataset.pid || null;
 			console.log(data)
+			this.refs.reply.value = '';
 		}
 		let url = blogGlobal.requestBaseUrl + '/comments';
 		this.sendRequest(url, 'post', data, (json) => {
@@ -441,6 +458,12 @@ class Article extends React.Component {
 						</div>
 					</aside>
 				</section>
+				<ul styleName="toolbar">
+					<li styleName="toolbar-item" title="赞一个" onClick={this.handlePraise.bind(this, 0, this.props.match.params.articleId)}><i className="fa fa-thumbs-o-up" styleName="pre-operate"></i><i className="fa fa-thumbs-up" styleName="operated"></i><span>1</span></li>
+					<li styleName="toolbar-item"  title="收藏"><i className="fa fa-bookmark-o" styleName="pre-operate"></i><i className="fa fa-bookmark" styleName="operated"></i><span>1</span></li>
+					<li styleName="toolbar-item"  title="评论"><i className="fa fa-commenting-o" styleName="pre-operate"></i><i className="fa fa-commenting" styleName="operated"></i><span>1</span></li>
+				</ul>
+				<div className="fa fa-chevron-up" styleName="backtop" title="回到顶部"></div>
 			</article>
 		)
 	}

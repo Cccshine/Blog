@@ -8,6 +8,7 @@ const CommentSchema = new mongoose.Schema({
 	fromUsername: String,
 	toUsername: String,
 	content:String,
+	praiseUser:[mongoose.Schema.Types.ObjectId],
 	createTime:{
 		type:Date,
 		default:Date.now()

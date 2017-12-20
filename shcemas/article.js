@@ -19,6 +19,7 @@ const ArticleSchema = new mongoose.Schema({
 		type:Boolean,
 		default:false
 	},
+	praiseUser:[mongoose.Schema.Types.ObjectId],
 	createTime:{
 		type:Date,
 		default:Date.now()

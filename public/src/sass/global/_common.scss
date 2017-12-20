@@ -127,3 +127,14 @@ body{
     height: 40px;
     border-radius: 50%;
 }
+
+.jiathis_style{
+	display: none;
+}
+
+.article-detail .jiathis_style{
+	display: block;
+	img{
+		border-radius: 10px 0 0 10px;
+	}
+}
