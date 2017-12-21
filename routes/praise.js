@@ -25,16 +25,16 @@ router.post('/',function(req,res){
 
 router.delete('/',function(req,res){
 	let {subjectId,type,uid} = req.body;
-	if(type === 0){//对文章点赞
+	if(type === 0){//对文章取消点赞
 		ArticleModel.findOneAndUpdate({_id:subjectId},{$pull: {praiseUser: uid}}).then(() => {
-			return res.json({"status":1,"msg":"praise success"});
+			return res.json({"status":1,"msg":"cancle praise success"});
 		}).catch((err) => {
 			console.log(err);
 			res.status(500).send('Something broke!');
 		});
-	}else{//对评论点赞
+	}else{//对评论取消点赞
 		CommentModel.findOneAndUpdate({_id:subjectId},{$pull: {praiseUser: uid}}).then(() => {
-			return res.json({"status":1,"msg":"praise success"});
+			return res.json({"status":1,"msg":"cancle praise success"});
 		}).catch((err) => {
 			console.log(err);
 			res.status(500).send('Something broke!');

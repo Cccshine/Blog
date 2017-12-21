@@ -20,6 +20,7 @@ const ArticleSchema = new mongoose.Schema({
 		default:false
 	},
 	praiseUser:[mongoose.Schema.Types.ObjectId],
+	collectionUser:[mongoose.Schema.Types.ObjectId],
 	createTime:{
 		type:Date,
 		default:Date.now()

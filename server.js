@@ -20,6 +20,7 @@ const articleRouter = require('./routes/article');
 const tagRouter = require('./routes/tag');
 const commentRouter = require('./routes/comment');
 const praiseRouter = require('./routes/praise');
+const collectionRouter = require('./routes/collection');
 
 const app = express();
 
@@ -68,6 +69,7 @@ app.use('/api/articles', articleRouter);
 app.use('/api/tags', tagRouter);
 app.use('/api/comments', commentRouter);
 app.use('/api/praise', praiseRouter);
+app.use('/api/collection', collectionRouter);
 
 app.listen(port);
 

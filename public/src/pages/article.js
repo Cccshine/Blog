@@ -9,6 +9,7 @@ import style from '../sass/pages/article.scss';
 import blogGlobal from '../data/global';
 
 let eHeadings = null, headingsOffset = [];//存储所有的h1,h2,h3标签及其距离顶部的距离
+let loginUid = sessionStorage.getItem('uid');
 let rendererMD = new marked.Renderer();
 rendererMD.heading = function (text, level) {
 	let className = Number(level) <= 3 ? 'heading' : '';
@@ -35,6 +36,9 @@ class Article extends React.Component {
 		this.state = {
 			catalog: [],
 			content: "",
+			praiseUser: [],
+			collectionUser: [],
+			commentTotal: 0,
 			sidebarShow: true,
 			article: null,
 			activeCatalog: "",
@@ -93,7 +97,7 @@ class Article extends React.Component {
 		} else {
 			vdom.push(
 				<li key={menuList.eleId} styleName={('title-level-' + menuList.level) + (this.state.activeCatalog === menuList.eleId ? ' active' : '')}>
-					<a href={'#' + menuList.eleId} onClick={this.handleCatalogClick}>
+					<a href={'#' + menuList.eleId} styleName='catalog-anchor' onClick={this.handleCatalogClick}>
 						<i className="fa fa-star"></i>
 						<span>{menuList.label}</span>
 					</a>
@@ -114,16 +118,17 @@ class Article extends React.Component {
 			return response.json();
 		}).then((json) => {
 			console.log(json);
-			this.setState({ article: json.article, content: json.article.content });
+			this.setState({ article: json.article, content: json.article.content ,praiseUser: json.article.praiseUser,collectionUser: json.article.collectionUser});
 			this.createCatalog(this.refs.content.innerHTML);
 			eHeadings = document.getElementsByClassName('heading');
 			for (let ele of eHeadings) {
 				let item = {
-					"top": this.getOffset(ele).top - 60,//减去60的padding-top
+					"top": this.getOffset(ele).top,//由于目录锚点正常定位会被fixed的header遮盖，所以对h1,h2,h3设置了padding-top=header的高度，这里不需要再减去header的高度60
 					"anchorId": ele.getAttribute('id')
 				}
 				headingsOffset.push(item);
 			}
+			console.log(headingsOffset)
 			headingsOffset.reverse();
 		}).catch((err) => {
 			console.log(err);
@@ -139,7 +144,7 @@ class Article extends React.Component {
 
 	changeCatalog = (event) => {
 		let scroll = document.documentElement.scrollTop || document.body.scrollTop;
-		if (scroll > 70) {//70为header的高度
+		if (scroll > 70) {//70为文章内容header的高度（不是指顶部header）
 			this.setState({ fixed: true });
 		} else {
 			this.setState({ fixed: false });
@@ -162,21 +167,37 @@ class Article extends React.Component {
 		this.setState({ activeCatalog: target.getAttribute('href').slice(1) });
 	}
 
-	handlePraise = (type,subjectId,event) => {
+	handlePraise = (type,isPraise,subjectId,event) => {
 		let data = {
 			uid: sessionStorage.getItem('uid'),
 			type: type,
 			subjectId:subjectId
 		}
+		let rquestMode = isPraise ? 'post' : 'delete';
 		let url = blogGlobal.requestBaseUrl + '/praise';
 		if(type === 0){//文章点赞
-
+			let newPraiseUser = this.state.praiseUser;
+			if(isPraise){
+				newPraiseUser.push(loginUid)
+				
+			}else{
+				let index = this.state.praiseUser.indexOf(loginUid);
+				if(index >= 0){
+					newPraiseUser.splice(index,1);
+				}
+			}
+			this.setState({praiseUser:newPraiseUser}) 
 		}else{//评论点赞
-
+			
 		}
-		this.sendRequest(url, 'post', data, (json) => {
+		this.sendRequest(url, rquestMode, data, (json) => {
 			console.log(json);
 		})
+	}
+
+	handleBackTop = () => {
+		document.documentElement.scrollTop = 0;
+		document.body.scrollTop = 0;
 	}
 
 	handleReply = (index, item, event) => {
@@ -219,7 +240,7 @@ class Article extends React.Component {
 					newCommentList.push(comment);
 				}
 			}
-			this.setState({ commentList: newCommentList });
+			this.setState({ commentList: newCommentList,commentTotal: commentList.length});
 		})
 	}
 
@@ -334,7 +355,7 @@ class Article extends React.Component {
 
 
 	render() {
-		let { catalog, article, content, sidebarShow, activeCatalog, fixed, commentList, replyIndex, replayUser, isCommentError, isReplyError} = this.state;
+		let { catalog, article, content, praiseUser, collectionUser, commentTotal, sidebarShow, activeCatalog, fixed, commentList, replyIndex, replayUser, isCommentError, isReplyError} = this.state;
 		let tagArr = article ? article.tag.split(';') : [];
 		tagArr.pop();
 		let tagProps = { isLink: true, hasClose: false, list: tagArr };
@@ -440,7 +461,7 @@ class Article extends React.Component {
 									})
 								}
 							</ul>
-							<div styleName="add-comment">
+							<div styleName="add-comment" id="comment">
 								<div className="fl" styleName="avatar"><img src={require('../images/logo.jpg')} className="avatar" /></div>
 								<div styleName="comment-form">
 									<button className="btn-normal fr" onClick={this.comfirmComment.bind(this, 'comment')}>评论</button>
@@ -459,11 +480,15 @@ class Article extends React.Component {
 					</aside>
 				</section>
 				<ul styleName="toolbar">
-					<li styleName="toolbar-item" title="赞一个" onClick={this.handlePraise.bind(this, 0, this.props.match.params.articleId)}><i className="fa fa-thumbs-o-up" styleName="pre-operate"></i><i className="fa fa-thumbs-up" styleName="operated"></i><span>1</span></li>
-					<li styleName="toolbar-item"  title="收藏"><i className="fa fa-bookmark-o" styleName="pre-operate"></i><i className="fa fa-bookmark" styleName="operated"></i><span>1</span></li>
-					<li styleName="toolbar-item"  title="评论"><i className="fa fa-commenting-o" styleName="pre-operate"></i><i className="fa fa-commenting" styleName="operated"></i><span>1</span></li>
+					{praiseUser.includes(loginUid) ? 
+						<li styleName="toolbar-item" title="赞一个" onClick={this.handlePraise.bind(this, 0, false, this.props.match.params.articleId)}><i className="fa fa-thumbs-up"></i><span>{praiseUser.length}</span></li> : 
+						<li styleName="toolbar-item" title="赞一个" onClick={this.handlePraise.bind(this, 0, true, this.props.match.params.articleId)}><i className="fa fa-thumbs-o-up" styleName="pre-operate"></i><i className="fa fa-thumbs-up" styleName="operated"></i><span>{praiseUser.length}</span></li>}
+					{collectionUser.includes(loginUid) ? 
+						<li styleName="toolbar-item" title="收藏" onClick={this.handleCollection.bind(this, false, this.props.match.params.articleId)}><i className="fa fa-bookmark"></i><span>{collectionUser.length}</span></li> : 
+						<li styleName="toolbar-item" title="收藏" onClick={this.handleCollection.bind(this, true, this.props.match.params.articleId)}><i className="fa fa-bookmark-o" styleName="pre-operate"></i><i className="fa fa-bookmark" styleName="operated"></i><span>{praiseUser.length}</span></li>}
+					<li styleName="toolbar-item"  title="评论"><a href="#comment"><i className="fa fa-commenting-o" styleName="pre-operate"></i><i className="fa fa-commenting" styleName="operated"></i><span>{commentTotal}</span></a></li>
 				</ul>
-				<div className="fa fa-chevron-up" styleName="backtop" title="回到顶部"></div>
+				<div className="fa fa-chevron-up" styleName="backtop" title="回到顶部" onClick={this.handleBackTop}></div>
 			</article>
 		)
 	}

@@ -10,6 +10,12 @@
 }
 .content-container{
 	position:relative;
+	.content{
+		h1,h2,h3{
+			padding-top: 60px;
+			margin-top: -60px;
+		}
+	}
 }
 .header{
 	position:relative;
@@ -206,6 +212,7 @@
 		margin-bottom: 30px;
 		color: $theme-adorn-color;
 		text-align: center;
+		background: #fff;
 		border-radius: 50%;
 		cursor: pointer;
 		box-shadow: 5px 5px 10px #555;
@@ -213,6 +220,10 @@
 		transition: all $transition-time-normal;
 		.operated{
 			display: none;
+		}
+		a{
+			display: block;
+			color: $theme-adorn-color;
 		}
 		&:hover{
 			.pre-operate{
