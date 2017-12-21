@@ -187,9 +187,32 @@ class Article extends React.Component {
 				}
 			}
 			this.setState({praiseUser:newPraiseUser}) 
-		}else{//评论点赞
-			
 		}
+		this.sendRequest(url, rquestMode, data, (json) => {
+			console.log(json);
+			if(type === 1){
+				this.fetchComments();
+			}
+		})
+	}
+
+	handleCollection = (isCollection, subjectId, event) => {
+		let data = {
+			uid: sessionStorage.getItem('uid'),
+			subjectId:subjectId
+		}
+		let rquestMode = isCollection ? 'post' : 'delete';
+		let url = blogGlobal.requestBaseUrl + '/collection';
+		let newCollectionUser = this.state.collectionUser;
+		if(isCollection){
+			newCollectionUser.push(loginUid)
+		}else{
+			let index = this.state.collectionUser.indexOf(loginUid);
+			if(index >= 0){
+				newCollectionUser.splice(index,1);
+			}
+		}
+		this.setState({collectionUser:newCollectionUser});
 		this.sendRequest(url, rquestMode, data, (json) => {
 			console.log(json);
 		})
@@ -227,18 +250,16 @@ class Article extends React.Component {
 		let url = blogGlobal.requestBaseUrl + '/comments?articleId=' + this.props.match.params.articleId;
 		this.sendRequest(url, 'get', null, (json) => {
 			console.log(json);
-			let { commentList } = json;
+			let { commentList, replyList } = json;
 			let newCommentList = [];
 			for (let comment of commentList) {
-				if (!comment.parentId) {
 					comment.replyList = [];
-					for (let item of commentList) {
+					for (let item of replyList) {
 						if (item.parentId == comment._id) {
 							comment.replyList.push(item);
 						}
 					}
 					newCommentList.push(comment);
-				}
 			}
 			this.setState({ commentList: newCommentList,commentTotal: commentList.length});
 		})
@@ -364,7 +385,7 @@ class Article extends React.Component {
 				<header styleName="header" className="clearfix">
 					<div className="fl">
 						<h1 styleName="title">{article ? article.title : ''}</h1>
-						<div styleName="tag-panel">
+						<div>
 							<Tag {...tagProps} />
 						</div>
 					</div>
@@ -401,16 +422,19 @@ class Article extends React.Component {
 															<time>{this.getDateDiff(item.createTime)}</time>
 														</div>
 														<div className="fr" styleName="operate">
-															<span onClick={this.handlePraise}><i className="fa fa-thumbs-o-up"></i>赞<em>+6</em></span>
+															{item.praiseUser.includes(loginUid) ? 
+																<span onClick={this.handlePraise.bind(this,1,false,item._id)}><i className="fa fa-thumbs-up"></i>赞<em>({item.praiseUser.length})</em></span> : 
+																<span onClick={this.handlePraise.bind(this,1,true,item._id)}><i className="fa fa-thumbs-o-up"></i>赞<em>({item.praiseUser.length})</em></span>
+															}
 															<span onClick={this.handleReply.bind(this, index, item)}><i className="fa fa-reply"></i>回复</span>
 														</div>
 													</div>
 													<div styleName="comment-detail">{item.content}</div>
-													<ul styleName="replay-list">
+													<ul>
 														{
 															item.replyList.map((ritem, rindex) => {
 																return (
-																	<li styleName="replay-item" key={rindex + 'r'}>
+																	<li key={rindex + 'r'}>
 																		<div className="fl" data-userid={ritem.fromUid} data-username={ritem.fromUsername}><img src={require('../images/logo.jpg')} className="avatar" /></div>
 																		<div styleName="comment-content">
 																			<div styleName="comment-info" className="clearfix">
@@ -432,7 +456,10 @@ class Article extends React.Component {
 																				}
 																				{
 																					ritem.fromUid === sessionStorage.getItem('uid') ? null : <div className="fr" styleName="operate">
-																						<span onClick={this.handlePraise}><i className="fa fa-thumbs-o-up"></i>赞<em>+6</em></span>
+																						{ritem.praiseUser.includes(loginUid) ? 
+																							<span onClick={this.handlePraise.bind(this,1,false,ritem._id)}><i className="fa fa-thumbs-up"></i>赞<em>({ritem.praiseUser.length})</em></span> : 
+																							<span onClick={this.handlePraise.bind(this,1,true,ritem._id)}><i className="fa fa-thumbs-o-up"></i>赞<em>({ritem.praiseUser.length})</em></span>
+																						}
 																						<span onClick={this.handleReply.bind(this, index, ritem)}><i className="fa fa-reply"></i>回复</span>
 																					</div>
 																				}
@@ -485,7 +512,7 @@ class Article extends React.Component {
 						<li styleName="toolbar-item" title="赞一个" onClick={this.handlePraise.bind(this, 0, true, this.props.match.params.articleId)}><i className="fa fa-thumbs-o-up" styleName="pre-operate"></i><i className="fa fa-thumbs-up" styleName="operated"></i><span>{praiseUser.length}</span></li>}
 					{collectionUser.includes(loginUid) ? 
 						<li styleName="toolbar-item" title="收藏" onClick={this.handleCollection.bind(this, false, this.props.match.params.articleId)}><i className="fa fa-bookmark"></i><span>{collectionUser.length}</span></li> : 
-						<li styleName="toolbar-item" title="收藏" onClick={this.handleCollection.bind(this, true, this.props.match.params.articleId)}><i className="fa fa-bookmark-o" styleName="pre-operate"></i><i className="fa fa-bookmark" styleName="operated"></i><span>{praiseUser.length}</span></li>}
+						<li styleName="toolbar-item" title="收藏" onClick={this.handleCollection.bind(this, true, this.props.match.params.articleId)}><i className="fa fa-bookmark-o" styleName="pre-operate"></i><i className="fa fa-bookmark" styleName="operated"></i><span>{collectionUser.length}</span></li>}
 					<li styleName="toolbar-item"  title="评论"><a href="#comment"><i className="fa fa-commenting-o" styleName="pre-operate"></i><i className="fa fa-commenting" styleName="operated"></i><span>{commentTotal}</span></a></li>
 				</ul>
 				<div className="fa fa-chevron-up" styleName="backtop" title="回到顶部" onClick={this.handleBackTop}></div>

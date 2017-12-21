@@ -27,8 +27,13 @@ router.post('/',function(req,res){
 
 router.get('/',function(req,res){
 	let articleId = req.query.articleId;
-	CommentModel.find({articleId:articleId}).then((commentList) => {
-		return res.json({"status":1,commentList:commentList,"msg":"success"});
+	CommentModel.find({articleId:articleId,parentId:null}).sort({praiseTotal:1}).then((commentList) => {
+		CommentModel.find({articleId:articleId,parentId:{$ne:null}}).then((replyList) => {
+			return res.json({"status":1,commentList:commentList,replyList:replyList,"msg":"success"});
+		}).catch((err) => {
+			console.log(err);
+			res.status(500).send('Something broke!');
+		})
 	}).catch((err) => {
 		console.log(err);
 		res.status(500).send('Something broke!');

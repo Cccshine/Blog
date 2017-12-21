@@ -126,7 +126,7 @@ class Draft extends React.Component {
 											list = list.slice(0, list.length - 1);
 											return (
 												<li styleName="draft-item" key={index}>
-													<h3><Link target="_self" to={"/write/" + item._id}>{item.title}</Link></h3>
+													<h3><Link target="_self" to={"/write/" + item._id}>{item.title || '无标题'}</Link></h3>
 													<div className="clearfix">
 														<div styleName="save-time" className="fl">保存于{moment(item.updateTime).format('YYYY-MM-DD')}</div>
 														<div styleName="btn-group" className="fr">
