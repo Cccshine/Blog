@@ -7,14 +7,16 @@ const CommentModel = mongoose.model('Comment');
 router.post('/',function(req,res){
 	let {subjectId,type,uid} = req.body;
 	if(type === 0){//对文章点赞
-		ArticleModel.findOneAndUpdate({_id:subjectId},{$addToSet: {praiseUser: uid}}).then(() => {
+		ArticleModel.findOneAndUpdate({_id:subjectId},{$addToSet: {praiseUser: uid}}).then((praise) => {
 			return res.json({"status":1,"msg":"praise success"});
 		}).catch((err) => {
 			console.log(err);
 			res.status(500).send('Something broke!');
 		});
 	}else{//对评论点赞
-		CommentModel.findOneAndUpdate({_id:subjectId},{$addToSet: {praiseUser: uid}}).then(() => {
+		CommentModel.findOneAndUpdate({_id:subjectId},{$addToSet: {praiseUser: uid}},{new:true}).then((comment) => {
+			comment.praiseTotal = comment.praiseUser.length;
+			comment.save();
 			return res.json({"status":1,"msg":"praise success"});
 		}).catch((err) => {
 			console.log(err);
@@ -33,7 +35,9 @@ router.delete('/',function(req,res){
 			res.status(500).send('Something broke!');
 		});
 	}else{//对评论取消点赞
-		CommentModel.findOneAndUpdate({_id:subjectId},{$pull: {praiseUser: uid}}).then(() => {
+		CommentModel.findOneAndUpdate({_id:subjectId},{$pull: {praiseUser: uid}},{new:true}).then((comment) => {
+			comment.praiseTotal = comment.praiseUser.length;
+			comment.save();
 			return res.json({"status":1,"msg":"cancle praise success"});
 		}).catch((err) => {
 			console.log(err);

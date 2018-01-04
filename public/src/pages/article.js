@@ -1,6 +1,7 @@
 import React from 'react';
 import marked from 'marked';
 import Highlight from 'highlight.js';
+import { Link } from 'react-router-dom';
 import moment from 'moment';
 import Modal from '../component/modal/modal';
 import Tag from '../component/tag/tag';
@@ -48,6 +49,8 @@ class Article extends React.Component {
 			replayUser:'',
 			isCommentError: false,
 			isReplyError: false,
+			lastArticle:[],
+			nextArticle:[]
 		}
 	}
 	createCatalog = (html) => {
@@ -118,7 +121,8 @@ class Article extends React.Component {
 			return response.json();
 		}).then((json) => {
 			console.log(json);
-			this.setState({ article: json.article, content: json.article.content ,praiseUser: json.article.praiseUser,collectionUser: json.article.collectionUser});
+			let {article, lastArticle, nextArticle }= json.result;
+			this.setState({ article: article, content: article.content ,praiseUser: article.praiseUser,collectionUser: article.collectionUser, lastArticle:lastArticle, nextArticle:nextArticle});
 			this.createCatalog(this.refs.content.innerHTML);
 			eHeadings = document.getElementsByClassName('heading');
 			for (let ele of eHeadings) {
@@ -128,7 +132,6 @@ class Article extends React.Component {
 				}
 				headingsOffset.push(item);
 			}
-			console.log(headingsOffset)
 			headingsOffset.reverse();
 		}).catch((err) => {
 			console.log(err);
@@ -376,7 +379,7 @@ class Article extends React.Component {
 
 
 	render() {
-		let { catalog, article, content, praiseUser, collectionUser, commentTotal, sidebarShow, activeCatalog, fixed, commentList, replyIndex, replayUser, isCommentError, isReplyError} = this.state;
+		let { catalog, article, content, praiseUser, collectionUser, commentTotal, sidebarShow, activeCatalog, fixed, commentList, replyIndex, replayUser, isCommentError, isReplyError, lastArticle, nextArticle} = this.state;
 		let tagArr = article ? article.tag.split(';') : [];
 		tagArr.pop();
 		let tagProps = { isLink: true, hasClose: false, list: tagArr };
@@ -403,8 +406,12 @@ class Article extends React.Component {
 								<img href="#" />
 							</div>
 							<div styleName="relative-link" className="clearfix">
-								<a className="fl"><i className="fa fa-chevron-left"></i>&nbsp;上一篇</a>
-								<a className="fr">下一篇&nbsp;<i className="fa fa-chevron-right"></i></a>
+								{
+									lastArticle ? <Link target='_blank' to={"/articles/" + lastArticle._id} className="fl"><i className="fa fa-chevron-left"></i>&nbsp;{lastArticle.title}</Link> : null
+								}
+								{
+									nextArticle ? <Link target='_blank' to={"/articles/" + nextArticle._id} className="fr">{nextArticle.title}&nbsp;<i className="fa fa-chevron-right"></i></Link> : null
+								}
 							</div>
 						</div>
 						<div styleName="comment">
@@ -455,13 +462,18 @@ class Article extends React.Component {
 																					</div>
 																				}
 																				{
-																					ritem.fromUid === sessionStorage.getItem('uid') ? null : <div className="fr" styleName="operate">
+																					ritem.fromUid === sessionStorage.getItem('uid') ? <div className="fr" styleName="operate">
 																						{ritem.praiseUser.includes(loginUid) ? 
 																							<span onClick={this.handlePraise.bind(this,1,false,ritem._id)}><i className="fa fa-thumbs-up"></i>赞<em>({ritem.praiseUser.length})</em></span> : 
 																							<span onClick={this.handlePraise.bind(this,1,true,ritem._id)}><i className="fa fa-thumbs-o-up"></i>赞<em>({ritem.praiseUser.length})</em></span>
-																						}
-																						<span onClick={this.handleReply.bind(this, index, ritem)}><i className="fa fa-reply"></i>回复</span>
-																					</div>
+																						}</div>: 
+																						<div className="fr" styleName="operate">
+																							{ritem.praiseUser.includes(loginUid) ? 
+																								<span onClick={this.handlePraise.bind(this,1,false,ritem._id)}><i className="fa fa-thumbs-up"></i>赞<em>({ritem.praiseUser.length})</em></span> : 
+																								<span onClick={this.handlePraise.bind(this,1,true,ritem._id)}><i className="fa fa-thumbs-o-up"></i>赞<em>({ritem.praiseUser.length})</em></span>
+																							}
+																							<span onClick={this.handleReply.bind(this, index, ritem)}><i className="fa fa-reply"></i>回复</span>
+																						</div>
 																				}
 																			</div>
 																			<div styleName="comment-detail">{ritem.content}</div>

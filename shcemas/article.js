@@ -41,21 +41,14 @@ ArticleSchema.pre('save',function(next){
 	if(article.isNew){
 		article.createTime = article.updateTime = article.publicTime = Date.now();
 	}else{
-		article.updateTime = Date.now();
+		if(article.isPublic){
+			article.updateTime = article.publicTime = Date.now();
+		}else{
+			article.updateTime = Date.now();
+		}
 	}
 	next();
 })
-
-ArticleSchema.pre('update',function(next){
-	let isPublic = this.getUpdate().$set.isPublic;
-	if(isPublic){
-		this.update({},{$set:{publicTime:Date.now()}});
-	}else{
-		this.update({},{$set:{updateTime:Date.now()}});
-	}
-	next();
-})
-
 
 
 module.exports = ArticleSchema;

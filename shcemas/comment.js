@@ -21,20 +21,11 @@ const CommentSchema = new mongoose.Schema({
 
 //保存前执行的函数
 CommentSchema.pre('save', function(next) {
+	console.log('ssssssssssssssssssss')
 	if (this.isNew) {
 		this.createTime = Date.now();
 	}
-	this.praiseTotal = this.praiseUser.length;
-	console.log('yyy')
 	next();
 })
-
-CommentSchema.pre('update',function(next){
-	let praiseUser = this.getUpdate().$set.praiseUser;
-	this.update({},{$set:{praiseTotal:praiseUser.length}});
-	console.log('update')
-	next();
-})
-
 
 module.exports = CommentSchema;

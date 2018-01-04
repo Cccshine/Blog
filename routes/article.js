@@ -83,7 +83,6 @@ router.delete('/',function(req,res){
 		tagArr = article.tag.split(';');
 		tagArr.pop();
 		for(let tagName of tagArr){
-			console.log('tagName'+tagName)
 			TagModel.findOne({name:tagName}).then((tag) => {
 				tag.articles = tag.articles.filter((ele,index) => {
 					return ele.toString() !== articleId;
@@ -115,12 +114,19 @@ router.get('/',(req,res) => {
 	let tagName = req.query.tagName;
 	if(mode == 'detail'){//文章详情页
 		let articleId = req.query.articleId;
+		let result = {};
 		ArticleModel.findOne({isPublic:true, _id:articleId}).then((article) => {
 			article.scan++;
-			article.save((err)=>{
-				console.log(err);
-			})
-			return res.json({"status":1,article:article,"msg":"success"});
+			article.save();
+			result.article = article;
+			return ArticleModel.findOne({isPublic:true, publicTime:{$lt:article.publicTime}}).exec();
+		}).then((lastArticle) => {
+			result.lastArticle = lastArticle;
+			console.log(result.article.publicTime)
+			return ArticleModel.findOne({isPublic:true, publicTime:{$gt:result.article.publicTime}}).exec();
+		}).then((nextArticle) => {
+			result.nextArticle = nextArticle;
+			return res.json({"status":1,result:result,"msg":"success"});
 		}).catch((err) => {
 			console.log(err);
 			res.status(500).send('Something broke!');
@@ -163,7 +169,6 @@ router.get('/',(req,res) => {
 	}else{//编辑页
 		let articleId = req.query.articleId;
 		ArticleModel.findOne({_id:articleId}).then((article) => {
-			console.log(article)
 			return res.json({"status":1,article:article,"msg":"success"});
 		}).catch((err) => {
 			console.log(err);
