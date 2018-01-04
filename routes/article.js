@@ -119,13 +119,13 @@ router.get('/',(req,res) => {
 			article.scan++;
 			article.save();
 			result.article = article;
-			return ArticleModel.findOne({isPublic:true, publicTime:{$lt:article.publicTime}}).exec();
+			return ArticleModel.find({isPublic:true, publicTime:{$lt:article.publicTime}}).sort({publicTime:-1}).limit(1).exec();
 		}).then((lastArticle) => {
-			result.lastArticle = lastArticle;
+			result.lastArticle = lastArticle ? lastArticle[0] : null;
 			console.log(result.article.publicTime)
-			return ArticleModel.findOne({isPublic:true, publicTime:{$gt:result.article.publicTime}}).exec();
+			return ArticleModel.find({isPublic:true, publicTime:{$gt:result.article.publicTime}}).sort({publicTime:1}).limit(1).exec();
 		}).then((nextArticle) => {
-			result.nextArticle = nextArticle;
+			result.nextArticle = nextArticle ? nextArticle[0] : null;
 			return res.json({"status":1,result:result,"msg":"success"});
 		}).catch((err) => {
 			console.log(err);

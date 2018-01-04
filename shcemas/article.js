@@ -41,8 +41,8 @@ ArticleSchema.pre('save',function(next){
 	if(article.isNew){
 		article.createTime = article.updateTime = article.publicTime = Date.now();
 	}else{
-		if(article.isPublic){
-			article.updateTime = article.publicTime = Date.now();
+		if(article.isPublic && article.publicTime == article.createTime){
+			article.publicTime = Date.now();
 		}else{
 			article.updateTime = Date.now();
 		}
