@@ -112,6 +112,8 @@ router.delete('/',function(req,res){
 router.get('/',(req,res) => {
 	let mode = req.query.mode;
 	let tagName = req.query.tagName;
+	let startTime = req.query.startTime;
+	let endTime = req.query.endTime;
 	if(mode == 'detail'){//文章详情页
 		let articleId = req.query.articleId;
 		let result = {};
@@ -166,7 +168,40 @@ router.get('/',(req,res) => {
 			res.status(500).send('Something broke!');
 		})
 	
-	}else{//编辑页
+	}else if(mode == 'archive' && !startTime && !endTime){
+		ArticleModel.aggregate([
+			{
+				$match:{
+					"isPublic":true
+				}
+			},
+			{
+				$project:{
+					yearMonth:{$dateToString:{ format: "%Y%m", date: "$publicTime" } },
+				}
+			},
+			{
+				$group:{
+					_id:"$yearMonth",
+					total:{
+						$sum:1
+					}
+				}
+			},
+			{
+				$sort:{
+					_id:1
+				}
+			}
+		]).then((archiveList)=>{
+			console.log(archiveList)
+			return res.json({"status":1,archiveList:archiveList,"msg":"success"});
+		}).catch((err)=>{
+			console.log(err);
+		})
+	}else if(mode == 'archive' && startTime && endTime){
+
+	}else if(mode == 'edit'){//编辑页
 		let articleId = req.query.articleId;
 		ArticleModel.findOne({_id:articleId}).then((article) => {
 			return res.json({"status":1,article:article,"msg":"success"});
@@ -174,6 +209,8 @@ router.get('/',(req,res) => {
 			console.log(err);
 			res.status(500).send('Something broke!');
 		})
+	}else{
+		res.status(500).send('Something broke!');
 	}
 })
 
