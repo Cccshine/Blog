@@ -1,0 +1,55 @@
+@import "../../sass/variables";
+@import "../../sass/mixin/square";
+@import "../../sass/mixin/vertical_center";
+@import "../../sass/global/_center.scss";
+.root{
+    width:960px;
+	min-height:700px;
+    margin:0 auto;
+    .null-tip,.loading{
+		@extend .common-level-center-transform;
+		margin-top: 100px;
+		color:$theme-adorn-color;
+		font-size: 24px;
+	}
+	.loading{
+		i{
+			font-size: 30px;
+			margin-right: 20px;
+		}
+	}
+}
+.archive-list{
+    .archive-item{
+        display: inline-block;
+        position: relative;
+        @include vCenterLineHeight(30px);
+        background: $theme-main-color;
+        color: #fff;
+        margin: 10px;
+        padding: 0 10px;
+        border-radius: $border-radius-normal;
+        transition: all $transition-time-normal;
+        a{
+            color: #fff;
+        }
+        .sum{
+            position: absolute;
+            width: 20px;
+            @include vCenterLineHeight(20px);
+            height: 20px;
+            background: $theme-main-color;
+            text-align: center;
+            border-radius: 50%;
+            right: -8px;
+            top: -8px;
+            transition: all $transition-time-normal;
+        }
+        &:hover{
+            background: $theme-adorn-color;
+            .sum{
+                background: $theme-adorn-color;
+            }
+        }
+    }
+}

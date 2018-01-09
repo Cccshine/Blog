@@ -190,17 +190,24 @@ router.get('/',(req,res) => {
 			},
 			{
 				$sort:{
-					_id:1
+					_id:-1
 				}
 			}
 		]).then((archiveList)=>{
-			console.log(archiveList)
-			return res.json({"status":1,archiveList:archiveList,"msg":"success"});
+			if(archiveList.length > 0){
+				return res.json({"status":1,"archiveList":archiveList,"msg":"get success"});
+			}else{
+				return res.json({"status":0,"archiveList":archiveList,"msg":"no article"});
+			}
 		}).catch((err)=>{
 			console.log(err);
 		})
 	}else if(mode == 'archive' && startTime && endTime){
-
+		ArticleModel.find({isPublic:true,publicTime:{$gte:startTime,$lte:endTime}}).then((articleList)=>{
+			return res.json({"articleList":articleList,"msg":"get success"});
+		}).catch((err)=>{
+			console.log(err);
+		})
 	}else if(mode == 'edit'){//编辑页
 		let articleId = req.query.articleId;
 		ArticleModel.findOne({_id:articleId}).then((article) => {
