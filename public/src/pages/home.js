@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import Modal from '../component/modal/modal';
 import TipBar from '../component/tipBar/tip-bar';
 import Tag from '../component/tag/tag';
+import Pagination from '../component/pagination/pagination';
 import CSSModules from 'react-css-modules';
 import style from '../sass/pages/home.scss';
 import blogGlobal from '../data/global';
@@ -28,7 +29,7 @@ class Home extends React.Component {
 		this.fetchList();
 	}
 
-	fetchList = () =>{
+	fetchList = () => {
 		let url = blogGlobal.requestBaseUrl + "/articles?mode=public";
 		fetch(url, {
 			method: 'get',
@@ -49,7 +50,7 @@ class Home extends React.Component {
 		});
 	}
 
-	handleDelete = (articleId,event) => {
+	handleDelete = (articleId, event) => {
 		this.setState({ delModalShow: true, articleId: articleId });
 	}
 
@@ -71,7 +72,7 @@ class Home extends React.Component {
 		}).then((response) => {
 			return response.json();
 		}).then((json) => {
-			this.setState({ showTip: true});
+			this.setState({ showTip: true });
 			this.fetchList();
 			this.hideTip();
 		}).catch((err) => {
@@ -89,7 +90,7 @@ class Home extends React.Component {
 	}
 
 	handleDelModalClose = () => {
-		this.setState({delModalShow: false})
+		this.setState({ delModalShow: false })
 	}
 
 	hideTip = () => {
@@ -97,7 +98,7 @@ class Home extends React.Component {
 	}
 
 	render() {
-		let { status, summaryList, isLogin, loginModalShow, delModalShow ,showTip, role} = this.state;
+		let { status, summaryList, isLogin, loginModalShow, delModalShow, showTip, role } = this.state;
 		let modalHtml = <p className="tips-in-modal">您还未登录，是否前往登录？<span className="small-tip">(登录后可评论)</span></p>;
 		let modalProps = {
 			isOpen: loginModalShow,
@@ -110,7 +111,7 @@ class Home extends React.Component {
 			isOpen: delModalShow,
 			title: '删除提醒',
 			modalHtml: <p className="tips-in-modal">确定删除该文章吗？</p>,
-			btns: [{ name: '确定', ref: 'ok', handleClick: this.comfirmDel}, { name: '取消', ref: 'close' }],
+			btns: [{ name: '确定', ref: 'ok', handleClick: this.comfirmDel }, { name: '取消', ref: 'close' }],
 			handleModalClose: this.handleDelModalClose
 		}
 		let tagProps = { isLink: true, hasClose: false };
@@ -127,34 +128,39 @@ class Home extends React.Component {
 						switch (status) {
 							case 1:
 								return (
-									summaryList.map((item, index) => {
-										let list = item.tag.split(';');
-										list = list.slice(0, list.length - 1);
-										return (
-											<section styleName="summary-section" key={index}>
-												<div className="clearfix">
-													<h3 className="fl"><Link target="_blank" to={"/articles/" + item._id}>{item.title}</Link></h3>
-													{
-														role === 0 ? null : <div styleName="btn-group" className="fr">
-														<button className="btn-normal btn-sm"><Link target="_self" to={"/write/" + item._id}>编辑</Link></button>
-														<button className="btn-normal btn-sm" onClick={this.handleDelete.bind(this,item._id)}>删除</button>
-													</div>
-													}
-												</div>
-												<div styleName="tag-panel">
-													<Tag {...tagProps} list={list} />
-												</div>
-												<div styleName="summary">
-													<p dangerouslySetInnerHTML={{ __html: marked(item.summary)}}></p>
-												</div>
-												<div styleName="more">
-													<Link target="_blank" to={"/articles/" + item._id}>查看更多</Link>
-												</div>
-												<span styleName="timeline-circle"></span>
-												<span styleName="timeline-date">{moment(item.publicTime).format('YYYY-MM-DD')}</span>
-											</section>
-										)
-									})
+									<div>
+										{
+											summaryList.map((item, index) => {
+												let list = item.tag.split(';');
+												list = list.slice(0, list.length - 1);
+												return (
+													<section styleName="summary-section" key={index}>
+														<div className="clearfix">
+															<h3 className="fl"><Link target="_blank" to={"/articles/" + item._id}>{item.title}</Link></h3>
+															{
+																role === 0 ? null : <div styleName="btn-group" className="fr">
+																	<button className="btn-normal btn-sm"><Link target="_self" to={"/write/" + item._id}>编辑</Link></button>
+																	<button className="btn-normal btn-sm" onClick={this.handleDelete.bind(this, item._id)}>删除</button>
+																</div>
+															}
+														</div>
+														<div styleName="tag-panel">
+															<Tag {...tagProps} list={list} />
+														</div>
+														<div styleName="summary">
+															<p dangerouslySetInnerHTML={{ __html: marked(item.summary) }}></p>
+														</div>
+														<div styleName="more">
+															<Link target="_blank" to={"/articles/" + item._id}>查看更多</Link>
+														</div>
+														<span styleName="timeline-circle"></span>
+														<span styleName="timeline-date">{moment(item.publicTime).format('YYYY-MM-DD')}</span>
+													</section>
+												)
+											})
+										}
+										<Pagination />
+									</div>
 								)
 								break;
 							case 2:

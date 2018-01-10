@@ -80,6 +80,16 @@ body{
 	width: $button-small-width;
 	height: $button-small-height;
 }
+.btn-normal.disabled{
+	background: #ccc;
+	cursor: not-allowed;
+	border: 1px solid #ccc;
+	&:hover{
+		background: #ccc;
+		cursor: not-allowed;
+		border: 1px solid #ccc;
+	}
+}
 .input-wrap-normal{
 	width:$input-wrap-normal-width;
 	@include vCenterLineHeight($input-wrap-normal-height);
