@@ -168,7 +168,7 @@ router.get('/',(req,res) => {
 			res.status(500).send('Something broke!');
 		})
 	
-	}else if(mode == 'archive' && !startTime && !endTime){
+	}else if(mode == 'archive' && !startTime && !endTime){//归档页
 		ArticleModel.aggregate([
 			{
 				$match:{
@@ -202,7 +202,7 @@ router.get('/',(req,res) => {
 		}).catch((err)=>{
 			console.log(err);
 		})
-	}else if(mode == 'archive' && startTime && endTime){
+	}else if(mode == 'archive' && startTime && endTime){//归档文章列表
 		ArticleModel.find({isPublic:true,publicTime:{$gte:startTime,$lte:endTime}}).then((articleList)=>{
 			return res.json({"articleList":articleList,"msg":"get success"});
 		}).catch((err)=>{
