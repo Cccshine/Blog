@@ -22,7 +22,6 @@ class Modal extends React.Component{
 
 	render(){
 		let {title,modalHtml,btns,handleModalClose} = this.props;
-		console.log(handleModalClose)
 		return (
 			<div>
 				{this.state.isOpen ? 
