@@ -78,7 +78,6 @@ router.post('/',function(req,res){
 router.delete('/',function(req,res){
 	let {articleId} = req.body;
 	let tagArr = [];
-	console.log('delete:'+articleId)
 	ArticleModel.findOneAndRemove({_id:articleId}).then((article) => {
 		tagArr = article.tag.split(';');
 		tagArr.pop();
@@ -110,12 +109,11 @@ router.delete('/',function(req,res){
 });
 
 router.get('/',(req,res) => {
-	let mode = req.query.mode;
-	let tagName = req.query.tagName;
-	let startTime = req.query.startTime;
-	let endTime = req.query.endTime;
+	let {mode,lastTime,currentPage,pageSize,dir,articleId,tagName,startTime,endTime} = req.query;
+	currentPage = Number(currentPage);
+	pageSize = Number(pageSize);
+	dir = Number(dir);
 	if(mode == 'detail'){//文章详情页
-		let articleId = req.query.articleId;
 		let result = {};
 		ArticleModel.findOne({isPublic:true, _id:articleId}).then((article) => {
 			article.scan++;
@@ -145,16 +143,68 @@ router.get('/',(req,res) => {
 			res.status(500).send('Something broke!');
 		})
 	}else if(mode == 'public' && !tagName) {//首页文章列表
-		ArticleModel.find({isPublic:true}).then((articleList) => {
-			if(articleList.length > 0){
-				return res.json({"status":1,"articleList":articleList,"msg":"get success"});
+		if(currentPage === 0){
+			ArticleModel.find({isPublic:true}).then((articleList) => {
+				homePageTotal = Math.ceil(articleList.length/pageSize);
+				homeArticleTotal = articleList.length;
+			}).catch((err) => {
+				console.log(err);
+				res.status(500).send('Something broke!');
+			})
+		}
+		if(currentPage === 0){
+			ArticleModel.find({isPublic:true}).sort({publicTime:-1}).limit(pageSize).then((articleList) => {
+				if(articleList.length > 0){
+					return res.json({"status":1,"articleList":articleList,"pageTotal":homePageTotal,"msg":"get success"});
+				}else{
+					return res.json({"status":0,"articleList":articleList,"pageTotal":homePageTotal,"msg":"no article"});
+				}
+			}).catch((err) => {
+				console.log(err);
+				res.status(500).send('Something broke!');
+			})
+		}else if(currentPage === homePageTotal - 1){
+			let limit = homeArticleTotal - homePageTotal*pageSize;
+			ArticleModel.find({isPublic:true}).sort({publicTime:1}).limit(limit).then((articleList) => {
+				if(articleList.length > 0){
+					return res.json({"status":1,"articleList":articleList,"pageTotal":homePageTotal,"msg":"get success"});
+				}else{
+					return res.json({"status":0,"articleList":articleList,"pageTotal":homePageTotal,"msg":"no article"});
+				}
+			}).catch((err) => {
+				console.log(err);
+				res.status(500).send('Something broke!');
+			})
+		}else if(dir > 0){
+			ArticleModel.find({isPublic:true,publicTime:{$lt:lastTime}}).sort({publicTime:-1}).limit(pageSize).then((articleList) => {
+				if(articleList.length > 0){
+					return res.json({"status":1,"articleList":articleList,"pageTotal":homePageTotal,"msg":"get success"});
+				}else{
+					return res.json({"status":0,"articleList":articleList,"pageTotal":homePageTotal,"msg":"no article"});
+				}
+			}).catch((err) => {
+				console.log(err);
+				res.status(500).send('Something broke!');
+			})
+		}else{
+			let skipNum = 0;
+			if(currentPage === homePageTotal - 2){
+				skipNum = homeArticleTotal - (currentPage+1)*pageSize - 1;
 			}else{
-				return res.json({"status":0,"articleList":articleList,"msg":"no article"});
+				skipNum = pageSize - 1;
 			}
-		}).catch((err) => {
-			console.log(err);
-			res.status(500).send('Something broke!');
-		})
+			ArticleModel.find({isPublic:true,publicTime:{$gt:lastTime}}).sort({publicTime:1}).skip(skipNum).limit(pageSize).sort({publicTime:-1}).then((articleList) => {
+				if(articleList.length > 0){
+					return res.json({"status":1,"articleList":articleList,"pageTotal":homePageTotal,"msg":"get success"});
+				}else{
+					return res.json({"status":0,"articleList":articleList,"pageTotal":homePageTotal,"msg":"no article"});
+				}
+			}).catch((err) => {
+				console.log(err);
+				res.status(500).send('Something broke!');
+			})
+		}
+		
 	}else if(mode == 'public' && tagName){//标签分类文章列表
 		ArticleModel.find({tag:eval("/"+tagName+"/i"),isPublic:true}).then((articleList) => {
 			console.log(articleList)
@@ -209,7 +259,6 @@ router.get('/',(req,res) => {
 			console.log(err);
 		})
 	}else if(mode == 'edit'){//编辑页
-		let articleId = req.query.articleId;
 		ArticleModel.findOne({_id:articleId}).then((article) => {
 			return res.json({"status":1,article:article,"msg":"success"});
 		}).catch((err) => {

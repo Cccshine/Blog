@@ -7,41 +7,57 @@ class Pagination extends React.Component{
     constructor(props) {
 		super(props);
 	    this.state = {
-            current:0,
-            pageSize:20,
-            total:1
+            currentPage:0,
+            pageSize:this.props.pageSize,
+            pageTotal:this.props.pageTotal,
+            lastTime:this.props.lastTime
 	    };
     }
-    handleFirst(e){
-        if(this.state.current === 0){
-            return;
-        }
+    componentWillReceiveProps = (nextProps) => {
+        this.setState({lastTime:nextProps.lastTime});
     }
-    handlePrev(e){
-        if(this.state.current === 0){
+    handleFirst = (e) => {
+        if(this.state.currentPage === 0){
             return;
         }
+        this.setState({currentPage:0}, () => {
+            this.props.fetchList(this.state.lastTime, this.state.currentPage,this.state.pageSize, -1);
+        });
     }
-    handleNext(e){
-        if(this.state.current === this.state.total - 1){
+    handlePrev = (e) => {
+        if(this.state.currentPage === 0){
             return;
         }
+        this.setState({currentPage:(this.state.currentPage - 1)},() => {
+            this.props.fetchList(this.state.lastTime, this.state.currentPage,this.state.pageSize, -1);
+        });
     }
-    handleNext(e){
-        if(this.state.current === this.state.total - 1){
+    handleNext = (e) => {
+        if(this.state.currentPage === this.state.pageTotal - 1){
             return;
         }
+        this.setState({ currentPage: (this.state.currentPage + 1) },() => {
+            this.props.fetchList(this.state.lastTime, this.state.currentPage,this.state.pageSize, 1);
+        });
+    }
+    handleLast = (e) => {
+        if(this.state.currentPage === this.state.pageTotal - 1){
+            return;
+        }
+        this.setState({currentPage:this.state.pageTotal - 1}, () => {
+            this.props.fetchList(this.state.lastTime, this.state.currentPage,this.state.pageSize, 1);
+        });
     }
     render(){
-        let {current,total} = this.state;
+        let {currentPage,pageTotal} = this.state;
         return (
-            total ? 
+            pageTotal ? 
             <div data-role="pagination">
-                 <button className={"btn-normal btn-sm"+(current !== 0 ? '':' disabled')} onClick={this.handleFirst}>首页</button>
-                 <button className={"btn-normal btn-sm"+(current !== 0 ? '':' disabled')} onClick={this.handlePrev}>上一页</button>
-                 <span styleName="pagination-info">{current+1}/{total}</span>
-                 <button className={"btn-normal btn-sm"+(current !== total - 1 ? '':' disabled')} onClick={this.handleNext}>下一页</button>
-                 <button className={"btn-normal btn-sm"+(current !== total - 1 ? '':' disabled')} onClick={this.handleLast}>末页</button>
+                 <button className={"btn-normal btn-sm"+(currentPage !== 0 ? '':' disabled')} onClick={this.handleFirst}>首页</button>
+                 <button className={"btn-normal btn-sm"+(currentPage !== 0 ? '':' disabled')} onClick={this.handlePrev}>上一页</button>
+                 <span styleName="pagination-info">{currentPage+1}/{pageTotal}</span>
+                 <button className={"btn-normal btn-sm"+(currentPage !== pageTotal - 1 ? '':' disabled')} onClick={this.handleNext}>下一页</button>
+                 <button className={"btn-normal btn-sm"+(currentPage !== pageTotal - 1 ? '':' disabled')} onClick={this.handleLast}>末页</button>
             </div> : null
         )
     }

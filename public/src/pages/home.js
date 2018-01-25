@@ -21,16 +21,20 @@ class Home extends React.Component {
 			summaryList: null,
 			articleId: null,
 			showTip: false,
-			role: props.role
+			role: props.role,
+			pageTotal: 0,
+			pageSize: 2,
+			lastTime:""
 		}
 	}
 
-	componentWillMount = () => {
-		this.fetchList();
+	componentDidMount = () => {
+		this.fetchList((new Date()).toISOString(),0,this.state.pageSize,1);
 	}
 
-	fetchList = () => {
-		let url = blogGlobal.requestBaseUrl + "/articles?mode=public";
+	fetchList = (lastTime,currentPage,pageSize,dir) => {
+		console.log(typeof lastTime, lastTime)
+		let url = blogGlobal.requestBaseUrl + "/articles?mode=public&lastTime="+lastTime+"&currentPage="+currentPage+"&pageSize="+pageSize+"&dir="+dir;
 		fetch(url, {
 			method: 'get',
 			mode: 'cors',
@@ -39,11 +43,11 @@ class Home extends React.Component {
 			return response.json();
 		}).then((json) => {
 			console.log(json);
-			let { status, articleList } = json;
+			let { status, articleList ,pageTotal} = json;
 			if (status == 0) {
 				this.setState({ status: 2 });
 			} else if (status == 1) {
-				this.setState({ status: 1, summaryList: articleList });
+				this.setState({ status: 1, summaryList: articleList ,pageTotal:pageTotal, lastTime:articleList[articleList.length - 1].publicTime});
 			}
 		}).catch((err) => {
 			console.log(err);
@@ -98,7 +102,7 @@ class Home extends React.Component {
 	}
 
 	render() {
-		let { status, summaryList, isLogin, loginModalShow, delModalShow, showTip, role } = this.state;
+		let { status, summaryList, isLogin, loginModalShow, delModalShow, showTip, role ,pageTotal, pageSize, lastTime} = this.state;
 		let modalHtml = <p className="tips-in-modal">您还未登录，是否前往登录？<span className="small-tip">(登录后可评论)</span></p>;
 		let modalProps = {
 			isOpen: loginModalShow,
@@ -120,6 +124,12 @@ class Home extends React.Component {
 			type: 'success',
 			text: '删除成功',
 			classNames: 'tip-bar-alert'
+		}
+		let pageProps ={
+			pageSize: pageSize,
+			pageTotal: pageTotal,
+			lastTime: lastTime,
+			fetchList: this.fetchList
 		}
 		return (
 			<div styleName="root">
@@ -159,7 +169,7 @@ class Home extends React.Component {
 												)
 											})
 										}
-										<Pagination />
+										<Pagination {...pageProps}/>
 									</div>
 								)
 								break;
