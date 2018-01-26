@@ -4,6 +4,7 @@ import Tag from '../component/tag/tag';
 import Select from '../component/select/select';
 import { Link } from 'react-router-dom';
 import TipBar from '../component/tipBar/tip-bar';
+import Pagination from '../component/pagination/pagination';
 import Modal from '../component/modal/modal';
 import blogGlobal from '../data/global';
 import CSSModules from 'react-css-modules';
@@ -19,16 +20,19 @@ class Draft extends React.Component {
 			tipType: '',
 			showTip: false,
 			tipText: '',
-			articleId: null
+			articleId: null,
+			pageTotal: 0,
+			pageSize: 2,
+			lastTime:""
 		}
 	}
 
 	componentWillMount = () => {
-		this.fetchList();
+		this.fetchList((new Date()).toISOString(),0,this.state.pageSize,1);
 	}
 
-	fetchList(){
-		let url = blogGlobal.requestBaseUrl + "/articles/?mode=draft";
+	fetchList(lastTime,currentPage,pageSize,dir){
+		let url = blogGlobal.requestBaseUrl + "/articles/?mode=draft&lastTime="+lastTime+"&currentPage="+currentPage+"&pageSize="+pageSize+"&dir="+dir;
 		fetch(url, {
 			method: 'get',
 			mode: 'cors',
@@ -37,11 +41,11 @@ class Draft extends React.Component {
 			return response.json();
 		}).then((json) => {
 			console.log(json);
-			let { status, draftList } = json;
+			let { status, articleList ,pageTotal } = json;
 			if (status == 0) {
 				this.setState({ status: 2 });
 			} else if (status == 1) {
-				this.setState({ status: 1, draftList: draftList });
+				this.setState({ status: 1, draftList: articleList ,pageTotal:pageTotal, lastTime:articleList[articleList.length - 1].publicTime});
 			}
 		}).catch((err) => {
 			console.log(err);
@@ -99,7 +103,7 @@ class Draft extends React.Component {
 	}
 
 	render() {
-		let { status, draftList, showModal, showTip, tipType, tipText } = this.state;
+		let { status, draftList, showModal, showTip, tipType, tipText, pageSize, pageTotal, lastTime} = this.state;
 		let tipProps = {
 			arrow: 'no',
 			type: tipType,
@@ -113,42 +117,53 @@ class Draft extends React.Component {
 			btns: [{ name: '确定', ref: 'ok', handleClick: this.comfirmQuit }, { name: '取消', ref: 'close' }],
 			handleModalClose: this.handleModalClose
 		}
+		let pageProps ={
+			pageSize: pageSize,
+			pageTotal: pageTotal,
+			lastTime: lastTime,
+			fetchList: this.fetchList
+		}
 		return (
 			<div styleName="root">
-				<ul styleName="draft-list">
-					{
-						(() => {
-							switch (status) {
-								case 1:
-									return (
-										draftList.map((item, index) => {
-											let list = item.tag.split(';');
-											list = list.slice(0, list.length - 1);
-											return (
-												<li styleName="draft-item" key={index}>
-													<h3><Link target="_self" to={"/write/" + item._id}>{item.title || '无标题'}</Link></h3>
-													<div className="clearfix">
-														<div styleName="save-time" className="fl">保存于{moment(item.updateTime).format('YYYY-MM-DD')}</div>
-														<div styleName="btn-group" className="fr">
-															<button className="btn-normal btn-sm"><Link target="_self" to={"/write/" + item._id}>编辑</Link></button>
-															<button className="btn-normal btn-sm" onClick={this.handleQuitDraft.bind(this, item._id)}>舍弃</button>
-														</div>
-													</div>
-												</li>
-											)
-										})
-									)
-									break;
-								case 2:
-									return <h3 styleName="null-tip">暂无草稿</h3>
-									break;
-								default:
-									return <div styleName="loading"><i className="fa fa-spinner fa-pulse"></i><span>正在加载...</span></div>
-									break;
-							}
-						})()
-					}
-				</ul>
+				{
+					(() => {
+						switch (status) {
+							case 1:
+								return (
+									<div>
+										<ul styleName="draft-list">
+											{
+												draftList.map((item, index) => {
+													let list = item.tag.split(';');
+													list = list.slice(0, list.length - 1);
+													return (
+														<li styleName="draft-item" key={index}>
+															<h3><Link target="_self" to={"/write/" + item._id}>{item.title || '无标题'}</Link></h3>
+															<div className="clearfix">
+																<div styleName="save-time" className="fl">保存于{moment(item.updateTime).format('YYYY-MM-DD')}</div>
+																<div styleName="btn-group" className="fr">
+																	<button className="btn-normal btn-sm"><Link target="_self" to={"/write/" + item._id}>编辑</Link></button>
+																	<button className="btn-normal btn-sm" onClick={this.handleQuitDraft.bind(this, item._id)}>舍弃</button>
+																</div>
+															</div>
+														</li>
+													)
+												})
+											}
+										</ul>
+										<Pagination {...pageProps}/>
+									</div>
+								)
+								break;
+							case 2:
+								return <h3 styleName="null-tip">暂无草稿</h3>
+								break;
+							default:
+								return <div styleName="loading"><i className="fa fa-spinner fa-pulse"></i><span>正在加载...</span></div>
+								break;
+						}
+					})()
+				}
 				{showTip ? <TipBar {...tipProps} /> : null}
 				{showModal ? <Modal {...modalProps} /> : null}
 			</div>

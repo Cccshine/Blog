@@ -14,6 +14,11 @@
             background-color: $theme-adorn-color;
         }
     }
+    [data-role=pagination]{
+        position: absolute;
+        right: 20px;
+        bottom: 10px;
+    }
     .null-tip,.loading{
 		@extend .common-level-center-transform;
 		margin-top: 100px;

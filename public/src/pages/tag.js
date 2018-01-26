@@ -4,6 +4,7 @@ import marked from 'marked';
 import { Link } from 'react-router-dom';
 import Modal from '../component/modal/modal';
 import TipBar from '../component/tipBar/tip-bar';
+import Pagination from '../component/pagination/pagination';
 import TagComponent from '../component/tag/tag';
 import CSSModules from 'react-css-modules';
 import style from '../sass/pages/tag.scss';
@@ -23,31 +24,17 @@ class Tag extends React.Component {
 			articleId: null,
 			showTip: false,
 			isTagList: false,
-			role: props.role
+			role: props.role,
+			pageTotal: 0,
+			pageSize: 2,
+			lastTime:""
 		}
 	}
 
 	componentWillMount = () => {
 		let tagName = this.props.match.params.tagName || null;
 		if (tagName) {
-			let url = blogGlobal.requestBaseUrl + "/articles?mode=public&tagName=" + tagName;
-			fetch(url, {
-				method: 'get',
-				mode: 'cors',
-				credentials: 'include',
-			}).then((response) => {
-				return response.json();
-			}).then((json) => {
-				console.log(json);
-				let { status, articleList } = json;
-				if (status == 0) {
-					this.setState({ status: 2 });
-				} else if (status == 1) {
-					this.setState({ status: 1, articleList: articleList });
-				}
-			}).catch((err) => {
-				console.log(err);
-			});
+			this.fetchList((new Date()).toISOString(),0,this.state.pageSize,1);
 		} else {
 			this.setState({ isTagList: true });
 			let url = blogGlobal.requestBaseUrl + "/tags";
@@ -84,6 +71,28 @@ class Tag extends React.Component {
 		tags = [];
 		angleX = Math.PI/1000;
 		angleY = Math.PI/1000;
+	}
+
+	fetchList = (lastTime,currentPage,pageSize,dir) => {
+		let tagName = this.props.match.params.tagName || null;
+		let url = blogGlobal.requestBaseUrl + "/articles?mode=public&tagName="+tagName+"&lastTime="+lastTime+"&currentPage="+currentPage+"&pageSize="+pageSize+"&dir="+dir;
+		fetch(url, {
+			method: 'get',
+			mode: 'cors',
+			credentials: 'include',
+		}).then((response) => {
+			return response.json();
+		}).then((json) => {
+			console.log(json);
+			let { status, articleList ,pageTotal } = json;
+			if (status == 0) {
+				this.setState({ status: 2 });
+			} else if (status == 1) {
+				this.setState({ status: 1, articleList: articleList ,pageTotal:pageTotal, lastTime:articleList[articleList.length - 1].publicTime});
+			}
+		}).catch((err) => {
+			console.log(err);
+		});
 	}
 
 	handleDelete = (articleId, event) => {
@@ -207,7 +216,7 @@ class Tag extends React.Component {
 	}
 
 	render() {
-		let { status, articleList, tagList, delModalShow, showTip, isTagList, role } = this.state;
+		let { status, articleList, tagList, delModalShow, showTip, isTagList, role, pageSize, pageTotal, lastTime} = this.state;
 		let delModalProps = {
 			isOpen: delModalShow,
 			title: '删除提醒',
@@ -221,6 +230,12 @@ class Tag extends React.Component {
 			type: 'success',
 			text: '删除成功',
 			classNames: 'tip-bar-alert'
+		}
+		let pageProps ={
+			pageSize: pageSize,
+			pageTotal: pageTotal,
+			lastTime: lastTime,
+			fetchList: this.fetchList
 		}
 		let rootPadding = isTagList ? {padding:20} : {padding:'20px 20px 20px 100px'};
 		return (
@@ -270,6 +285,7 @@ class Tag extends React.Component {
 												)
 											})
 										}
+										<Pagination {...pageProps}/>
 									</div>
 								)
 								break;

@@ -50,5 +50,4 @@ ArticleSchema.pre('save',function(next){
 	next();
 })
 
-
 module.exports = ArticleSchema;

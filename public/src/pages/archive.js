@@ -4,6 +4,7 @@ import marked from 'marked';
 import { Link } from 'react-router-dom';
 import Modal from '../component/modal/modal';
 import TipBar from '../component/tipBar/tip-bar';
+import Pagination from '../component/pagination/pagination';
 import TagComponent from '../component/tag/tag';
 import CSSModules from 'react-css-modules';
 import style from '../sass/pages/archive.scss';
@@ -21,31 +22,16 @@ class Archive extends React.Component {
 			articleId: null,
 			role: props.role,
 			delModalShow: false,
-			showTip: false
+			showTip: false,
+			pageTotal: 0,
+			pageSize: 2,
+			lastTime:""
 		}
 	}
 	componentWillMount = () => {
 		let time = this.props.match.params.time || null;
 		if(time){
-			year = time.slice(0,4);
-			month = time.slice(4)
-			let realTime = year + '-' + month;
-			let startTime = moment(realTime).format('x')*1;
-			let endTime = moment(startTime).add(1,'months').subtract(1,'seconds').format('x')*1;
-			let url = blogGlobal.requestBaseUrl + "/articles?mode=archive&startTime="+startTime+"&endTime="+endTime;
-			fetch(url, {
-				method: 'get',
-				mode: 'cors',
-				credentials: 'include',
-			}).then((response) => {
-				return response.json();
-			}).then((json) => {
-				let { articleList } = json;
-				this.setState({ status: 1, articleList: articleList });
-				console.log(json);
-			}).catch((err) => {
-				console.log(err);
-			});
+			this.fetchList((new Date()).toISOString(),0,this.state.pageSize,1);
 		}else{
 			this.setState({ isArchiveList: true });
 			let url = blogGlobal.requestBaseUrl + "/articles?mode=archive";
@@ -63,6 +49,32 @@ class Archive extends React.Component {
 				console.log(err);
 			});
 		}
+	}
+
+	fetchList = (lastTime,currentPage,pageSize,dir) => {
+		let time = this.props.match.params.time || null;
+		year = time.slice(0,4);
+		month = time.slice(4)
+		let realTime = year + '-' + month;
+		let startTime = moment(realTime).format('x')*1;
+		let endTime = moment(startTime).add(1,'months').subtract(1,'seconds').format('x')*1;
+		let url = blogGlobal.requestBaseUrl + "/articles?mode=archive&startTime="+startTime+"&endTime="+endTime+"&lastTime="+lastTime+"&currentPage="+currentPage+"&pageSize="+pageSize+"&dir="+dir;
+		fetch(url, {
+			method: 'get',
+			mode: 'cors',
+			credentials: 'include',
+		}).then((response) => {
+			return response.json();
+		}).then((json) => {
+			let { status, articleList ,pageTotal } = json;
+			if (status == 0) {
+				this.setState({ status: 2 });
+			} else if (status == 1) {
+				this.setState({ status: 1, articleList: articleList ,pageTotal:pageTotal, lastTime:articleList[articleList.length - 1].publicTime});
+			}
+		}).catch((err) => {
+			console.log(err);
+		});
 	}
 
 	handleDelete = (articleId, event) => {
@@ -96,7 +108,7 @@ class Archive extends React.Component {
 	}
 
 	render() {
-		let { status, archiveList, isArchiveList, articleList, role, delModalShow, showTip} = this.state;
+		let { status, archiveList, isArchiveList, articleList, role, delModalShow, showTip, pageSize, pageTotal, lastTime} = this.state;
 		let delModalProps = {
 			isOpen: delModalShow,
 			title: '删除提醒',
@@ -110,6 +122,12 @@ class Archive extends React.Component {
 			type: 'success',
 			text: '删除成功',
 			classNames: 'tip-bar-alert'
+		}
+		let pageProps ={
+			pageSize: pageSize,
+			pageTotal: pageTotal,
+			lastTime: lastTime,
+			fetchList: this.fetchList
 		}
 		let rootPadding = isArchiveList ? {padding:20} : {padding:'20px 20px 20px 100px'};
 		return (
@@ -164,6 +182,7 @@ class Archive extends React.Component {
 												)
 											})
 										}
+										<Pagination {...pageProps}/>
 									</div>									
 								)
 								break;

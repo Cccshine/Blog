@@ -132,92 +132,35 @@ router.get('/',(req,res) => {
 			res.status(500).send('Something broke!');
 		})
 	}else if(mode == 'draft'){//草稿箱
-		ArticleModel.find({isPublic:false}).then((draftList) => {
-			if(draftList.length > 0){
-				return res.json({"status":1,"draftList":draftList,"msg":"get success"});
-			}else{
-				return res.json({"status":0,"draftList":draftList,"msg":"no draft"});
-			}
-		}).catch((err) => {
-			console.log(err);
-			res.status(500).send('Something broke!');
-		})
+		if(currentPage === 0){//第一页
+			ArticleModel.pageFirst(res,{isPublic:false},pageSize);
+		}else if(currentPage === homePageTotal - 1){//最后一页
+			ArticleModel.pageLast(res,{isPublic:false},pageSize);
+		}else if(dir > 0){//下一页
+			ArticleModel.pageNext(res,{isPublic:false},pageSize);
+		}else{//上一页
+			ArticleModel.pagePrev(res,{isPublic:false},currentPage,pageSize);
+		}
 	}else if(mode == 'public' && !tagName) {//首页文章列表
-		if(currentPage === 0){
-			ArticleModel.find({isPublic:true}).then((articleList) => {
-				homePageTotal = Math.ceil(articleList.length/pageSize);
-				homeArticleTotal = articleList.length;
-			}).catch((err) => {
-				console.log(err);
-				res.status(500).send('Something broke!');
-			})
+		if(currentPage === 0){//第一页
+			ArticleModel.pageFirst(res,{isPublic:true},pageSize);
+		}else if(currentPage === homePageTotal - 1){//最后一页
+			ArticleModel.pageLast(res,{isPublic:true},pageSize);
+		}else if(dir > 0){//下一页
+			ArticleModel.pageNext(res,{isPublic:true,publicTime:{$lt:lastTime}},pageSize);
+		}else{//上一页
+			ArticleModel.pagePrev(res,{isPublic:true,publicTime:{$gt:lastTime}},currentPage,pageSize);
 		}
-		if(currentPage === 0){
-			ArticleModel.find({isPublic:true}).sort({publicTime:-1}).limit(pageSize).then((articleList) => {
-				if(articleList.length > 0){
-					return res.json({"status":1,"articleList":articleList,"pageTotal":homePageTotal,"msg":"get success"});
-				}else{
-					return res.json({"status":0,"articleList":articleList,"pageTotal":homePageTotal,"msg":"no article"});
-				}
-			}).catch((err) => {
-				console.log(err);
-				res.status(500).send('Something broke!');
-			})
-		}else if(currentPage === homePageTotal - 1){
-			let limit = homeArticleTotal - homePageTotal*pageSize;
-			ArticleModel.find({isPublic:true}).sort({publicTime:1}).limit(limit).then((articleList) => {
-				if(articleList.length > 0){
-					return res.json({"status":1,"articleList":articleList,"pageTotal":homePageTotal,"msg":"get success"});
-				}else{
-					return res.json({"status":0,"articleList":articleList,"pageTotal":homePageTotal,"msg":"no article"});
-				}
-			}).catch((err) => {
-				console.log(err);
-				res.status(500).send('Something broke!');
-			})
-		}else if(dir > 0){
-			ArticleModel.find({isPublic:true,publicTime:{$lt:lastTime}}).sort({publicTime:-1}).limit(pageSize).then((articleList) => {
-				if(articleList.length > 0){
-					return res.json({"status":1,"articleList":articleList,"pageTotal":homePageTotal,"msg":"get success"});
-				}else{
-					return res.json({"status":0,"articleList":articleList,"pageTotal":homePageTotal,"msg":"no article"});
-				}
-			}).catch((err) => {
-				console.log(err);
-				res.status(500).send('Something broke!');
-			})
-		}else{
-			let skipNum = 0;
-			if(currentPage === homePageTotal - 2){
-				skipNum = homeArticleTotal - (currentPage+1)*pageSize - 1;
-			}else{
-				skipNum = pageSize - 1;
-			}
-			ArticleModel.find({isPublic:true,publicTime:{$gt:lastTime}}).sort({publicTime:1}).skip(skipNum).limit(pageSize).sort({publicTime:-1}).then((articleList) => {
-				if(articleList.length > 0){
-					return res.json({"status":1,"articleList":articleList,"pageTotal":homePageTotal,"msg":"get success"});
-				}else{
-					return res.json({"status":0,"articleList":articleList,"pageTotal":homePageTotal,"msg":"no article"});
-				}
-			}).catch((err) => {
-				console.log(err);
-				res.status(500).send('Something broke!');
-			})
-		}
-		
 	}else if(mode == 'public' && tagName){//标签分类文章列表
-		ArticleModel.find({tag:eval("/"+tagName+"/i"),isPublic:true}).then((articleList) => {
-			console.log(articleList)
-			if(articleList.length > 0){
-				return res.json({"status":1,"articleList":articleList,"msg":"get success"});
-			}else{
-				return res.json({"status":0,"articleList":articleList,"msg":"no article"});
-			}
-		}).catch((err) => {
-			console.log(err);
-			res.status(500).send('Something broke!');
-		})
-	
+		if(currentPage === 0){//第一页
+			ArticleModel.pageFirst(res,{tag:eval("/"+tagName+"/i"), isPublic:true},pageSize);
+		}else if(currentPage === homePageTotal - 1){//最后一页
+			ArticleModel.pageLast(res,{tag:eval("/"+tagName+"/i"), isPublic:true},pageSize);
+		}else if(dir > 0){//下一页
+			ArticleModel.pageNext(res,{tag:eval("/"+tagName+"/i"), isPublic:true,publicTime:{$lt:lastTime}},pageSize);
+		}else{//上一页
+			ArticleModel.pagePrev(res,{tag:eval("/"+tagName+"/i"), isPublic:true,publicTime:{$gt:lastTime}},currentPage,pageSize);
+		}
 	}else if(mode == 'archive' && !startTime && !endTime){//归档页
 		ArticleModel.aggregate([
 			{
@@ -253,11 +196,15 @@ router.get('/',(req,res) => {
 			console.log(err);
 		})
 	}else if(mode == 'archive' && startTime && endTime){//归档文章列表
-		ArticleModel.find({isPublic:true,publicTime:{$gte:startTime,$lte:endTime}}).then((articleList)=>{
-			return res.json({"articleList":articleList,"msg":"get success"});
-		}).catch((err)=>{
-			console.log(err);
-		})
+		if(currentPage === 0){//第一页
+			ArticleModel.pageFirst(res,{isPublic:true,publicTime:{$gte:startTime,$lte:endTime}},pageSize);
+		}else if(currentPage === homePageTotal - 1){//最后一页
+			ArticleModel.pageLast(res,{isPublic:true,publicTime:{$gte:startTime,$lte:endTime}},pageSize);
+		}else if(dir > 0){//下一页
+			ArticleModel.pageNext(res,{isPublic:true,publicTime:{$lt:lastTime,$gte:startTime,$lte:endTime}},pageSize);
+		}else{//上一页
+			ArticleModel.pagePrev(res,{isPublic:true,publicTime:{$gt:lastTime,$gte:startTime,$lte:endTime}},currentPage,pageSize);
+		}
 	}else if(mode == 'edit'){//编辑页
 		ArticleModel.findOne({_id:articleId}).then((article) => {
 			return res.json({"status":1,article:article,"msg":"success"});

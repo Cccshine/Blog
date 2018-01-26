@@ -1,9 +1,30 @@
 @import "../../sass/variables";
 @import "../../sass/global/_center.scss";
 @import "../../sass/mixin/_vertical_center.scss";
-.draft-list{
+.root{
     width: 960px;
+    min-height: 700px;
     margin: 20px auto;
+    position: relative;
+    [data-role=pagination]{
+        position: absolute;
+        right: 20px;
+        bottom: 10px;
+    }
+    .null-tip,.loading{
+        @extend .common-level-center-transform;
+        margin-top: 100px;
+        color:$theme-adorn-color;
+        font-size: 24px;
+    }
+    .loading{
+        i{
+            font-size: 30px;
+            margin-right: 20px;
+        }
+    }
+}
+.draft-list{
     .draft-item{
         margin-bottom: 20px;
         padding-bottom: 10px;
