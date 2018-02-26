@@ -17,6 +17,13 @@ body{
 	background-color:$theme-adorn-color;
 	box-shadow:$top-header-n-shadow;
 }
+.profile-tabs .active-tab{
+	color: #fff;
+	background:$theme-adorn-color;
+	&:hover{
+		color: #fff;
+	}
+}
 .tips-in-modal{
 	text-align:center;
 	.small-tip{
