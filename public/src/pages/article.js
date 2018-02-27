@@ -195,6 +195,16 @@ class Article extends React.Component {
 			console.log(json);
 			if(type === 1){
 				this.fetchComments();
+			}else{
+				let data = {
+					userId:sessionStorage.getItem('uid'),
+					articleId:subjectId,
+					activityMode: isPraise ? 2 : 4
+				}
+				console.log(data)
+				this.sendRequest(blogGlobal.requestBaseUrl + '/activity', 'post', data, (json) => {
+					console.log(json)
+				})
 			}
 		})
 	}

@@ -17,7 +17,6 @@ class Collection extends React.Component{
 		let list = ["css","html"]
 		return(
 			<div styleName="profile-active-list">
-			收藏
 				<section styleName="list-item">
 					<div styleName="list-item-content">
 						<div className="clearfix">

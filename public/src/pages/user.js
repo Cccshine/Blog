@@ -19,18 +19,20 @@ class User extends React.Component{
 	}
 
 	componentWillMount = () => {
-		this.props.history.push({ pathname: '/user/activities'});
+		let username = this.props.match.params.username;
+		// to do 后台请求头像等用户信息
 	}
 
 	render(){
 		let tagProps = { isLink: true, hasClose: false };
 		let list = ["css","html"]
+		let username = this.props.match.params.username;
 		return(
 			<div styleName="root">
 				<header className="clearfix" styleName="profile-header">
 					<div className="fl" styleName="user-info">
 						<img className="fl" src={require('../images/logo.jpg')}  alt="cshine"/>
-						<h3 className="fl">Cshine</h3>
+						<h3 className="fl">{username}</h3>
 					</div>
 					<div className="fr" styleName="btn-group">
 						<button className="btn-normal btn-md">设置</button>
@@ -38,15 +40,15 @@ class User extends React.Component{
 				</header>
 				<div styleName="profile-main">
 					<nav styleName="profile-tabs" className="profile-tabs">
-						<NavLink to="/user/activities" activeClassName="active-tab">动态</NavLink>
-						<NavLink to="/user/collections" activeClassName="active-tab">收藏</NavLink>
-						<NavLink to="/user/thumbs-up" activeClassName="active-tab">点赞</NavLink>
+						<NavLink to={"/user/"+username+"/activities"} activeClassName="active-tab">动态</NavLink>
+						<NavLink to={"/user/"+username+"/collections"} activeClassName="active-tab">收藏的文章</NavLink>
+						<NavLink to={"/user/"+username+"/thumbs-up"} activeClassName="active-tab">点赞的文章</NavLink>
 					</nav>
 					<div>
 						<Switch>
-							<Route path="/user/collections" component={Collection}/>
-							<Route path="/user/thumbs-up" component={ThumbUp}/>
-							<Route path="/user" component={Activity}/>
+							<Route path="/user/:username/collections" component={Collection}/>
+							<Route path="/user/:username/thumbs-up" component={ThumbUp}/>
+							<Route path="/user/:username/activities" component={Activity}/>
 							<Route component={NoMatch}/>
 					    </Switch>
 					</div>

@@ -11,7 +11,7 @@ const userModel = require('./models/user');
 const articleModel = require('./models/article');
 const tagModel = require('./models/tag');
 const commentModel = require('./models/comment');
-// const praiseModel = require('./models/praise');
+const activityModel = require('./models/activity');
 const indexRouter = require('./routes/index');
 const registerRouter = require('./routes/register');
 const loginRouter = require('./routes/login');
@@ -21,6 +21,7 @@ const tagRouter = require('./routes/tag');
 const commentRouter = require('./routes/comment');
 const praiseRouter = require('./routes/praise');
 const collectionRouter = require('./routes/collection');
+const activityRouter = require('./routes/activity');
 
 const app = express();
 
@@ -72,6 +73,7 @@ app.use('/api/tags', tagRouter);
 app.use('/api/comments', commentRouter);
 app.use('/api/praise', praiseRouter);
 app.use('/api/collection', collectionRouter);
+app.use('/api/activity', activityRouter);
 
 app.listen(port);
 

@@ -12,13 +12,18 @@ class Activity extends React.Component{
 	constructor(props){
 		super(props);
 	}
+
+	componentWillMount = () => {
+		
+	}
+
 	render(){
 		let tagProps = { isLink: true, hasClose: false };
 		let list = ["css","html"]
 		return(
 			<div styleName="profile-active-list">
 				<section styleName="list-item">
-					<div styleName="list-item-meta">收藏了文章</div>
+					<div styleName="list-item-meta">收藏了文章（刚刚）</div>
 					<div styleName="list-item-content">
 						<div className="clearfix">
 							<h3 className="fl"><Link target="_blank" to={"/articles/" + '1'}>xxxxxx</Link></h3>
@@ -40,7 +45,7 @@ class Activity extends React.Component{
 					</div>
 				</section>
 				<section styleName="list-item">
-					<div styleName="list-item-meta">点赞了文章</div>
+					<div styleName="list-item-meta">点赞了文章（三天前）</div>
 					<div styleName="list-item-content">
 						<div className="clearfix">
 							<h3 className="fl"><Link target="_blank" to={"/articles/" + '1'}>xxxxxx</Link></h3>
