@@ -109,7 +109,7 @@ router.delete('/',function(req,res){
 });
 
 router.get('/',(req,res) => {
-	let {mode,lastTime,currentPage,pageSize,dir,articleId,tagName,startTime,endTime} = req.query;
+	let {mode,lastTime,currentPage,pageSize,dir,articleId,tagName,startTime,endTime,userId} = req.query;
 	currentPage = Number(currentPage);
 	pageSize = Number(pageSize);
 	dir = Number(dir);
@@ -205,6 +205,20 @@ router.get('/',(req,res) => {
 		}else{//上一页
 			ArticleModel.pagePrev(res,{isPublic:true,publicTime:{$gt:lastTime,$gte:startTime,$lte:endTime}},currentPage,pageSize);
 		}
+	}else if(mode == 'collection'){//用户中心---收藏的文章
+		ArticleModel.find({collectionUser:userId}).then((collectionArticles) => {
+			return res.json({"status":1,collectionArticles:collectionArticles,"msg":"success"});
+		}).catch((err) => {
+			console.log(err);
+			res.status(500).send('Something broke!');
+		})
+	}else if(mode == 'praise'){//用户中心---点赞的文章
+		ArticleModel.find({praiseUser:userId}).then((praiseArticles) => {
+			return res.json({"status":1,praiseArticles:praiseArticles,"msg":"success"});
+		}).catch((err) => {
+			console.log(err);
+			res.status(500).send('Something broke!');
+		})
 	}else if(mode == 'edit'){//编辑页
 		ArticleModel.findOne({_id:articleId}).then((article) => {
 			return res.json({"status":1,article:article,"msg":"success"});

@@ -8,9 +8,9 @@ import Tag from '../component/tag/tag';
 import CSSModules from 'react-css-modules';
 import style from '../sass/pages/user.scss';
 import blogGlobal from '../data/global';
-import Activity from './activity.js';
-import Collection from './collection.js';
-import ThumbUp from './thumbs-up.js';
+import Activity from './user-activity.js';
+import Collection from './user-collection.js';
+import Praise from './user-praise.js';
 import NoMatch from './nomatch.js';
 
 class User extends React.Component{
@@ -42,12 +42,12 @@ class User extends React.Component{
 					<nav styleName="profile-tabs" className="profile-tabs">
 						<NavLink to={"/user/"+username+"/activities"} activeClassName="active-tab">动态</NavLink>
 						<NavLink to={"/user/"+username+"/collections"} activeClassName="active-tab">收藏的文章</NavLink>
-						<NavLink to={"/user/"+username+"/thumbs-up"} activeClassName="active-tab">点赞的文章</NavLink>
+						<NavLink to={"/user/"+username+"/praise"} activeClassName="active-tab">点赞的文章</NavLink>
 					</nav>
 					<div>
 						<Switch>
 							<Route path="/user/:username/collections" component={Collection}/>
-							<Route path="/user/:username/thumbs-up" component={ThumbUp}/>
+							<Route path="/user/:username/praise" component={Praise}/>
 							<Route path="/user/:username/activities" component={Activity}/>
 							<Route component={NoMatch}/>
 					    </Switch>

@@ -89,8 +89,8 @@ class Activity extends React.Component{
 							<section styleName="list-item" key={index}>
 								<div styleName="list-item-meta">{{
 							        [1]: '收藏',
-							        [2]: '取消收藏',
-							        [3]: '点赞',
+							        [2]: '点赞',
+							        [3]: '取消收藏',
 							        [4]: '取消点赞',
 							        [5]: '评论',
 							      }[item.activityMode]}文章（{this.getDateDiff(item.createTime)}）
