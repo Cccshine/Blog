@@ -6,7 +6,7 @@ const ActivityeModel = mongoose.model('Activity');
 router.post('/',function(req,res){
     let {userId,articleId,activityMode} = req.body;
     let _activity = {
-		articleId:articleId,
+		article:articleId,
 		userId:userId,
 		activityMode: activityMode
 	}
@@ -22,7 +22,7 @@ router.post('/',function(req,res){
 
 router.get('/',function(req,res){
 	let userId = req.query.userId;
-	ActivityeModel.find({userId:userId}).sort({creatTime:-1}).then((activityList) => {
+	ActivityeModel.find({userId:userId}).sort({createTime:-1}).populate('article').then((activityList) => {
 		return res.json({"status":1,activityList:activityList,"msg":"success"});
 	}).catch((err) => {
 		console.log(err);

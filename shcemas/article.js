@@ -21,6 +21,10 @@ const ArticleSchema = new mongoose.Schema({
 	},
 	praiseUser:[mongoose.Schema.Types.ObjectId],
 	collectionUser:[mongoose.Schema.Types.ObjectId],
+	commentTotal:{
+		type:Number,
+		default:0
+	},
 	createTime:{
 		type:Date,
 		default:Date.now()

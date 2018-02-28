@@ -18,6 +18,14 @@ router.post('/',function(req,res){
 	console.log('评论');
 	let newComment = new CommentModel(_comment);
 	newComment.save().then((comment) => {
+		if(!parentId){
+			ArticleModel.findOneAndUpdate({_id:articleId},{$inc:{commentTotal:1}}).then((article) => {
+				console.log(article)
+			}).catch((err) => {
+				console.log(err);
+				res.status(500).send('Something broke!');
+			});
+		}
 		return res.json({"status":1,comment:comment,"msg":"comment success"});
 	}).catch((err) => {
 		console.log(err);

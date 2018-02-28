@@ -122,7 +122,7 @@ class Article extends React.Component {
 		}).then((json) => {
 			console.log(json);
 			let {article, lastArticle, nextArticle }= json.result;
-			this.setState({ article: article, content: article.content ,praiseUser: article.praiseUser,collectionUser: article.collectionUser, lastArticle:lastArticle, nextArticle:nextArticle});
+			this.setState({ article: article, content: article.content ,praiseUser: article.praiseUser,collectionUser: article.collectionUser, commentTotal: article.commentTotal, lastArticle:lastArticle, nextArticle:nextArticle});
 			this.createCatalog(this.refs.content.innerHTML);
 			eHeadings = document.getElementsByClassName('heading');
 			for (let ele of eHeadings) {
@@ -201,10 +201,9 @@ class Article extends React.Component {
 					articleId:subjectId,
 					activityMode: isPraise ? 2 : 4
 				}
-				console.log(data)
 				this.sendRequest(blogGlobal.requestBaseUrl + '/activity', 'post', data, (json) => {
 					console.log(json)
-				})
+				});
 			}
 		})
 	}
@@ -228,6 +227,14 @@ class Article extends React.Component {
 		this.setState({collectionUser:newCollectionUser});
 		this.sendRequest(url, rquestMode, data, (json) => {
 			console.log(json);
+			let data = {
+				userId:sessionStorage.getItem('uid'),
+				articleId:subjectId,
+				activityMode: isCollection ? 1 : 3
+			}
+			this.sendRequest(blogGlobal.requestBaseUrl + '/activity', 'post', data, (json) => {
+				console.log(json)
+			})
 		})
 	}
 
@@ -312,6 +319,16 @@ class Article extends React.Component {
 			console.log(json);
 			this.fetchComments();
 			this.setState({replyIndex:-1});
+			if(mode === 'comment'){
+				let activityData = {
+					userId:data.fromUid,
+					articleId:data.articleId,
+					activityMode: 5
+				}
+				this.sendRequest(blogGlobal.requestBaseUrl + '/activity', 'post', activityData, (json) => {
+					console.log(json)
+				})
+			}
 		})
 	}
 
