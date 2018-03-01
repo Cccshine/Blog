@@ -14,7 +14,7 @@ class Pagination extends React.Component{
 	    };
     }
     componentWillReceiveProps = (nextProps) => {
-        this.setState({lastTime:nextProps.lastTime});
+        this.setState({pageTotal:nextProps.pageTotal,lastTime:nextProps.lastTime});
     }
     handleFirst = (e) => {
         if(this.state.currentPage === 0){
