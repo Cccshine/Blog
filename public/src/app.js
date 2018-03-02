@@ -91,8 +91,6 @@ export default class App extends React.Component{
 						<Route path="/archive/:time" component={(props) => <Archive {...props} role={role}/>}/>
 						<Route path="/archive" component={(props) => <Archive {...props} role={role}/>}/>
 						<Route path="/about" component={About}/>
-						<Route path="/login" component={Login}/>
-						<Route path="/register" component={Register}/>
 						<Route path="/user/:username" component={User}/>
 						<Route path="/write/:articleId" component={Write}/>
 						<Route path="/write" component={Write}/>

@@ -5,6 +5,7 @@ import {BrowserRouter,Route,Switch} from 'react-router-dom';
 
 import Login from './pages/login.js';
 import Register from './pages/register.js';
+import Forget from './pages/forget.js';
 import App from './app';
 
 import './sass/global/_common.scss';
@@ -16,6 +17,7 @@ ReactDOM.render(
 		<Switch>
 			<Route path="/login" component={Login}/>
 			<Route path="/register" component={Register}/>
+			<Route path="/forget" component={Forget}/>
 			<Route path="/" component={App}/> 
 		</Switch>
 	</BrowserRouter>,document.getElementById('blog'));

@@ -12,5 +12,22 @@
 	.auto-login{
 		text-align:left;
 		padding-left:($form-box-width - $form-input-width)/2;
+		.auto-login-checkbox{
+			margin-right:5px;
+		}
+		input{
+			display:none;
+		}
+	}
+	.quick-link-item{
+		display:block;
+		text-align:right;
+		padding-right:50px;
+		margin-top:10px;
+		color:$theme-adorn-color;
+		transition: all 1s;
+		&:hover{
+			text-decoration:underline;
+		}
 	}
 }

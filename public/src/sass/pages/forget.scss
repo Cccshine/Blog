@@ -1,0 +1,53 @@
+@import "../../sass/variables";
+@import "../../sass/global/_center.scss";
+@import "../../sass/mixin/_vertical_center.scss";
+.root{
+	height:100%;
+	background: linear-gradient(#fff,#22C3AA);
+	[data-role*="tip-has"]{
+		@extend .common-vertical-center-transform;
+		left:370px;
+	}
+	[data-role*="tip-no"]{
+		position:relative;
+		margin: $register-tip-bar-noarrow-margin;
+		height:$tip-bar-oneline-height;
+	}
+	.main-content{
+		width:960px;
+		min-height:700px;
+		margin:0 auto;
+		h3{
+			@include vCenterLineHeight(50px);
+		}
+	}
+	.step-list{
+		display: flex;
+    	justify-content: space-between;
+    	margin-top: 100px;
+    	li{
+    		display: inline-block;
+		    padding: 10px 50px;
+		    i{
+		    	display: inline-block;
+	    	    width: 25px;
+	    	    height: 25px;
+	    	    line-height: 25px;
+	    	    text-align: center;
+	    	    border-radius: 50%;
+	    	    margin-right: 10px;
+	    	    color: #fff;
+	    	    background: #ccc;
+		    }
+    	}
+    	li.active{
+    		border-bottom:5px solid $theme-adorn-color;
+    		i{
+    			background: $theme-adorn-color;
+    		}
+    	}
+	}
+	.form-box-spc{
+		margin-top: 100px;
+	}
+}

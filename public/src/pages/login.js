@@ -1,5 +1,6 @@
 import React from 'react';
 import SHA from 'sha1';
+import { Link } from 'react-router-dom';
 import blogGlobal from '../data/global';
 import QuickLink from '../component/quickLink/quick-link';
 import TipBar from '../component/tipBar/tip-bar';
@@ -72,7 +73,7 @@ class Login extends React.Component{
 
 	}
 	render(){
-		let {status,info} = this.state;
+		let {status,info,autoLogin} = this.state;
 		let tipbarProps = {
 			type:status == 1 ? 'error' : 'success',
 			text:info,
@@ -91,11 +92,13 @@ class Login extends React.Component{
 							<input type="password" name="password" placeholder="密码" onChange={this.handlePasswordChange}/>
 						</div>
 						<div className="form-group" styleName="auto-login">
+							<label htmlFor="auto" styleName="auto-login-checkbox" className={"fa "+ (autoLogin ? "fa-check-square" : "fa-square-o")}></label>
 							<input type="checkbox" id="auto" onClick={this.handleAutoLoginClick}/>
 							<label htmlFor="auto">下次自动登录</label>
 						</div>
 						<TipBar {...tipbarProps}/>
 						<button className="operate-btn" name="login-btn">登录</button>
+						<Link to="/forget" styleName="quick-link-item">忘记密码？</Link>
 					</form>
 				</div>
 			</div>
