@@ -13,6 +13,9 @@
 		margin: $register-tip-bar-noarrow-margin;
 		height:$tip-bar-oneline-height;
 	}
+	nav a{
+		color: $theme-main-color;
+	}
 	.main-content{
 		width:960px;
 		min-height:700px;
@@ -49,5 +52,27 @@
 	}
 	.form-box-spc{
 		margin-top: 100px;
+	}
+	.safe-verify{
+		.tip{
+			@include vCenterLineHeight(50px);
+			text-align: center;
+			strong{
+				color: $theme-adorn-color;
+			}
+		}
+		.form-box-spc{
+			margin-top: 50px;
+		}
+		.form-group-double{
+			input{
+				width: 200px;
+			}
+			button{
+				width: 90px;
+				font-size: 14px;
+				margin-left: 10px;
+			}
+		}
 	}
 }

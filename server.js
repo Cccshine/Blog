@@ -22,6 +22,7 @@ const commentRouter = require('./routes/comment');
 const praiseRouter = require('./routes/praise');
 const collectionRouter = require('./routes/collection');
 const activityRouter = require('./routes/activity');
+const forgetRouter = require('./routes/forget');
 
 const app = express();
 
@@ -76,6 +77,7 @@ app.use('/api/comments', commentRouter);
 app.use('/api/praise', praiseRouter);
 app.use('/api/collection', collectionRouter);
 app.use('/api/activity', activityRouter);
+app.use('/api/forget', forgetRouter);
 
 app.listen(port);
 
