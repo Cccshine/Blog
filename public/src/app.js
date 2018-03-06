@@ -12,6 +12,7 @@ import Register from './pages/register.js';
 import User from './pages/user.js';
 import Draft from './pages/draft.js';
 import Article from './pages/article.js';
+import Setting from './pages/setting.js';
 import NoMatch from './pages/nomatch.js';
 
 import 'es5-shim';
@@ -96,6 +97,7 @@ export default class App extends React.Component{
 						<Route path="/write" component={Write}/>
 						<Route path="/draft" component={Draft}/>
 						<Route path="/articles/:articleId" component={Article}/>
+						<Route path="/setting" component={Setting}/>
 						<Route component={NoMatch}/>
 				    </Switch>
 				</main>

@@ -24,7 +24,7 @@ class Login extends React.Component{
 		this.setState({username:event.target.value});
 	}
 	handlePasswordChange = (event) => {
-		this.setState({password:event.target.value});
+		this.setState({password:SHA(event.target.value)});
 	}
 	handleAutoLoginClick = (event) => {
 		this.setState({autoLogin:event.target.checked});
@@ -42,7 +42,7 @@ class Login extends React.Component{
 		}
 		let data = {
 			username:username,
-			password:SHA(password),
+			password:password,
 			isAuto:this.state.autoLogin
 		}
 		let url = blogGlobal.requestBaseUrl+"/login";
@@ -86,7 +86,7 @@ class Login extends React.Component{
 				<div className="form-box">
 					<form onSubmit={this.handleSubmit}>
 						<div className="form-group fa fa-user">
-							<input type="text" name="username" placeholder="用户名/邮箱名" onChange={this.handleUserNameChange}/>
+							<input type="text" name="username" placeholder="用户名" onChange={this.handleUserNameChange}/>
 						</div>
 						<div className="form-group fa fa-lock">
 							<input type="password" name="password" placeholder="密码" onChange={this.handlePasswordChange}/>

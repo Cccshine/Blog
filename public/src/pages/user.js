@@ -23,6 +23,10 @@ class User extends React.Component{
 		// to do 后台请求头像等用户信息
 	}
 
+	handleSetting = () => {
+		this.props.history.push({ pathname: '/setting', state: {username:this.props.match.params.usernameue}});
+	}
+
 	render(){
 		let tagProps = { isLink: true, hasClose: false };
 		let list = ["css","html"]
@@ -34,9 +38,12 @@ class User extends React.Component{
 						<img className="fl" src={require('../images/logo.jpg')}  alt="cshine"/>
 						<h3 className="fl">{username}</h3>
 					</div>
-					<div className="fr" styleName="btn-group">
-						<button className="btn-normal btn-md">设置</button>
-					</div>
+					{
+						username === sessionStorage.getItem('username') ? <div className="fr" styleName="btn-group">
+						<button className="btn-normal btn-md" onClick={this.handleSetting}>设置</button>
+					</div> : null
+					}
+					
 				</header>
 				<div styleName="profile-main">
 					<nav styleName="profile-tabs" className="profile-tabs">

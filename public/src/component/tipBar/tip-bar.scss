@@ -21,6 +21,7 @@
 }
 .tip-has-arrow{
 	@extend .tip-no-arrow;
+	line-height:1;
 	&:before{
 		@include triangle(right,$tip-bar-arrow-size,$tip-bar-arrow-color-default);
 		@extend .common-vertical-center-transform;

@@ -66,12 +66,30 @@
 		}
 		.form-group-double{
 			input{
-				width: 200px;
+				width: 180px;
 			}
 			button{
-				width: 90px;
+				width: 110px;
 				font-size: 14px;
 				margin-left: 10px;
+			}
+		}
+		.disabled-btn{
+			background: #ccc;
+			border-color: #ccc;
+		}
+	}
+	.complete{
+		text-align: center;
+		.tip{
+			@include vCenterLineHeight(50px);
+			margin-bottom: 30px;
+			font-size: 20px;
+			strong{
+				color: $theme-adorn-color;
+			}
+			i{
+				color: #13AE67;
 			}
 		}
 	}

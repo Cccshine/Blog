@@ -21,7 +21,6 @@ const CommentSchema = new mongoose.Schema({
 
 //保存前执行的函数
 CommentSchema.pre('save', function(next) {
-	console.log('ssssssssssssssssssss')
 	if (this.isNew) {
 		this.createTime = Date.now();
 	}

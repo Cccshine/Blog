@@ -3,7 +3,7 @@ const blogGlobal = {
 	"usernameRuleErrLength":"用户名长度不能超过10个字符",
 	"usernameRuleErrType":"用户名只能含有汉字、数字、字母、下划线",
 	"usernameExist":"用户名已存在",
-	"usernameUnExist":"用户名不存在",
+	"usernameUnExist":"用户不存在",
 	"usernameNullTip":"请输入用户名",
 	"passwordRuleTip":"必须包含数字、字母、下划线其中两种，长度不小于8",
 	"passwordRuleErrLength":"密码长度不能少于8个字符",
@@ -17,6 +17,7 @@ const blogGlobal = {
 	"registerPassTip":"注册成功",
 	"loginPassTip":"登录成功",
 	"passwordUnMatchTip":"用户名与密码不匹配",
+	"tryTime":5,
 	"requestBaseUrl":"http://localhost:4000/api"
 }
 

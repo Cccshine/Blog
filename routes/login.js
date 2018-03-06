@@ -14,8 +14,7 @@ router.post('/', function(req, res, next) {
   	name:username,
   	password:password
   }
-  UserModel.findOne({$or:[{"name":username},{"email": username}]})
-  .then((user) => {
+  UserModel.findOne({"name":username}).then((user) => {
     if(user){
       if(password === user.password){
         req.session.uid = user._id; 
@@ -34,8 +33,7 @@ router.post('/', function(req, res, next) {
     }else{
       return res.json({"status":0,"msg":"user unexsist"});//用户不存在
     }
-  })
-  .catch((err) => {
+  }).catch((err) => {
     console.log(err);
     res.status(500).send('Something broke!');
   })

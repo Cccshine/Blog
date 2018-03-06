@@ -16,7 +16,6 @@ class Modal extends React.Component{
 	}
 
 	handleClose = (event) => {
-		console.log('bbb')
 		this.setState({isOpen:false});
 	}
 

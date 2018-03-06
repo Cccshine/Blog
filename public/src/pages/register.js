@@ -73,7 +73,7 @@ class Register extends React.Component{
 	}
 	handlePasswordChange = (event) => {
 		let value = event.target.value;
-		this.setState({password:value});
+		this.setState({password:SHA(value)});
 		if(value === ''){
 			this.setState({
 				passwordTip:blogGlobal.passwordRuleTip,
@@ -121,7 +121,7 @@ class Register extends React.Component{
 		}
 	}
 	handleComfirmPasswordChange = (event) => {
-		this.setState({comfirmPassword:event.target.value});
+		this.setState({comfirmPassword:SHA(event.target.value)});
 	}
 	handleComfirmPasswordFocus = (event) => {
 		this.setState({comfirmPasswordStatus:0});
@@ -209,7 +209,7 @@ class Register extends React.Component{
 		}
 		let data = {
 			username:this.state.username,
-			password:SHA(this.state.password),
+			password:this.state.password,
 			email:this.state.email
 		}
 		let url =blogGlobal.requestBaseUrl+"/register";
