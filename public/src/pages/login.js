@@ -24,7 +24,7 @@ class Login extends React.Component{
 		this.setState({username:event.target.value});
 	}
 	handlePasswordChange = (event) => {
-		this.setState({password:SHA(event.target.value)});
+		this.setState({password:event.target.value});
 	}
 	handleAutoLoginClick = (event) => {
 		this.setState({autoLogin:event.target.checked});
@@ -42,7 +42,7 @@ class Login extends React.Component{
 		}
 		let data = {
 			username:username,
-			password:password,
+			password:SHA(password),
 			isAuto:this.state.autoLogin
 		}
 		let url = blogGlobal.requestBaseUrl+"/login";

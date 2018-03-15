@@ -33,7 +33,6 @@ class Home extends React.Component {
 	}
 
 	fetchList = (lastTime,currentPage,pageSize,dir) => {
-		console.log(typeof lastTime, lastTime)
 		let url = blogGlobal.requestBaseUrl + "/articles?mode=public&lastTime="+lastTime+"&currentPage="+currentPage+"&pageSize="+pageSize+"&dir="+dir;
 		fetch(url, {
 			method: 'get',

@@ -106,7 +106,7 @@ class Forget extends React.Component {
 			}
 			let data = {
 				username:this.state.username,
-				password:this.state.password
+				password:SHA(this.state.password)
 			}
 			let url = blogGlobal.requestBaseUrl + "/user/reset-password";
 			this.sendRequest(url, 'post', data, (json) => {
@@ -159,7 +159,7 @@ class Forget extends React.Component {
 
 	handlePasswordChange = (event) => {
 		let value = event.target.value;
-		this.setState({password:SHA(value)});
+		this.setState({password:value});
 		if(value === ''){
 			this.setState({
 				passwordTip:blogGlobal.passwordRuleTip,
@@ -207,7 +207,7 @@ class Forget extends React.Component {
 		}
 	}
 	handleComfirmPasswordChange = (event) => {
-		this.setState({comfirmPassword:SHA(event.target.value)});
+		this.setState({comfirmPassword:event.target.value});
 	}
 	handleComfirmPasswordFocus = (event) => {
 		this.setState({comfirmPasswordStatus:0});
@@ -295,7 +295,7 @@ class Forget extends React.Component {
 										<div className="form-box" styleName="form-box-spc">
 											<form>
 												<div className="form-group">
-													<input type="password" name="password" ref="inputPassword" placeholder="密码" onChange={this.handlePasswordChange} onFocus={this.handlePasswordFocus} onBlur={this.handlePasswordBlur}/>
+													<input type="password" name="password" ref="inputPassword" placeholder="新密码" onChange={this.handlePasswordChange} onFocus={this.handlePasswordFocus} onBlur={this.handlePasswordBlur}/>
 													<TipBar type={passwordTipType} text={passwordTip} arrow="has"/>
 												</div>
 												<div className="form-group">

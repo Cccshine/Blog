@@ -42,15 +42,14 @@ class Setting extends React.Component{
 	comfirmChangePw = () => {
 		let {password, comfirmPassword, passwordStatus, comfirmPasswordStatus} = this.state;
 		let username = sessionStorage.getItem('username');
-		console.log(password.trim(),comfirmPassword.trim(),SHA(''))
-		if(password.trim() === SHA('')){
+		if(password.trim() === ''){
 			this.setState({
 				passwordTip:blogGlobal.passwordNullTip,
 				passwordStatus:1
 			});
 			return;
 		}
-		if(comfirmPassword.trim() === SHA('')){
+		if(comfirmPassword.trim() === ''){
 			this.setState({
 				comfirmPasswordTip:blogGlobal.comfirmPasswordNullTip,
 				comfirmPasswordStatus:1
@@ -62,7 +61,7 @@ class Setting extends React.Component{
 		}
 		let data = {
 			username:this.state.username,
-			password:this.state.password
+			password:SHA(this.state.password)
 		}
 		let url = blogGlobal.requestBaseUrl + "/user/reset-password";
 		this.sendRequest(url, 'post', data, (json) => {
@@ -73,7 +72,7 @@ class Setting extends React.Component{
 
 	handlePasswordChange = (event) => {
 		let value = event.target.value;
-		this.setState({password:SHA(value)});
+		this.setState({password:value});
 		if(value === ''){
 			this.setState({
 				passwordTip:blogGlobal.passwordRuleTip,
@@ -105,7 +104,7 @@ class Setting extends React.Component{
 		});
 	}
 	handlePasswordFocus = (event) => {
-		if(this.state.password.trim() === SHA('')){
+		if(this.state.password.trim() === ''){
 			this.setState({
 				passwordTip:blogGlobal.passwordRuleTip,
 				passwordStatus:0
@@ -113,7 +112,7 @@ class Setting extends React.Component{
 		}
 	}
 	handlePasswordBlur = (event) => {
-		if(this.state.password.trim() === SHA('')){
+		if(this.state.password.trim() === ''){
 			this.setState({
 				passwordTip:blogGlobal.passwordNullTip,
 				passwordStatus:1
@@ -121,14 +120,14 @@ class Setting extends React.Component{
 		}
 	}
 	handleComfirmPasswordChange = (event) => {
-		this.setState({comfirmPassword:SHA(event.target.value)});
+		this.setState({comfirmPassword:event.target.value});
 	}
 	handleComfirmPasswordFocus = (event) => {
 		this.setState({comfirmPasswordStatus:0});
 	}
 	handleComfirmPasswordBlur = (event) => {
 		let comfirmPassword = this.state.comfirmPassword;
-		if(comfirmPassword.trim() === SHA('') && this.state.passwordStatus === 2){
+		if(comfirmPassword.trim() === '' && this.state.passwordStatus === 2){
 			this.setState({
 				comfirmPasswordTip:blogGlobal.comfirmPasswordNullTip,
 				comfirmPasswordStatus:1
