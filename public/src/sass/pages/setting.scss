@@ -44,4 +44,30 @@
 			border-color:$theme-adorn-color;
 		}
 	}
+	.safe-verify{
+		.tip{
+			@include vCenterLineHeight(50px);
+			text-align: center;
+			strong{
+				color: $theme-adorn-color;
+			}
+		}
+		.form-box-spc{
+			margin-top: 50px;
+		}
+		.form-group-double{
+			input{
+				width: 180px;
+			}
+			button{
+				width: 110px;
+				font-size: 14px;
+				margin-left: 10px;
+			}
+		}
+		.disabled-btn{
+			background: #ccc;
+			border-color: #ccc;
+		}
+	}
 }

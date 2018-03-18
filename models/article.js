@@ -2,7 +2,6 @@ const mongoose = require('mongoose');
 const ArticleSchema = require('../shcemas/article');
 
 const Article = mongoose.model('Article',ArticleSchema);
-
 Article.pageFirst = function(res,query,pageSize){
 	Article.find(query).then((articleList) => {//第一页时更新总数及总页数
 		homePageTotal = Math.ceil(articleList.length/pageSize);

@@ -40,6 +40,7 @@ class Modal extends React.Component{
 							}
 						</footer>
 					</div> : null}
+				{this.state.isOpen ? <div styleName="backdrop"></div> : null}
 			</div>
 		)
 	}

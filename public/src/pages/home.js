@@ -102,7 +102,7 @@ class Home extends React.Component {
 
 	render() {
 		let { status, summaryList, isLogin, loginModalShow, delModalShow, showTip, role ,pageTotal, pageSize, lastTime} = this.state;
-		let modalHtml = <p className="tips-in-modal">您还未登录，是否前往登录？<span className="small-tip">(登录后可评论)</span></p>;
+		let modalHtml = <p className="tips-in-modal">您还未登录，是否前往登录？<span className="small-tip">(登录后可评论，点赞，收藏)</span></p>;
 		let modalProps = {
 			isOpen: loginModalShow,
 			title: '登录提醒',

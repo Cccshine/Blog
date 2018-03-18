@@ -201,6 +201,16 @@
 		font-size: 14px;
 		height: 80px;
 	}
+	.comment-tip{
+		text-align: center;
+		a{
+			color: $theme-main-color;
+			transition: all $transition-time-normal;
+			&:hover{
+				color: $theme-adorn-color;
+			}
+		}
+	}
 }
 .toolbar{
 	position: fixed;

@@ -28,11 +28,6 @@ const userRouter = require('./routes/user');
 
 const app = express();
 
-var homeArticleTotal = 0;
-var homePageTotal = 0;
-var activityPageTotal = 0;
-var activityTotal = 0;
-
 // 设置监听端口,环境变量要是设置了PORT就用环境变量的PORT
 const port = process.env.PORT || config.port;
 mongoose.Promise = global.Promise

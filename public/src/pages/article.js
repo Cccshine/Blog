@@ -11,6 +11,7 @@ import blogGlobal from '../data/global';
 
 let eHeadings = null, headingsOffset = [];//存储所有的h1,h2,h3标签及其距离顶部的距离
 let loginUid = sessionStorage.getItem('uid');
+let isLogin = sessionStorage.getItem('isLogin') === "false" ? false : true;
 let rendererMD = new marked.Renderer();
 rendererMD.heading = function (text, level) {
 	let className = Number(level) <= 3 ? 'heading' : '';
@@ -50,7 +51,8 @@ class Article extends React.Component {
 			isCommentError: false,
 			isReplyError: false,
 			lastArticle:[],
-			nextArticle:[]
+			nextArticle:[],
+			loginModalShow:false
 		}
 	}
 	createCatalog = (html) => {
@@ -171,6 +173,10 @@ class Article extends React.Component {
 	}
 
 	handlePraise = (type,isPraise,subjectId,event) => {
+		if(!isLogin){
+			this.setState({loginModalShow:true});
+			return;
+		}
 		let data = {
 			uid: sessionStorage.getItem('uid'),
 			type: type,
@@ -209,6 +215,10 @@ class Article extends React.Component {
 	}
 
 	handleCollection = (isCollection, subjectId, event) => {
+		if(!isLogin){
+			this.setState({loginModalShow:true});
+			return;
+		}
 		let data = {
 			uid: sessionStorage.getItem('uid'),
 			subjectId:subjectId
@@ -244,6 +254,10 @@ class Article extends React.Component {
 	}
 
 	handleReply = (index, item, event) => {
+		if(!isLogin){
+			this.setState({loginModalShow:true});
+			return;
+		}
 		this.setState({ replyIndex: index });
 		setTimeout(() => {
 			this.setState({replayUser:item.fromUsername})
@@ -404,12 +418,28 @@ class Article extends React.Component {
 		return result;
 	}
 
+	gotoLogin = () => {
+		this.props.history.push('/login')
+	}
+
+	handleLoginModalClose = () => {
+		this.setState({ loginModalShow: false });
+	}
+
 
 	render() {
-		let { catalog, article, content, praiseUser, collectionUser, commentTotal, sidebarShow, activeCatalog, fixed, commentList, replyIndex, replayUser, isCommentError, isReplyError, lastArticle, nextArticle} = this.state;
+		let { catalog, article, content, praiseUser, collectionUser, commentTotal, sidebarShow, activeCatalog, fixed, commentList, replyIndex, replayUser, isCommentError, isReplyError, lastArticle, nextArticle,loginModalShow} = this.state;
 		let tagArr = article ? article.tag.split(';') : [];
 		tagArr.pop();
 		let tagProps = { isLink: true, hasClose: false, list: tagArr };
+		let modalHtml = <p className="tips-in-modal">您还未登录，是否前往登录？<span className="small-tip">(登录后可评论，点赞，收藏)</span></p>;
+		let modalProps = {
+			isOpen: loginModalShow,
+			title: '登录提醒',
+			modalHtml: modalHtml,
+			btns: [{ name: '确定', ref: 'ok', handleClick: this.gotoLogin }, { name: '取消', ref: 'close' }],
+			handleModalClose: this.handleLoginModalClose
+		}
 		return (
 			<article styleName="root" className="clearfix">
 				<header styleName="header" className="clearfix">
@@ -527,15 +557,17 @@ class Article extends React.Component {
 									})
 								}
 							</ul>
-							<div styleName="add-comment" id="comment">
-								<div className="fl" styleName="avatar"><img src={require('../images/logo.jpg')} className="avatar" /></div>
-								<div styleName="comment-form">
-									<button className="btn-normal fr" onClick={this.comfirmComment.bind(this, 'comment')}>评论</button>
-									<div className="over-hidden">
-										<textarea ref="comment" placeholder="在此输入评论，请文明用语" styleName={isCommentError && 'error'} onChange={this.handleCommentChange}></textarea>
-									</div>
-								</div>
-							</div>
+							{
+								isLogin ? <div styleName="add-comment" id="comment">
+											<div className="fl" styleName="avatar"><img src={require('../images/logo.jpg')} className="avatar" /></div>
+											<div styleName="comment-form">
+												<button className="btn-normal fr" onClick={this.comfirmComment.bind(this, 'comment')}>评论</button>
+												<div className="over-hidden">
+													<textarea ref="comment" placeholder="在此输入评论，请文明用语" styleName={isCommentError && 'error'} onChange={this.handleCommentChange}></textarea>
+												</div>
+											</div>
+										</div> :  <div styleName="add-comment" id="comment"><p styleName="comment-tip">登陆后才可评论，是否前往<Link to = "/login">登录</Link></p></div>
+							}
 						</div>
 					</div>
 					<aside styleName="sidebar" className={fixed ? 'fl' : 'fl absolute'} style={{ display: sidebarShow ? 'block' : 'none' }}>
@@ -548,13 +580,14 @@ class Article extends React.Component {
 				<ul styleName="toolbar">
 					{praiseUser.includes(loginUid) ? 
 						<li styleName="toolbar-item" title="赞一个" onClick={this.handlePraise.bind(this, 0, false, this.props.match.params.articleId)}><i className="fa fa-thumbs-up"></i><span>{praiseUser.length}</span></li> : 
-						<li styleName="toolbar-item" title="赞一个" onClick={this.handlePraise.bind(this, 0, true, this.props.match.params.articleId)}><i className="fa fa-thumbs-o-up" styleName="pre-operate"></i><i className="fa fa-thumbs-up" styleName="operated"></i><span>{praiseUser.length}</span></li>}
+						<li styleName="toolbar-item" title="取消赞" onClick={this.handlePraise.bind(this, 0, true, this.props.match.params.articleId)}><i className="fa fa-thumbs-o-up" styleName="pre-operate"></i><i className="fa fa-thumbs-up" styleName="operated"></i><span>{praiseUser.length}</span></li>}
 					{collectionUser.includes(loginUid) ? 
 						<li styleName="toolbar-item" title="收藏" onClick={this.handleCollection.bind(this, false, this.props.match.params.articleId)}><i className="fa fa-bookmark"></i><span>{collectionUser.length}</span></li> : 
-						<li styleName="toolbar-item" title="收藏" onClick={this.handleCollection.bind(this, true, this.props.match.params.articleId)}><i className="fa fa-bookmark-o" styleName="pre-operate"></i><i className="fa fa-bookmark" styleName="operated"></i><span>{collectionUser.length}</span></li>}
+						<li styleName="toolbar-item" title="取消收藏" onClick={this.handleCollection.bind(this, true, this.props.match.params.articleId)}><i className="fa fa-bookmark-o" styleName="pre-operate"></i><i className="fa fa-bookmark" styleName="operated"></i><span>{collectionUser.length}</span></li>}
 					<li styleName="toolbar-item"  title="评论"><a href="#comment"><i className="fa fa-commenting-o" styleName="pre-operate"></i><i className="fa fa-commenting" styleName="operated"></i><span>{commentTotal}</span></a></li>
 				</ul>
 				<div className="fa fa-chevron-up" styleName="backtop" title="回到顶部" onClick={this.handleBackTop}></div>
+				<Modal {...modalProps}/>
 			</article>
 		)
 	}

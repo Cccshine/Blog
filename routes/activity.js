@@ -2,6 +2,8 @@ const express = require('express');
 const mongoose = require('mongoose');
 const router = express.Router();
 const ActivityeModel = mongoose.model('Activity');
+let activityPageTotal = 0;
+let activityTotal = 0;
 router.post('/',function(req,res){
     let {userId,articleId,activityMode} = req.body;
     let _activity = {
@@ -23,7 +25,7 @@ router.get('/',function(req,res){
 	let {userId,lastTime,currentPage,pageSize,dir} = req.query;
 	currentPage = Number(currentPage);
 	pageSize = Number(pageSize);
-	dir = Number(dir);
+    dir = Number(dir);
 	if(currentPage === 0){//第一页
 		ActivityeModel.find({userId:userId}).then((activityList) => {//第一页时更新总数及总页数
 			activityPageTotal = Math.ceil(activityList.length/pageSize);

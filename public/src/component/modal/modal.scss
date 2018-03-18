@@ -10,6 +10,7 @@
 	box-shadow:$box-shadow-normal;
 	background-color:#fff;
 	font-size:$modal-font-size;
+	z-index: 1001;
 }
 .modal-header{
 	@include vCenterLineHeight($modal-header-height);
@@ -35,4 +36,15 @@
 .modal-footer{
 	@include vCenterLineHeight($modal-footer-height);
 	text-align:center;
+}
+
+.backdrop{
+	width: 100%;
+	height: 100%;
+	position: fixed;
+	top: 0;
+	left: 0;
+	background: #000;
+	opacity: 0.7;
+	z-index: 1000;
 }
