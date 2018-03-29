@@ -35,7 +35,13 @@ class User extends React.Component{
 			<div styleName="root">
 				<header className="clearfix" styleName="profile-header">
 					<div className="fl" styleName="user-info">
-						<img className="fl" src={require('../images/logo.jpg')}  alt="cshine"/>
+						<div className="fl" styleName="avatar">
+							<img className="fl" src={require('../images/logo.jpg')}  alt="cshine"/>
+							<div styleName="mask">
+								<span>更换头像</span>
+							</div>
+							<input type="file" title="请点击选择图片上传"/>
+						</div>
 						<h3 className="fl">{username}</h3>
 					</div>
 					{
