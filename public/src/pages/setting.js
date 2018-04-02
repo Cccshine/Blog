@@ -276,7 +276,7 @@ class Setting extends React.Component{
 		
 	}
 
-	//发送请求mode: post--新建评论
+	//发送请求
 	sendRequest = (url, mode, data, callback) => {
 		fetch(url, {
 			method: mode,

@@ -13,34 +13,141 @@ import Collection from './user-collection.js';
 import Praise from './user-praise.js';
 import NoMatch from './nomatch.js';
 
+import CImage from '../other/CImage.min.js';
+import '../other/cimage.css';
+
+let avatarFile = null;
+
 class User extends React.Component{
 	constructor(props){
 		super(props);
+		this.state = {
+			avatarModalShow:false,
+			uploadSrc:'',
+			avatarSrc:'',
+		}
 	}
 
 	componentWillMount = () => {
-		let username = this.props.match.params.username;
+		let url = blogGlobal.requestBaseUrl + "/user?username="+sessionStorage.getItem('username');
+		this.sendRequest(url, 'get', null, (json) => {
+			console.log(json)
+			this.setState({avatarSrc:json.userInfo.avatar})
+		});
 		// to do 后台请求头像等用户信息
 	}
 
-	handleSetting = () => {
-		this.props.history.push({ pathname: '/setting', state: {username:this.props.match.params.usernameue}});
+	handleChangeAvatar = (event) => {
+		let file = event.target.files[0];
+		if(file.type.split('/')[0] !== 'image'){
+			alert('请上传图片');
+			return;
+		}
+		if(file.size > 1024*1024*2){
+			alert('图片大小不得超过2M');
+			return;
+		}
+		avatarFile = file;
+		let fd = new FileReader();
+		fd.readAsDataURL(file);
+		fd.onload = () => {
+			this.setState({avatarModalShow:true,uploadSrc:fd.result});
+			this.refs.upload.value = '';
+			setTimeout(()=>{
+				let CI = new CImage({
+				    element: this.refs.cimage,
+				    createHandles: ['n', 's', 'e', 'w', 'ne', 'se', 'sw', 'nw'],
+				    aspectRatio: 1,
+				    previewSize: [100, 50],
+				    minSize: [20, 20],
+				    onChange: () => {
+				        // let info = CI.getSelectInfo();
+				        // console.log(info);
+				    },
+				    onSelect: () => {
+				        console.log('select')
+				    },
+				    onRelease:() => {
+				        console.log('release')
+				    }
+				});
+				CI.setSelect({x1:0,y1:0,x2:100,y2:100});
+			}, 0);
+		}
 	}
 
+	comfirmChangeAvatar = () => {
+		let url = blogGlobal.requestBaseUrl + "/user/upload-avatar";
+
+		var data = new FormData()
+		data.append('avatar', avatarFile);
+		console.log(avatarFile)
+		fetch(url, {
+			method: 'post',
+			headers: {
+				'Accept': 'application/json',
+			},
+			mode: 'cors',
+			credentials: 'include',
+			body: data
+		}).then((response) => {
+			return response.json();
+		}).then((json) => {
+			console.log(json)
+		}).catch((err) => {
+			console.log(err);
+		});
+	}
+
+	handleSetting = () => {
+		this.props.history.push({ pathname: '/setting', state: {username:sessionStorage.getItem('username')}});
+	}
+
+	//发送请求
+	sendRequest = (url, mode, data, callback) => {
+		fetch(url, {
+			method: mode,
+			headers: {
+				'Accept': 'application/json',
+				'Content-Type': 'application/json'
+			},
+			mode: 'cors',
+			credentials: 'include',
+			body: data ? JSON.stringify(data) : null
+		}).then((response) => {
+			return response.json();
+		}).then((json) => {
+			callback && callback(json);
+		}).catch((err) => {
+			console.log(err);
+		});
+	}
+
+
 	render(){
+		let {avatarModalShow,avatarSrc,uploadSrc} = this.state;
 		let tagProps = { isLink: true, hasClose: false };
 		let list = ["css","html"]
-		let username = this.props.match.params.username;
+		let username = sessionStorage.getItem('username');
+		let avatarModalHtml = <img id="cimage" ref="cimage" src={uploadSrc} alt={username}/>
+		let avatarModalProps = {
+			isOpen: avatarModalShow,
+			title: '更换头像',
+			name:'avatar',
+			modalHtml: avatarModalHtml,
+			btns: [{ name: '上传头像', ref: 'ok', handleClick: this.comfirmChangeAvatar }, { name: '取消', ref: 'close' }],
+			handleModalClose: this.handleAvatarModalClose
+		}
 		return(
 			<div styleName="root">
 				<header className="clearfix" styleName="profile-header">
 					<div className="fl" styleName="user-info">
 						<div className="fl" styleName="avatar">
-							<img className="fl" src={require('../images/logo.jpg')}  alt="cshine"/>
+							<img className="fl" src={avatarSrc}  alt={username}/>
 							<div styleName="mask">
 								<span>更换头像</span>
 							</div>
-							<input type="file" title="请点击选择图片上传"/>
+							<input type="file" name="avatar" ref="upload" title="请点击选择图片上传" accept="image/*" onChange={this.handleChangeAvatar}/>
 						</div>
 						<h3 className="fl">{username}</h3>
 					</div>
@@ -66,6 +173,7 @@ class User extends React.Component{
 					    </Switch>
 					</div>
 				</div>
+				{avatarModalShow ? <Modal {...avatarModalProps} /> : null}
 			</div>
 		)
 	}

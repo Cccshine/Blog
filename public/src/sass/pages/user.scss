@@ -19,6 +19,9 @@
 		right: 20px;
 		bottom: 10px;
 	}
+	[data-role="model-avatar"]{
+		width:auto;
+	}
 	.null-tip,.loading{
 		@extend .common-level-center-transform;
 		margin-top: 100px;
@@ -85,6 +88,7 @@
 .profile-tabs{
 	display:flex;
 	justify-content:space-around;
+	display:none;
 	a{
 		flex-grow: 1;
 		@include vCenterLineHeight(40px);
@@ -104,6 +108,7 @@
 	}
 }
 .profile-active-list{
+	display:none;
 	padding: 10px;
 	font-size: 14px;
 	.list-item{

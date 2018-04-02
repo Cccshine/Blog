@@ -20,16 +20,16 @@ class Modal extends React.Component{
 	}
 
 	render(){
-		let {title,modalHtml,btns,handleModalClose} = this.props;
+		let {title,name,modalHtml,btns,handleModalClose} = this.props;
 		return (
 			<div>
 				{this.state.isOpen ? 
-					<div styleName="modal" ref="modal">
+					<div styleName="modal" ref="modal" data-role={"model-"+name}>
 						<header styleName="modal-header">
 							<h4>{title}</h4>
 							<i className="fa fa-close" onClick={handleModalClose ? handleModalClose : this.handleClose}></i>
 						</header>
-						<main styleName="modal-body">
+						<main styleName="modal-body" className="clearfix">
 							{modalHtml}
 						</main>
 						<footer styleName="modal-footer">
