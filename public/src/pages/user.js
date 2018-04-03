@@ -17,6 +17,7 @@ import CImage from '../other/CImage.min.js';
 import '../other/cimage.css';
 
 let avatarFile = null;
+let avatarArea = null;
 
 class User extends React.Component{
 	constructor(props){
@@ -31,10 +32,8 @@ class User extends React.Component{
 	componentWillMount = () => {
 		let url = blogGlobal.requestBaseUrl + "/user?username="+sessionStorage.getItem('username');
 		this.sendRequest(url, 'get', null, (json) => {
-			console.log(json)
 			this.setState({avatarSrc:json.userInfo.avatar})
 		});
-		// to do 后台请求头像等用户信息
 	}
 
 	handleChangeAvatar = (event) => {
@@ -61,14 +60,7 @@ class User extends React.Component{
 				    previewSize: [100, 50],
 				    minSize: [20, 20],
 				    onChange: () => {
-				        // let info = CI.getSelectInfo();
-				        // console.log(info);
-				    },
-				    onSelect: () => {
-				        console.log('select')
-				    },
-				    onRelease:() => {
-				        console.log('release')
+				        avatarArea = CI.getSelectInfo();
 				    }
 				});
 				CI.setSelect({x1:0,y1:0,x2:100,y2:100});
@@ -78,10 +70,9 @@ class User extends React.Component{
 
 	comfirmChangeAvatar = () => {
 		let url = blogGlobal.requestBaseUrl + "/user/upload-avatar";
-
 		var data = new FormData()
 		data.append('avatar', avatarFile);
-		console.log(avatarFile)
+		data.append('avatarArea',JSON.stringify(avatarArea));
 		fetch(url, {
 			method: 'post',
 			headers: {
@@ -93,10 +84,11 @@ class User extends React.Component{
 		}).then((response) => {
 			return response.json();
 		}).then((json) => {
-			console.log(json)
+			this.setState({avatarSrc:json.avatarSrc});
 		}).catch((err) => {
 			console.log(err);
 		});
+		this.setState({avatarModalShow:false});
 	}
 
 	handleSetting = () => {

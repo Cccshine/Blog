@@ -1,21 +1,22 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const moment = require('moment');
-const multer  = require('multer');
 const router = express.Router();
 const UserModel = mongoose.model('User');
-
+const fs = require('fs');
+const images = require("images");
+const multer  = require('multer');
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, '/uploads')
+    cb(null, './public/uploads')
   },
   filename: (req, file, cb) => {
-    let type = file.mimetype.split('/')[1];
+    let type = file.originalname.split(".");
     let name = req.session.username;
-    cb(null, `${file.fieldname}-${name}-${Date.now()}.${type}`);
+    cb(null, `${file.fieldname}-${name}-${Date.now()}.${type[type.length - 1]}`);
   }
 })
-const upload = multer({ storage: storage })
+const upload = multer({ storage: storage }).single('avatar');
 
 router.post('/reset-password', function(req, res) {
   let {username,password} = req.body;
@@ -48,13 +49,44 @@ router.get('/', function(req, res) {
   });
 });
 
-router.post('/upload-avatar', upload.single('avatar'), function (req, res, next) {
-  // req.file 是 `avatar` 文件的信息
-  // req.body 将具有文本域数据，如果存在的话
-  console.log(req.file)
+router.post('/upload-avatar', function (req, res) {
+  upload(req,res,(err)=>{
+    if(err){
+      console.log(err);
+      res.status(500).send('Something broke!');
+      return;
+    }
+    // req.file 是 `avatar` 文件的信息,req.body 将具有文本域数据，如果存在的话
+    let avatarArea = JSON.parse(req.body.avatarArea);
+    let newPath = `${req.file.destination}/clip-${req.file.filename}`;
+    let frontPath = `/uploads/clip-${req.file.filename}`;
+    console.log(avatarArea)
+    //截取生成新图片
+    images(images(req.file.path),avatarArea.x1,avatarArea.y1,avatarArea.width,avatarArea.height).resize(200).save(newPath);
+    //删除用户上传的图片
+    fs.unlink(req.file.path,(err)=>{
+      if(err){
+        console.log(err);
+        res.status(500).send('Something broke!');
+        return;
+      }
+      console.log('删除用户上传的图片成功');
+      UserModel.findOneAndUpdate({name:req.session.username},{$set:{avatar:frontPath}}).then((user) => {
+          //user默认为更新前的集合，所以可以直接删掉上一次的头像
+          fs.unlink('public'+user.avatar,(err)=>{
+            if(err){
+              console.log(err);
+              return;
+            }
+            console.log('删除原来的头像成功');
+          })
+          return res.json({"avatarSrc":frontPath,"msg":"setting avatar success"});//头像修改成功
+      }).catch((err) =>{
+        console.log(err);
+        res.status(500).send('Something broke!');
+      });
+    })
+  })
 })
 
 module.exports = router;
-
-//https://www.cnblogs.com/athean/p/6800895.html
-//https://blog.csdn.net/cjd6568358/article/details/54346383
