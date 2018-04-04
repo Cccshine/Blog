@@ -19,6 +19,9 @@ import '../other/cimage.css';
 let avatarFile = null;
 let avatarArea = null;
 
+let activeUsername = "";
+
+
 class User extends React.Component{
 	constructor(props){
 		super(props);
@@ -30,9 +33,11 @@ class User extends React.Component{
 	}
 
 	componentWillMount = () => {
-		let url = blogGlobal.requestBaseUrl + "/user?username="+sessionStorage.getItem('username');
+		activeUsername = window.location.pathname.split('/', 3)[2];
+		let url = blogGlobal.requestBaseUrl + "/user?username="+activeUsername;
 		this.sendRequest(url, 'get', null, (json) => {
-			this.setState({avatarSrc:json.userInfo.avatar})
+			this.setState({avatarSrc:json.userInfo.avatar});
+			this.props.history.push({ pathname: '/user/'+activeUsername+'/activities'});
 		});
 	}
 
@@ -92,7 +97,7 @@ class User extends React.Component{
 	}
 
 	handleSetting = () => {
-		this.props.history.push({ pathname: '/setting', state: {username:sessionStorage.getItem('username')}});
+		this.props.history.push({ pathname: '/setting', state: {username:activeUsername}});
 	}
 
 	//发送请求
@@ -120,8 +125,7 @@ class User extends React.Component{
 		let {avatarModalShow,avatarSrc,uploadSrc} = this.state;
 		let tagProps = { isLink: true, hasClose: false };
 		let list = ["css","html"]
-		let username = sessionStorage.getItem('username');
-		let avatarModalHtml = <img id="cimage" ref="cimage" src={uploadSrc} alt={username}/>
+		let avatarModalHtml = <img id="cimage" ref="cimage" src={uploadSrc} alt={activeUsername}/>
 		let avatarModalProps = {
 			isOpen: avatarModalShow,
 			title: '更换头像',
@@ -135,16 +139,15 @@ class User extends React.Component{
 				<header className="clearfix" styleName="profile-header">
 					<div className="fl" styleName="user-info">
 						<div className="fl" styleName="avatar">
-							<img className="fl" src={avatarSrc}  alt={username}/>
-							<div styleName="mask">
-								<span>更换头像</span>
-							</div>
-							<input type="file" name="avatar" ref="upload" title="请点击选择图片上传" accept="image/*" onChange={this.handleChangeAvatar}/>
+							<img className="fl" src={avatarSrc}  alt={activeUsername}/>
+							{
+								activeUsername === sessionStorage.getItem('username') ? <div><div styleName="mask"><span>更换头像</span></div><input type="file" name="avatar" ref="upload" title="请点击选择图片上传" accept="image/*" onChange={this.handleChangeAvatar}/></div> : null
+							}
 						</div>
-						<h3 className="fl">{username}</h3>
+						<h3 className="fl">{activeUsername}</h3>
 					</div>
 					{
-						username === sessionStorage.getItem('username') ? <div className="fr" styleName="btn-group">
+						activeUsername === sessionStorage.getItem('username') ? <div className="fr" styleName="btn-group">
 						<button className="btn-normal btn-md" onClick={this.handleSetting}>设置</button>
 					</div> : null
 					}
@@ -152,9 +155,9 @@ class User extends React.Component{
 				</header>
 				<div styleName="profile-main">
 					<nav styleName="profile-tabs" className="profile-tabs">
-						<NavLink to={"/user/"+username+"/activities"} activeClassName="active-tab">动态</NavLink>
-						<NavLink to={"/user/"+username+"/collections"} activeClassName="active-tab">收藏的文章</NavLink>
-						<NavLink to={"/user/"+username+"/praise"} activeClassName="active-tab">点赞的文章</NavLink>
+						<NavLink to={"/user/"+activeUsername+"/activities"} activeClassName="active-tab">动态</NavLink>
+						<NavLink to={"/user/"+activeUsername+"/collections"} activeClassName="active-tab">收藏的文章</NavLink>
+						<NavLink to={"/user/"+activeUsername+"/praise"} activeClassName="active-tab">点赞的文章</NavLink>
 					</nav>
 					<div>
 						<Switch>

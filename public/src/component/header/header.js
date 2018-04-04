@@ -12,7 +12,28 @@ class Header extends React.Component{
 		this.state = {
 			isLogin:props.isLogin,
 			role:props.role,
+			avatarSrc:''
 		}
+	}
+
+	componentWillMount = () => {
+		let username = this.props.username ? this.props.username : sessionStorage.getItem('username');
+		let url = blogGlobal.requestBaseUrl + "/user?username="+username;
+		fetch(url, {
+			method: 'get',
+			headers: {
+				'Accept': 'application/json',
+			},
+			mode: 'cors',
+			credentials: 'include',
+			body: null
+		}).then((response) => {
+			return response.json();
+		}).then((json) => {
+			this.setState({avatarSrc:json.userInfo.avatar})
+		}).catch((err) => {
+			console.log(err);
+		});
 	}
 
 	componentWillReceiveProps = (nextProps) => {
@@ -21,7 +42,7 @@ class Header extends React.Component{
 
 
 	render(){
-		let {isLogin,role} = this.state;
+		let {isLogin,role,avatarSrc} = this.state;
 		let quickLinkProps = {
 			pageName:isLogin ? 'logined' : 'index',
 			username:this.props.username,
@@ -30,7 +51,7 @@ class Header extends React.Component{
 		return (
 			<header styleName="top-header">
 				<div styleName="logo">
-					<img src={require('../../images/logo.jpg')}  alt="cshine"/>
+					<img src={avatarSrc}  alt="cshine"/>
 				</div>
 				<nav styleName="header-nav">
 					<NavLink exact to='/' activeClassName="active-nav">首页</NavLink>

@@ -3,10 +3,14 @@ const mongoose = require('mongoose');
 const CommentSchema = new mongoose.Schema({
 	articleId: mongoose.Schema.Types.ObjectId,
 	parentId:mongoose.Schema.Types.ObjectId,
-	fromUid:mongoose.Schema.Types.ObjectId,
-	toUid:mongoose.Schema.Types.ObjectId,
-	fromUsername: String,
-	toUsername: String,
+	fromUser:{
+		type:mongoose.Schema.Types.ObjectId,
+		ref:'User'
+	},
+	toUser:{
+		type:mongoose.Schema.Types.ObjectId,
+		ref:'User'
+	},
 	content:String,
 	praiseUser:[mongoose.Schema.Types.ObjectId],
 	praiseTotal:{

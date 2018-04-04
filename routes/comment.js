@@ -5,14 +5,12 @@ const ArticleModel = mongoose.model('Article');
 const CommentModel = mongoose.model('Comment');
 
 router.post('/',function(req,res){
-	let {articleId,parentId,fromUid,toUid,fromUsername,toUsername,content} = req.body;
+	let {articleId,parentId,fromUid,toUid,content} = req.body;
 	let _comment = {
 		articleId:articleId,
 		parentId:parentId,
-		fromUid:fromUid,
-		toUid:toUid,
-		fromUsername:fromUsername,
-		toUsername: toUsername,
+		fromUser:fromUid,
+		toUser:toUid,
 		content: content
 	}
 	console.log('评论');
@@ -35,8 +33,8 @@ router.post('/',function(req,res){
 
 router.get('/',function(req,res){
 	let articleId = req.query.articleId;
-	CommentModel.find({articleId:articleId,parentId:null}).sort({praiseTotal:-1}).then((commentList) => {
-		CommentModel.find({articleId:articleId,parentId:{$ne:null}}).sort({praiseTotal:-1}).then((replyList) => {
+	CommentModel.find({articleId:articleId,parentId:null}).sort({praiseTotal:-1}).populate('fromUser').populate('toUser').then((commentList) => {
+		CommentModel.find({articleId:articleId,parentId:{$ne:null}}).sort({praiseTotal:-1}).populate('fromUser').populate('toUser').then((replyList) => {
 			return res.json({"status":1,commentList:commentList,replyList:replyList,"msg":"success"});
 		}).catch((err) => {
 			console.log(err);

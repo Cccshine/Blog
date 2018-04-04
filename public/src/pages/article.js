@@ -52,7 +52,8 @@ class Article extends React.Component {
 			isReplyError: false,
 			lastArticle:[],
 			nextArticle:[],
-			loginModalShow:false
+			loginModalShow:false,
+			avatarSrc:''
 		}
 	}
 	createCatalog = (html) => {
@@ -137,6 +138,9 @@ class Article extends React.Component {
 			headingsOffset.reverse();
 		}).catch((err) => {
 			console.log(err);
+		});
+		this.sendRequest(blogGlobal.requestBaseUrl + "/user?username=" + sessionStorage.getItem('username'), 'get', null, (json) => {
+			this.setState({avatarSrc:json.userInfo.avatar});
 		});
 		this.fetchComments();
 		window.addEventListener('scroll', this.changeCatalog, false);
@@ -260,10 +264,10 @@ class Article extends React.Component {
 		}
 		this.setState({ replyIndex: index });
 		setTimeout(() => {
-			this.setState({replayUser:item.fromUsername})
+			this.setState({replayUser:item.fromUser.name})
 			this.refs.reply.focus();
-			this.refs.reply.dataset.touid = item.fromUid;
-			this.refs.reply.dataset.touname = item.fromUsername;
+			this.refs.reply.dataset.touid = item.fromUser._id;
+			this.refs.reply.dataset.touname = item.fromUser.name;
 			if(item.parentId){
 				this.refs.reply.dataset.pid = item.parentId;
 			}else{
@@ -301,7 +305,6 @@ class Article extends React.Component {
 
 	comfirmComment = (mode, event) => {
 		let data = {
-			fromUsername: sessionStorage.getItem('username'),
 			fromUid: sessionStorage.getItem('uid'),
 			articleId: this.props.match.params.articleId
 		}
@@ -322,7 +325,6 @@ class Article extends React.Component {
 				this.refs.reply.focus();
 				return;
 			}
-			data.toUsername = this.refs.reply.dataset.touname;
 			data.toUid = this.refs.reply.dataset.touid;
 			data.parentId = this.refs.reply.dataset.pid || null;
 			console.log(data)
@@ -428,7 +430,7 @@ class Article extends React.Component {
 
 
 	render() {
-		let { catalog, article, content, praiseUser, collectionUser, commentTotal, sidebarShow, activeCatalog, fixed, commentList, replyIndex, replayUser, isCommentError, isReplyError, lastArticle, nextArticle,loginModalShow} = this.state;
+		let { catalog, article, content, praiseUser, collectionUser, commentTotal, sidebarShow, activeCatalog, fixed, commentList, replyIndex, replayUser, isCommentError, isReplyError, lastArticle, nextArticle,loginModalShow,avatarSrc} = this.state;
 		let tagArr = article ? article.tag.split(';') : [];
 		tagArr.pop();
 		let tagProps = { isLink: true, hasClose: false, list: tagArr };
@@ -477,12 +479,12 @@ class Article extends React.Component {
 									commentList.map((item, index) => {
 										return (
 											<li styleName="comment-item" className="clearfix" key={index}>
-												<div className="fl" data-userid={item.fromUid} data-username={item.fromUsername}><img src={require('../images/logo.jpg')} className="avatar" /></div>
+												<div className="fl" data-userid={item.fromUser._id} data-username={item.fromUser.name}><Link to={`/user/${item.fromUser.name}/activities`}><img src={item.fromUser.avatar} className="avatar" /></Link></div>
 												<div styleName="comment-content">
 													<div styleName="comment-info" className="clearfix">
 														<div className="fl" styleName="user-info">
-															<strong>{item.fromUid === sessionStorage.getItem('uid') ? '我' : item.fromUsername}</strong>
-															{item.fromUsername === 'admin' ? <span>作者</span> : null}
+															<strong>{item.fromUser._id === sessionStorage.getItem('uid') ? '我' : item.fromUser.name}</strong>
+															{item.fromUser.name === 'admin' ? <span>作者</span> : null}
 															<time>{this.getDateDiff(item.createTime)}</time>
 														</div>
 														<div className="fr" styleName="operate">
@@ -499,27 +501,27 @@ class Article extends React.Component {
 															item.replyList.map((ritem, rindex) => {
 																return (
 																	<li key={rindex + 'r'}>
-																		<div className="fl" data-userid={ritem.fromUid} data-username={ritem.fromUsername}><img src={require('../images/logo.jpg')} className="avatar" /></div>
+																		<div className="fl" data-userid={ritem.fromUser._id} data-username={ritem.fromUser.name}><Link to={`/user/${ritem.fromUser.name}/activities`}><img src={ritem.fromUser.avatar} className="avatar" /></Link></div>
 																		<div styleName="comment-content">
 																			<div styleName="comment-info" className="clearfix">
 																				{
-																					ritem.fromUid === ritem.toUid ? 
+																					ritem.fromUser._id === ritem.toUser._id ? 
 																					<div className="fl" styleName="user-info">
-																						<strong>{ritem.fromUid === sessionStorage.getItem('uid') ? '我' : ritem.fromUsername}</strong>
-																						{ritem.fromUsername === 'admin' ? <span>作者</span> : null}
+																						<strong>{ritem.fromUser._id === sessionStorage.getItem('uid') ? '我' : ritem.fromUser.name}</strong>
+																						{ritem.fromUser.name === 'admin' ? <span>作者</span> : null}
 																						<time>{this.getDateDiff(ritem.createTime)}</time>
 																					</div> : 
 																					<div className="fl" styleName="user-info">
-																						<strong>{ritem.fromUid === sessionStorage.getItem('uid') ? '我' : ritem.fromUsername}</strong>
-																						{ritem.fromUsername === 'admin' ? <span>作者</span> : null}
+																						<strong>{ritem.fromUser._id === sessionStorage.getItem('uid') ? '我' : ritem.fromUser.name}</strong>
+																						{ritem.fromUser.name === 'admin' ? <span>作者</span> : null}
 																						<i>@</i>
-																						<strong>{ritem.toUid === sessionStorage.getItem('uid') ? '我' : ritem.toUsername}</strong>
-																						{ritem.toUsername === 'admin' ? <span>作者</span> : null}
+																						<strong>{ritem.toUser._id === sessionStorage.getItem('uid') ? '我' : ritem.toUser.name}</strong>
+																						{ritem.toUser.name === 'admin' ? <span>作者</span> : null}
 																						<time>{this.getDateDiff(ritem.createTime)}</time>
 																					</div>
 																				}
 																				{
-																					ritem.fromUid === sessionStorage.getItem('uid') ? <div className="fr" styleName="operate">
+																					ritem.fromUser._id === sessionStorage.getItem('uid') ? <div className="fr" styleName="operate">
 																						{ritem.praiseUser.includes(loginUid) ? 
 																							<span onClick={this.handlePraise.bind(this,1,false,ritem._id)}><i className="fa fa-thumbs-up"></i>赞<em>({ritem.praiseUser.length})</em></span> : 
 																							<span onClick={this.handlePraise.bind(this,1,true,ritem._id)}><i className="fa fa-thumbs-o-up"></i>赞<em>({ritem.praiseUser.length})</em></span>
@@ -559,7 +561,7 @@ class Article extends React.Component {
 							</ul>
 							{
 								isLogin ? <div styleName="add-comment" id="comment">
-											<div className="fl" styleName="avatar"><img src={require('../images/logo.jpg')} className="avatar" /></div>
+											<div className="fl" styleName="avatar"><Link to={`/user/${sessionStorage.getItem('username')}/activities`}><img src={avatarSrc} className="avatar" /></Link></div>
 											<div styleName="comment-form">
 												<button className="btn-normal fr" onClick={this.comfirmComment.bind(this, 'comment')}>评论</button>
 												<div className="over-hidden">
