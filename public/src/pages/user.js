@@ -12,6 +12,7 @@ import Activity from './user-activity.js';
 import Collection from './user-collection.js';
 import Praise from './user-praise.js';
 import NoMatch from './nomatch.js';
+import PubSub from 'pubsub-js';
 
 import CImage from '../other/CImage.min.js';
 import '../other/cimage.css';
@@ -90,6 +91,7 @@ class User extends React.Component{
 			return response.json();
 		}).then((json) => {
 			this.setState({avatarSrc:json.avatarSrc});
+			PubSub.publish('avtarChange',json.avatarSrc);
 		}).catch((err) => {
 			console.log(err);
 		});

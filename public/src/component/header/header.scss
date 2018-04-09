@@ -13,14 +13,30 @@
 	color:$top-header-n-color;
 	font:$top-header-n-font;
 	z-index:999;
-	display:none;
+	// display:none;
 }
 .logo{
 	float:left;
+	position:relative;
 	@include square($logo-size);
 	img{
 		@include square($logo-size);
 		border-radius:$border-radius-circle;
+	}
+	span{
+		min-width:18px;
+		height:18px;
+		line-height: 18px;
+	    position: absolute;
+	    top: -5px;
+	    right: -5px;
+	    color: #fff;
+	    font-size: 12px;
+	    font-weight:normal;
+	    text-align:center;
+	    background: $theme-adorn-color;;
+	    border-radius: 10px;
+	    padding: 0 2px;
 	}
 }
 .header-nav{

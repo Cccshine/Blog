@@ -245,16 +245,18 @@
 		}
 	}
 	span{
-		@include square(15px);
-		line-height: 15px;
+		min-width:18px;
+		height:18px;
+		line-height: 18px;
 	    position: absolute;
 	    top: -5px;
 	    right: -5px;
 	    color: #fff;
 	    font-size: 12px;
-	    font-weight: bold;
+	    text-align:center;
 	    background: $theme-adorn-color;;
-	    border-radius: 50%;
+	    border-radius: 10px;
+	    padding: 0 2px;
 	}
 }
 .root .backtop{

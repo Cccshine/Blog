@@ -27,6 +27,7 @@ const forgetRouter = require('./routes/forget');
 const userRouter = require('./routes/user');
 
 const app = express();
+const expressWs = require('express-ws')(app);
 
 // 设置监听端口,环境变量要是设置了PORT就用环境变量的PORT
 const port = process.env.PORT || config.port;
@@ -35,7 +36,7 @@ mongoose.Promise = global.Promise
 mongoose.connect(config.mongodb,{useMongoClient:true});
 const db = mongoose.connection;;
 db.on('error', console.error.bind(console,'connection error!'));
-db.once('open', function() {
+db.once('open', () => {
   console.log('connection successful!')
 });
 app.use(cookieParser('cshine'));
@@ -56,7 +57,7 @@ app.use(session({
 app.use( bodyParser.json() );       // to support JSON-encoded bodies
 app.use( bodyParser.urlencoded({ extended: true }) ); // to support URL-encoded bodies
 
-app.all('*', function(req, res, next) {
+app.all('*', (req, res, next) => {
     res.header("Access-Control-Allow-Origin", req.headers.origin);
     res.header('Access-Control-Allow-Headers', 'Origin, No-Cache, X-Requested-With, If-Modified-Since, Pragma, Last-Modified, Cache-Control, Expires, Content-Type, X-E4M-With');
     res.header("Access-Control-Allow-Methods","PUT,POST,GET,DELETE,OPTIONS,UPDATE");
@@ -76,6 +77,17 @@ app.use('/api/collection', collectionRouter);
 app.use('/api/activity', activityRouter);
 app.use('/api/forget', forgetRouter);
 app.use('/api/user', userRouter);
+
+const websocketRouter = require('./routes/websocket');
+app.use('/', websocketRouter);
+
+// app.ws('/avatar', (ws, req) => {
+//   ws.on('message', (msg) => {
+//     console.log(msg);
+//     ws.send('hello cc')
+//   });
+//   console.log('socket');
+// });
 
 app.listen(port);
 
