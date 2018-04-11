@@ -137,7 +137,7 @@ class Home extends React.Component {
 						switch (status) {
 							case 1:
 								return (
-									<div>
+									<div style={{display:'none'}}>
 										{
 											summaryList.map((item, index) => {
 												let list = item.tag.split(';');
@@ -173,10 +173,10 @@ class Home extends React.Component {
 								)
 								break;
 							case 2:
-								return <h3 styleName="null-tip">暂无文章</h3>
+								return <h3 styleName="null-tip" style={{display:'none'}}>暂无文章</h3>
 								break;
 							default:
-								return <div styleName="loading"><i className="fa fa-spinner fa-pulse"></i><span>正在加载...</span></div>
+								return <div styleName="loading" style={{display:'none'}}><i className="fa fa-spinner fa-pulse"></i><span>正在加载...</span></div>
 								break;
 						}
 					})()

@@ -94,6 +94,8 @@ class Header extends React.Component{
 					<li><Link to="/">cc</Link>评论了文章<Link to="/">测试测试timetotal</Link></li>
 					<li><Link to="/">cc</Link>评论了文章<Link to="/">测试测试timetotal</Link></li>
 					<li><Link to="/">cc</Link>评论了文章<Link to="/">测试测试timetotal</Link></li>
+					<li><Link to="/">cc</Link>评论了文章<Link to="/">测试测试timetotal</Link></li>
+					<li><Link to="/">cc</Link>评论了文章<Link to="/">测试测试timetotal</Link></li>
 				</ul>
 				<nav styleName="header-nav">
 					<NavLink exact to='/' activeClassName="active-nav">首页</NavLink>

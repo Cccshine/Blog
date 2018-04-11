@@ -39,6 +39,30 @@
 	    padding: 0 2px;
 	}
 }
+.msg-list{
+	position: absolute;
+	top: 60px;
+	width: 300px;
+	max-height:202px;
+	padding: 10px;
+    font-weight: normal;
+    font-size: 14px;
+    color: #555;
+    border: $border-normal-gray;
+    border-radius:$border-radius-normal;
+    box-shadow: $box-shadow-normal;
+    overflow:auto;
+    li{
+    	margin-bottom:10px;
+    }
+    a{
+    	color:$theme-main-color;
+    	margin:0 5px;
+    	&:hover{
+    		text-decoration:underline;
+    	}
+    }
+}
 .header-nav{
 	float:left;
 	@include vCenterLineHeight($top-header-height - $top-header-padding-vertical*2);
