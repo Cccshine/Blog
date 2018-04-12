@@ -13,6 +13,7 @@ const tagModel = require('./models/tag');
 const commentModel = require('./models/comment');
 const activityModel = require('./models/activity');
 const verifyCodeModel = require('./models/verifyCode');
+const messageModel = require('./models/message');
 const indexRouter = require('./routes/index');
 const registerRouter = require('./routes/register');
 const loginRouter = require('./routes/login');
@@ -25,6 +26,7 @@ const collectionRouter = require('./routes/collection');
 const activityRouter = require('./routes/activity');
 const forgetRouter = require('./routes/forget');
 const userRouter = require('./routes/user');
+const messageRouter = require('./routes/message');
 
 const app = express();
 const expressWs = require('express-ws')(app);
@@ -77,6 +79,7 @@ app.use('/api/collection', collectionRouter);
 app.use('/api/activity', activityRouter);
 app.use('/api/forget', forgetRouter);
 app.use('/api/user', userRouter);
+app.use('/api/message', messageRouter);
 
 const websocketRouter = require('./routes/websocket');
 app.use('/', websocketRouter);

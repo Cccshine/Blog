@@ -27,6 +27,7 @@ export default class App extends React.Component{
 		this.state = {
 			isLogin:true,
 			username:'',
+			avatar:'',
 			role:0
 		}
 	}
@@ -40,7 +41,7 @@ export default class App extends React.Component{
 			return response.json();
 		}).then((json) => {
 			if(json.username){
-				this.setState({isLogin:json.isLogin,username:json.username,role:json.role});
+				this.setState({isLogin:json.isLogin,username:json.username,avatar:json.avatar,role:json.role});
 				sessionStorage.setItem('username',json.username);
 				sessionStorage.setItem('role',json.role);
 				sessionStorage.setItem('uid',json.uid);
@@ -75,10 +76,11 @@ export default class App extends React.Component{
 	}
 
 	render(){
-		let {isLogin,username,role} = this.state;
+		let {isLogin,username,avatar,role} = this.state;
 		let userProps = {
 			isLogin:isLogin,
 			username:username,
+			avatar:avatar,
 			role:role
 		}
 		return(

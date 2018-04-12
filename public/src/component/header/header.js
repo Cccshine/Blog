@@ -15,33 +15,15 @@ class Header extends React.Component{
 		this.state = {
 			isLogin:props.isLogin,
 			role:props.role,
-			avatarSrc:'',
-			msgListShow:false
+			avatar:props.avatar,
+			msgShow:false
 		}
 	}
 
-	componentWillMount = () => {
-		let username = this.props.username ? this.props.username : sessionStorage.getItem('username');
-		let url = blogGlobal.requestBaseUrl + "/user?username="+username;
-		fetch(url, {
-			method: 'get',
-			headers: {
-				'Accept': 'application/json',
-			},
-			mode: 'cors',
-			credentials: 'include',
-			body: null
-		}).then((response) => {
-			return response.json();
-		}).then((json) => {
-			this.setState({avatarSrc:json.userInfo.avatar})
-		}).catch((err) => {
-			console.log(err);
-		});
-
+	componentDidMount = () => {
 		this.pubsub_token = PubSub.subscribe('avtarChange', (topic,message) => {  
 		    this.setState({  
-		        avatarSrc: message  
+		        avatar: message  
 		    });  
 		})
 
@@ -64,7 +46,7 @@ class Header extends React.Component{
 	}
 
 	componentWillReceiveProps = (nextProps) => {
-		this.setState({isLogin:nextProps.isLogin,role:nextProps.role});
+		this.setState({isLogin:nextProps.isLogin,avatar:nextProps.avatar,role:nextProps.role});
 	}
 
 	componentWillUnmount(){  
@@ -72,12 +54,12 @@ class Header extends React.Component{
 	} 
 
 	toggleMsgList = (event) => {
-		this.setState({msgListShow:!this.state.msgListShow});
+		this.setState({msgShow:!this.state.msgShow});
 	}
 
 
 	render(){
-		let {isLogin,role,avatarSrc,msgListShow} = this.state;
+		let {isLogin,role,avatar,msgShow} = this.state;
 		let quickLinkProps = {
 			pageName:isLogin ? 'logined' : 'index',
 			username:this.props.username,
@@ -86,17 +68,22 @@ class Header extends React.Component{
 		return (
 			<header styleName="top-header">
 				<div styleName="logo" onClick={this.toggleMsgList}>
-					<img src={avatarSrc}  alt={this.props.username}/>
+					<img src={avatar}  alt={this.props.username}/>
 					<span>10</span>
 				</div>
-				<ul styleName="msg-list" style={{ display: msgListShow ? 'block' : 'none' }}>
-					<li><Link to="/">cc</Link>评论了文章<Link to="/">测试测试timetotal</Link></li>
-					<li><Link to="/">cc</Link>评论了文章<Link to="/">测试测试timetotal</Link></li>
-					<li><Link to="/">cc</Link>评论了文章<Link to="/">测试测试timetotal</Link></li>
-					<li><Link to="/">cc</Link>评论了文章<Link to="/">测试测试timetotal</Link></li>
-					<li><Link to="/">cc</Link>评论了文章<Link to="/">测试测试timetotal</Link></li>
-					<li><Link to="/">cc</Link>评论了文章<Link to="/">测试测试timetotal</Link></li>
-				</ul>
+				<div styleName="msg" style={{ display: msgShow ? 'block' : 'none' }}>
+					<ul styleName="msg-list">
+						<li><Link to="/">cc</Link>评论了文章<Link to="/">测试测试timetotal</Link></li>
+						<li><Link to="/">cc</Link>评论了文章<Link to="/">测试测试timetotal</Link></li>
+						<li><Link to="/">cc</Link>评论了文章<Link to="/">测试测试timetotal</Link></li>
+						<li><Link to="/">cc</Link>评论了文章<Link to="/">测试测试timetotal</Link></li>
+						<li><Link to="/">cc</Link>评论了文章<Link to="/">测试测试timetotal</Link></li>
+						<li><Link to="/">cc</Link>评论了文章<Link to="/">测试测试timetotal</Link></li>
+					</ul>
+					<div styleName="msg-toolbar">
+						<Link to="/">查看全部>></Link>
+					</div>
+				</div>
 				<nav styleName="header-nav">
 					<NavLink exact to='/' activeClassName="active-nav">首页</NavLink>
 					<NavLink to="/tags" activeClassName="active-nav">标签</NavLink>

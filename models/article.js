@@ -6,16 +6,16 @@ Article.pageFirst = function(res,query,pageSize){
 	Article.find(query).then((articleList) => {//第一页时更新总数及总页数
 		homePageTotal = Math.ceil(articleList.length/pageSize);
 		homeArticleTotal = articleList.length;
-	}).catch((err) => {
-		console.log(err);
-		res.status(500).send('Something broke!');
-	})
-	Article.find(query).sort({publicTime:-1}).limit(pageSize).then((articleList) => {
-		if(articleList.length > 0){
-			return res.json({"status":1,"articleList":articleList,"pageTotal":homePageTotal,"msg":"get success"});
-		}else{
-			return res.json({"status":0,"articleList":articleList,"pageTotal":homePageTotal,"msg":"no article"});
-		}
+		Article.find(query).sort({publicTime:-1}).limit(pageSize).then((articleList) => {
+			if(articleList.length > 0){
+				return res.json({"status":1,"articleList":articleList,"pageTotal":homePageTotal,"msg":"get success"});
+			}else{
+				return res.json({"status":0,"articleList":articleList,"pageTotal":homePageTotal,"msg":"no article"});
+			}
+		}).catch((err) => {
+			console.log(err);
+			res.status(500).send('Something broke!');
+		})
 	}).catch((err) => {
 		console.log(err);
 		res.status(500).send('Something broke!');
