@@ -69,6 +69,7 @@
     "express": "^4.15.4",
     "express-session": "^1.15.5",
     "express-ws": "^3.0.0",
+    "faye": "^1.2.4",
     "font-awesome": "^4.7.0",
     "highlight.js": "^9.12.0",
     "i5ting_toc": "^1.1.4",

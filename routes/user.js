@@ -80,6 +80,8 @@ router.post('/upload-avatar', function (req, res) {
             }
             console.log('删除原来的头像成功');
           })
+          req.session.avatar = frontPath;
+          req.session.foobar = Date.now();//加上这一句才能使req.session.cookie.maxAge生效,使数据库中的session更新
           return res.json({"avatarSrc":frontPath,"msg":"setting avatar success"});//头像修改成功
       }).catch((err) =>{
         console.log(err);

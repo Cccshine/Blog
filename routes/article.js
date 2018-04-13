@@ -34,6 +34,7 @@ router.post('/',function(req,res){
 		});
 	}else{//新建
 		console.log('新建');
+		_article.authorId = req.session.uid;//只有admin可以写文章
 		newArticle = new ArticleModel(_article);
 		newArticle.save().then((article) => {
 			return res.json({"status":1,article:article,"msg":"add success"});

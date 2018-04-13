@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const ArticleSchema = new mongoose.Schema({
 	//文章类型 0--原创 1--转载 2--翻译
 	articleId: mongoose.Schema.Types.ObjectId,
+	authorId: mongoose.Schema.Types.ObjectId,
 	type:{
 		type:Number,
 		default:0

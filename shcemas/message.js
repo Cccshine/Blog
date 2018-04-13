@@ -14,7 +14,7 @@ const MessageSchema = new mongoose.Schema({
         type:mongoose.Schema.Types.ObjectId,
         ref:'Comment'
     },
-    operateMode:Number,//1--收藏文章 2--点赞文章 3--评论了文章 4--点赞了评论 5--回复了评论 
+    messageMode:Number,//1--收藏文章 2--点赞文章 3--评论了文章 4--点赞了评论 5--回复了评论 
     isRead:{
         type:Boolean,
         default:false

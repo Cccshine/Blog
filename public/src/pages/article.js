@@ -12,6 +12,7 @@ import blogGlobal from '../data/global';
 let eHeadings = null, headingsOffset = [];//存储所有的h1,h2,h3标签及其距离顶部的距离
 let loginUid = sessionStorage.getItem('uid');
 let isLogin = sessionStorage.getItem('isLogin') === "false" ? false : true;
+let authorId = null;
 let rendererMD = new marked.Renderer();
 rendererMD.heading = function (text, level) {
 	let className = Number(level) <= 3 ? 'heading' : '';
@@ -125,6 +126,7 @@ class Article extends React.Component {
 		}).then((json) => {
 			console.log(json);
 			let {article, lastArticle, nextArticle }= json.result;
+			authorId = article.authorId;
 			this.setState({ article: article, content: article.content ,praiseUser: article.praiseUser,collectionUser: article.collectionUser, commentTotal: article.commentTotal, lastArticle:lastArticle, nextArticle:nextArticle});
 			this.createCatalog(this.refs.content.innerHTML);
 			eHeadings = document.getElementsByClassName('heading');
@@ -176,7 +178,16 @@ class Article extends React.Component {
 		this.setState({ activeCatalog: target.getAttribute('href').slice(1) });
 	}
 
-	handlePraise = (type,isPraise,subjectId,event) => {
+	/**
+	 * [handlePraise]
+	 * @param  {Number}  type      [0--文章点赞 1--评论点赞]
+	 * @param  {Boolean} isPraise  [true--点赞 false--取消赞]
+	 * @param  {String}  subjectId [文章Id或者评论id]
+	 * @param  {String}  formUserId [文章作者/评论人id]
+	 * @param  {[type]}  event     [description]
+	 * @return {[type]}            [description]
+	 */
+	handlePraise = (type,isPraise,subjectId,formUserId,event) => {
 		if(!isLogin){
 			this.setState({loginModalShow:true});
 			return;
@@ -203,15 +214,29 @@ class Article extends React.Component {
 		}
 		this.sendRequest(url, rquestMode, data, (json) => {
 			console.log(json);
-			if(type === 1){
+			if(type === 1){//评论点赞
 				this.fetchComments();
 			}else{
 				let data = {
 					userId:sessionStorage.getItem('uid'),
 					articleId:subjectId,
-					activityMode: isPraise ? 2 : 4
+					activityMode: isPraise ? 2 : 4 //2--点赞 4--取消赞
 				}
 				this.sendRequest(blogGlobal.requestBaseUrl + '/activity', 'post', data, (json) => {
+					console.log(json)
+				});
+			}
+			if(isPraise){
+				let data = {
+					operateUserId:sessionStorage.getItem('uid'),
+					receiveUserId:formUserId,
+					articleId:this.props.match.params.articleId,
+					messageMode: type === 0 ? 2 : 4 //2--文章点赞 4--评论点赞
+				}
+				if(type === 1){
+					data.commentId = subjectId;
+				}
+				this.sendRequest(blogGlobal.requestBaseUrl + '/message', 'post', data, (json) => {
 					console.log(json)
 				});
 			}
@@ -250,6 +275,17 @@ class Article extends React.Component {
 				console.log(json)
 			})
 		})
+		if(isCollection){
+			let data = {
+				operateUserId:sessionStorage.getItem('uid'),
+				receiveUserId:authorId,
+				articleId:subjectId,
+				messageMode: 1 //1--收藏文章
+			}
+			this.sendRequest(blogGlobal.requestBaseUrl + '/message', 'post', data, (json) => {
+				console.log(json)
+			});
+		}
 	}
 
 	handleBackTop = () => {
@@ -345,6 +381,17 @@ class Article extends React.Component {
 					console.log(json)
 				})
 			}
+
+			let msgData = {
+				operateUserId:data.fromUid,
+				receiveUserId:mode === 'comment' ? authorId : data.toUid,
+				articleId:data.articleId,
+				commentId: mode === 'comment' ? json._id : data.parentId,
+				messageMode: mode === 'comment' ? 3 : 5 //3--评论 5--回复评论
+			}
+			this.sendRequest(blogGlobal.requestBaseUrl + '/message', 'post', msgData, (json) => {
+				console.log(json)
+			});
 		})
 	}
 
@@ -489,8 +536,8 @@ class Article extends React.Component {
 														</div>
 														<div className="fr" styleName="operate">
 															{item.praiseUser.includes(loginUid) ? 
-																<span onClick={this.handlePraise.bind(this,1,false,item._id)}><i className="fa fa-thumbs-up"></i>赞<em>({item.praiseUser.length})</em></span> : 
-																<span onClick={this.handlePraise.bind(this,1,true,item._id)}><i className="fa fa-thumbs-o-up"></i>赞<em>({item.praiseUser.length})</em></span>
+																<span onClick={this.handlePraise.bind(this,1,false,item._id,item.fromUser._id)}><i className="fa fa-thumbs-up"></i>赞<em>({item.praiseUser.length})</em></span> : 
+																<span onClick={this.handlePraise.bind(this,1,true,item._id,item.fromUser._id)}><i className="fa fa-thumbs-o-up"></i>赞<em>({item.praiseUser.length})</em></span>
 															}
 															<span onClick={this.handleReply.bind(this, index, item)}><i className="fa fa-reply"></i>回复</span>
 														</div>
@@ -523,13 +570,13 @@ class Article extends React.Component {
 																				{
 																					ritem.fromUser._id === sessionStorage.getItem('uid') ? <div className="fr" styleName="operate">
 																						{ritem.praiseUser.includes(loginUid) ? 
-																							<span onClick={this.handlePraise.bind(this,1,false,ritem._id)}><i className="fa fa-thumbs-up"></i>赞<em>({ritem.praiseUser.length})</em></span> : 
-																							<span onClick={this.handlePraise.bind(this,1,true,ritem._id)}><i className="fa fa-thumbs-o-up"></i>赞<em>({ritem.praiseUser.length})</em></span>
+																							<span onClick={this.handlePraise.bind(this,1,false,ritem._id,ritem.fromUser._id)}><i className="fa fa-thumbs-up"></i>赞<em>({ritem.praiseUser.length})</em></span> : 
+																							<span onClick={this.handlePraise.bind(this,1,true,ritem._id,ritem.fromUser._id)}><i className="fa fa-thumbs-o-up"></i>赞<em>({ritem.praiseUser.length})</em></span>
 																						}</div>: 
 																						<div className="fr" styleName="operate">
 																							{ritem.praiseUser.includes(loginUid) ? 
-																								<span onClick={this.handlePraise.bind(this,1,false,ritem._id)}><i className="fa fa-thumbs-up"></i>赞<em>({ritem.praiseUser.length})</em></span> : 
-																								<span onClick={this.handlePraise.bind(this,1,true,ritem._id)}><i className="fa fa-thumbs-o-up"></i>赞<em>({ritem.praiseUser.length})</em></span>
+																								<span onClick={this.handlePraise.bind(this,1,false,ritem._id,ritem.fromUser._id)}><i className="fa fa-thumbs-up"></i>赞<em>({ritem.praiseUser.length})</em></span> : 
+																								<span onClick={this.handlePraise.bind(this,1,true,ritem._id,ritem.fromUser._id)}><i className="fa fa-thumbs-o-up"></i>赞<em>({ritem.praiseUser.length})</em></span>
 																							}
 																							<span onClick={this.handleReply.bind(this, index, ritem)}><i className="fa fa-reply"></i>回复</span>
 																						</div>
@@ -581,11 +628,11 @@ class Article extends React.Component {
 				</section>
 				<ul styleName="toolbar">
 					{praiseUser.includes(loginUid) ? 
-						<li styleName="toolbar-item" title="赞一个" onClick={this.handlePraise.bind(this, 0, false, this.props.match.params.articleId)}><i className="fa fa-thumbs-up"></i><span>{praiseUser.length}</span></li> : 
-						<li styleName="toolbar-item" title="取消赞" onClick={this.handlePraise.bind(this, 0, true, this.props.match.params.articleId)}><i className="fa fa-thumbs-o-up" styleName="pre-operate"></i><i className="fa fa-thumbs-up" styleName="operated"></i><span>{praiseUser.length}</span></li>}
+						<li styleName="toolbar-item" title="赞一个" onClick={this.handlePraise.bind(this, 0, false, this.props.match.params.articleId,authorId)}><i className="fa fa-thumbs-up"></i><span>{praiseUser.length}</span></li> : 
+						<li styleName="toolbar-item" title="取消赞" onClick={this.handlePraise.bind(this, 0, true, this.props.match.params.articleId,authorId)}><i className="fa fa-thumbs-o-up" styleName="pre-operate"></i><i className="fa fa-thumbs-up" styleName="operated"></i><span>{praiseUser.length}</span></li>}
 					{collectionUser.includes(loginUid) ? 
-						<li styleName="toolbar-item" title="收藏" onClick={this.handleCollection.bind(this, false, this.props.match.params.articleId)}><i className="fa fa-bookmark"></i><span>{collectionUser.length}</span></li> : 
-						<li styleName="toolbar-item" title="取消收藏" onClick={this.handleCollection.bind(this, true, this.props.match.params.articleId)}><i className="fa fa-bookmark-o" styleName="pre-operate"></i><i className="fa fa-bookmark" styleName="operated"></i><span>{collectionUser.length}</span></li>}
+						<li styleName="toolbar-item" title="收藏" onClick={this.handleCollection.bind(this, false, this.props.match.params.articleId,authorId)}><i className="fa fa-bookmark"></i><span>{collectionUser.length}</span></li> : 
+						<li styleName="toolbar-item" title="取消收藏" onClick={this.handleCollection.bind(this, true, this.props.match.params.articleId,authorId)}><i className="fa fa-bookmark-o" styleName="pre-operate"></i><i className="fa fa-bookmark" styleName="operated"></i><span>{collectionUser.length}</span></li>}
 					<li styleName="toolbar-item"  title="评论"><a href="#comment"><i className="fa fa-commenting-o" styleName="pre-operate"></i><i className="fa fa-commenting" styleName="operated"></i><span>{commentTotal}</span></a></li>
 				</ul>
 				<div className="fa fa-chevron-up" styleName="backtop" title="回到顶部" onClick={this.handleBackTop}></div>

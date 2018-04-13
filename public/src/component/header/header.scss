@@ -50,6 +50,11 @@
     border: $border-normal-gray;
     border-radius:$border-radius-normal;
     box-shadow: $box-shadow-normal;
+    background: #fff;
+    .loading,.null-tip{
+    	text-align:center;
+		@include vCenterLineHeight(200px);
+    }
     .msg-list{
     	max-height:300px;
     	overflow:auto;

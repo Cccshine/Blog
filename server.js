@@ -28,8 +28,12 @@ const forgetRouter = require('./routes/forget');
 const userRouter = require('./routes/user');
 const messageRouter = require('./routes/message');
 
+const common = require('./common.js');
+console.log(common)
+
 const app = express();
 const expressWs = require('express-ws')(app);
+
 
 // 设置监听端口,环境变量要是设置了PORT就用环境变量的PORT
 const port = process.env.PORT || config.port;
@@ -81,16 +85,29 @@ app.use('/api/forget', forgetRouter);
 app.use('/api/user', userRouter);
 app.use('/api/message', messageRouter);
 
-const websocketRouter = require('./routes/websocket');
-app.use('/', websocketRouter);
+// const messageRouter = require('./routes/message');
+// app.use('/api/message', messageRouter);
 
-// app.ws('/avatar', (ws, req) => {
-//   ws.on('message', (msg) => {
-//     console.log(msg);
-//     ws.send('hello cc')
-//   });
-//   console.log('socket');
-// });
+app.ws('/message', (ws, req) => {
+    ws.on('message', (msg) => {
+        console.log('messageChange 收到消息');
+        console.log(expressWs.getWss('/message').clients)
+        messageModel.find({receiveUser:req.session.uid,isRead:false}).then((messageList) => {
+            expressWs.getWss('/message').clients.forEach(client => client.send(messageList.length));  
+        }).catch((err) => {
+            console.log(err);
+        }) 
+    });
+
+    common.pub.subscribe('/messageChange', function(message){
+        console.log('messageChange 事件触发'); 
+        messageModel.find({receiveUser:req.session.uid,isRead:false}).then((messageList) => {
+            expressWs.getWss('/message').clients.forEach(client => client.send(messageList.length));  
+        }).catch((err) => {
+            console.log(err);
+        }) 
+    })
+})
 
 app.listen(port);
 
