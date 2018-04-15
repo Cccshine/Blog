@@ -137,7 +137,7 @@ class Home extends React.Component {
 						switch (status) {
 							case 1:
 								return (
-									<div style={{display:'none'}}>
+									<div>
 										{
 											summaryList.map((item, index) => {
 												let list = item.tag.split(';');

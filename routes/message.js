@@ -3,10 +3,6 @@ const mongoose = require('mongoose');
 const router = express.Router();
 const MessageModel = mongoose.model('Message');
 const common = require('../common.js');
-// const Emitter = require('events').EventEmitter;   
-// const emitter = new Emitter();
-
-// const client = app.set('client');
 
 router.post('/',function(req,res){
     let {articleId,messageMode,operateUserId,receiveUserId} = req.body;
@@ -24,8 +20,7 @@ router.post('/',function(req,res){
 	newMessage.save().then((message) => {
 		console.log(operateUserId,receiveUserId,operateUserId != receiveUserId)
 		if(operateUserId != receiveUserId){
-			// emitter.emit('messageChange');
-			common.pub.publish('/messageChange');
+			common.emitter.emit('messageChange');
 		}
 		return res.json({"status":1,"msg":"add message success"});
 	}).catch((err) => {
@@ -82,7 +77,6 @@ router.get('/setRead',(req,res) => {
 // 	}) 
 //   });  
 // })
-
 
 
 module.exports = router;

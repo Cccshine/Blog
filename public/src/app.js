@@ -15,6 +15,8 @@ import Article from './pages/article.js';
 import Setting from './pages/setting.js';
 import NoMatch from './pages/nomatch.js';
 
+import PubSub from 'pubsub-js';
+
 import 'es5-shim';
 //为当前环境提供一个垫片babel-polyfill,来转换JavaScript新的API
 import 'babel-polyfill';
@@ -52,6 +54,12 @@ export default class App extends React.Component{
 		}).catch((err) => {
 			console.log(err)
 		})
+
+		this.pubsub_token = PubSub.subscribe('avtarChange', (topic,message) => {  
+		    this.setState({  
+		        avatar: message  
+		    });  
+		})
 	}
 
 	handleLogout = () => {
@@ -74,6 +82,10 @@ export default class App extends React.Component{
 			console.log(err)
 		})
 	}
+
+	componentWillUnmount(){  
+	    PubSub.unsubscribe(this.pubsub_token);  
+	} 
 
 	render(){
 		let {isLogin,username,avatar,role} = this.state;

@@ -5,9 +5,8 @@ import CSSModules from 'react-css-modules';
 import QuickLink from '../quickLink/quick-link';
 import ContactIcon from '../contactIcon/contact-icon';
 import style from './header.scss';
-import PubSub from 'pubsub-js';
 
-const ws = new WebSocket('ws://localhost:4000/message');  
+  
 let messageIds = [];
 class Header extends React.Component{
 	constructor(props){
@@ -24,13 +23,10 @@ class Header extends React.Component{
 	}
 
 	componentDidMount = () => {
+		console.log('this.props.username:'+sessionStorage.getItem('username'))
+		const ws = new WebSocket('ws://localhost:4000/message?username='+sessionStorage.getItem('username'));
 		document.addEventListener('click', this.hideMsgList, false);
 		this.fetchNewMsgList();
-		this.pubsub_token = PubSub.subscribe('avtarChange', (topic,message) => {  
-		    this.setState({  
-		        avatar: message  
-		    });  
-		})
 
 		ws.onmessage= (e) => {  
 			console.log('_message');  
@@ -42,7 +38,7 @@ class Header extends React.Component{
 			console.log(err);  
 		};  
 		ws.onopen= () => {  
-			ws.send(`${this.props.username}发送消息`);
+			ws.send(sessionStorage.getItem('username'));
 			console.log('_connect')  
 		};  
 		ws.onclose= () => {  
@@ -57,7 +53,6 @@ class Header extends React.Component{
 	}
 
 	componentWillUnmount(){  
-	    PubSub.unsubscribe(this.pubsub_token);  
 	    document.removeEventListener('click', this.hideMsgList, false);
 	    messageIds = null;
 	} 

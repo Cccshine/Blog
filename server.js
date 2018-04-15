@@ -29,7 +29,6 @@ const userRouter = require('./routes/user');
 const messageRouter = require('./routes/message');
 
 const common = require('./common.js');
-console.log(common)
 
 const app = express();
 const expressWs = require('express-ws')(app);
@@ -85,24 +84,33 @@ app.use('/api/forget', forgetRouter);
 app.use('/api/user', userRouter);
 app.use('/api/message', messageRouter);
 
-// const messageRouter = require('./routes/message');
-// app.use('/api/message', messageRouter);
 
 app.ws('/message', (ws, req) => {
     ws.on('message', (msg) => {
         console.log('messageChange 收到消息');
-        console.log(expressWs.getWss('/message').clients)
         messageModel.find({receiveUser:req.session.uid,isRead:false}).then((messageList) => {
-            expressWs.getWss('/message').clients.forEach(client => client.send(messageList.length));  
+            expressWs.getWss('/message?'+req.session.username).clients.forEach((client) => {
+                console.log(client.upgradeReq.query.username)
+                if(client.upgradeReq.query.username == req.query.username){
+                    client.send(messageList.length);
+                    return false;
+                }
+            });
         }).catch((err) => {
             console.log(err);
         }) 
     });
 
-    common.pub.subscribe('/messageChange', function(message){
+    common.emitter.on('messageChange', (message) => {
         console.log('messageChange 事件触发'); 
         messageModel.find({receiveUser:req.session.uid,isRead:false}).then((messageList) => {
-            expressWs.getWss('/message').clients.forEach(client => client.send(messageList.length));  
+            expressWs.getWss('/message?'+req.session.username).clients.forEach((client) => {
+                console.log(client.upgradeReq.query.username)
+                if(client.upgradeReq.query.username == req.query.username){
+                    client.send(messageList.length);
+                    return false;
+                }
+            });
         }).catch((err) => {
             console.log(err);
         }) 
