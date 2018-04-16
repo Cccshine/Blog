@@ -30,16 +30,17 @@ router.get('/',function(req,res){
 		ActivityeModel.find({userId:userId}).then((activityList) => {//第一页时更新总数及总页数
 			activityPageTotal = Math.ceil(activityList.length/pageSize);
 			activityTotal = activityList.length;
-		}).catch((err) => {
-			console.log(err);
-			res.status(500).send('Something broke!');
-		})
-		ActivityeModel.find({userId:userId}).sort({createTime:-1}).limit(pageSize).populate('article').then((activityList) => {
-			if(activityList.length > 0){
-				return res.json({"status":1,"activityList":activityList,"pageTotal":activityPageTotal,"msg":"get success"});
-			}else{
-				return res.json({"status":0,"activityList":activityList,"pageTotal":activityPageTotal,"msg":"no activity"});
-			}
+
+			ActivityeModel.find({userId:userId}).sort({createTime:-1}).limit(pageSize).populate('article').then((activityList) => {
+				if(activityList.length > 0){
+					return res.json({"status":1,"activityList":activityList,"pageTotal":activityPageTotal,"msg":"get success"});
+				}else{
+					return res.json({"status":0,"activityList":activityList,"pageTotal":activityPageTotal,"msg":"no activity"});
+				}
+			}).catch((err) => {
+				console.log(err);
+				res.status(500).send('Something broke!');
+			})
 		}).catch((err) => {
 			console.log(err);
 			res.status(500).send('Something broke!');

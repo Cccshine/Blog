@@ -90,7 +90,6 @@ app.ws('/message', (ws, req) => {
         console.log('messageChange 收到消息');
         messageModel.find({receiveUser:req.session.uid,isRead:false}).then((messageList) => {
             expressWs.getWss('/message?'+req.session.username).clients.forEach((client) => {
-                console.log(client.upgradeReq.query.username)
                 if(client.upgradeReq.query.username == req.query.username){
                     client.send(messageList.length);
                     return false;
@@ -105,7 +104,6 @@ app.ws('/message', (ws, req) => {
         console.log('messageChange 事件触发'); 
         messageModel.find({receiveUser:req.session.uid,isRead:false}).then((messageList) => {
             expressWs.getWss('/message?'+req.session.username).clients.forEach((client) => {
-                console.log(client.upgradeReq.query.username)
                 if(client.upgradeReq.query.username == req.query.username){
                     client.send(messageList.length);
                     return false;
