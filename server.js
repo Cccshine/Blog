@@ -100,19 +100,24 @@ app.ws('/message', (ws, req) => {
         }) 
     });
 
-    common.emitter.on('messageChange', (message) => {
-        console.log('messageChange 事件触发'); 
-        messageModel.find({receiveUser:req.session.uid,isRead:false}).then((messageList) => {
-            expressWs.getWss('/message?'+req.session.username).clients.forEach((client) => {
-                if(client.upgradeReq.query.username == req.query.username){
-                    client.send(messageList.length);
-                    return false;
-                }
-            });
-        }).catch((err) => {
-            console.log(err);
-        }) 
+    
+    ws.on('close', (msg) => {
+        console.log('close')
     })
+})
+
+common.emitter.on('messageChange', (req) => {
+    console.log('messageChange 事件触发'); 
+    messageModel.find({receiveUser:req.session.uid,isRead:false}).then((messageList) => {
+        expressWs.getWss('/message?'+req.session.username).clients.forEach((client) => {
+            if(client.upgradeReq.query.username == req.query.username){
+                client.send(messageList.length);
+                return false;
+            }
+        });
+    }).catch((err) => {
+        console.log(err);
+    }) 
 })
 
 app.listen(port);

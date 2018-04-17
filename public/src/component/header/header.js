@@ -122,13 +122,13 @@ class Header extends React.Component{
 					<img src={avatar}  alt={this.props.username}/>
 					{newMessageCount > 0 ? <span>{newMessageCount}</span> : null}
 				</div>
-				<div styleName="msg" style={{ display: msgShow ? 'block' : 'none' }} onClick={this.stopPropagation}>
+				<div styleName="msg" style={{ display: msgShow ? 'block' : 'none' }}>
 					{
 						(() => {
 							switch (messageStatus) {
 								case 1:
 									return (
-										<ul styleName="msg-list">
+										<ul styleName="msg-list" onClick={this.stopPropagation}>
 											{
 												messageList.map((item, index) => {
 													return(
