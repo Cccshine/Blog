@@ -7,7 +7,6 @@ import ContactIcon from '../contactIcon/contact-icon';
 import style from './header.scss';
 
   
-let messageIds = [];
 class Header extends React.Component{
 	constructor(props){
 		super(props);
@@ -30,8 +29,11 @@ class Header extends React.Component{
 
 		ws.onmessage= (e) => {  
 			console.log('_message');  
-			this.setState({newMessageCount:Number(e.data)});
-			this.fetchNewMsgList();
+			this.setState({newMessageCount:Number(e.data)},()=>{
+				if(this.state.newMessageCount){
+					this.fetchNewMsgList();
+				}
+			});
 		};  
 		ws.onerror= (err) => {  
 			console.log('_error');  
@@ -56,7 +58,6 @@ class Header extends React.Component{
 
 	componentWillUnmount(){  
 	    document.removeEventListener('click', this.hideMsgList, false);
-	    messageIds = null;
 	} 
 
 	fetchNewMsgList = () => {
@@ -70,10 +71,6 @@ class Header extends React.Component{
 		}).then((json) => {
 			console.log(json)
 			let status = json.messageList.length ? 1 : 2;
-			messageIds = [];
-			for(let item of json.messageList){
-				messageIds.push(item._id);
-			}
 			this.setState({  
 		        messageList: json.messageList,
 		        messageStatus: status
@@ -86,7 +83,7 @@ class Header extends React.Component{
 	toggleMsgList = (event) => {
 		if(this.state.newMessageCount){
 			this.setState({newMessageCount:0});
-			let url = blogGlobal.requestBaseUrl+'/message/setRead?msgIds='+messageIds;
+			let url = blogGlobal.requestBaseUrl+'/message/setRead';
 			fetch(url,{
 				method:'GET',
 				mode:'cors',
@@ -128,13 +125,13 @@ class Header extends React.Component{
 					<img src={avatar}  alt={this.props.username}/>
 					{newMessageCount > 0 ? <span>{newMessageCount}</span> : null}
 				</div>
-				<div styleName="msg" style={{ display: msgShow ? 'block' : 'none' }} onClick={this.stopPropagation}>
+				<div styleName="msg" style={{ display: msgShow ? 'block' : 'none' }}>
 					{
 						(() => {
 							switch (messageStatus) {
 								case 1:
 									return (
-										<ul styleName="msg-list">
+										<ul styleName="msg-list" onClick={this.stopPropagation}>
 											{
 												messageList.map((item, index) => {
 													return(
@@ -158,15 +155,15 @@ class Header extends React.Component{
 									)
 									break;
 								case 2:
-									return <p styleName="null-tip">暂无提醒</p>
+									return <p styleName="null-tip">暂无新提醒</p>
 								default:
 									return <div styleName="loading"><i className="fa fa-spinner fa-pulse"></i><span>正在加载...</span></div>
 									break;
 							}
 						})()
 					}
-					<div styleName="msg-toolbar" style={{ display: messageStatus === 2 ? 'none' : 'block' }}>
-						{/*<Link to="/">查看全部>></Link>*/}
+					<div styleName="msg-toolbar">
+						<Link to="/message">查看全部提醒>></Link>
 					</div>
 				</div>
 				<nav styleName="header-nav">

@@ -226,7 +226,7 @@ class Article extends React.Component {
 					console.log(json)
 				});
 			}
-			if(isPraise){
+			if(isPraise && formUserId !== sessionStorage.getItem('uid')){
 				let data = {
 					operateUserId:sessionStorage.getItem('uid'),
 					receiveUserId:formUserId,
@@ -275,7 +275,7 @@ class Article extends React.Component {
 				console.log(json)
 			})
 		})
-		if(isCollection){
+		if(isCollection && authorId !== sessionStorage.getItem('uid')){
 			let data = {
 				operateUserId:sessionStorage.getItem('uid'),
 				receiveUserId:authorId,
@@ -389,9 +389,11 @@ class Article extends React.Component {
 				commentId: mode === 'comment' ? json._id : data.parentId,
 				messageMode: mode === 'comment' ? 3 : 5 //3--评论 5--回复评论
 			}
-			this.sendRequest(blogGlobal.requestBaseUrl + '/message', 'post', msgData, (json) => {
-				console.log(json)
-			});
+			if(msgData.operateUserId !== msgData.receiveUserId){
+				this.sendRequest(blogGlobal.requestBaseUrl + '/message', 'post', msgData, (json) => {
+					console.log(json)
+				});
+			}
 		})
 	}
 

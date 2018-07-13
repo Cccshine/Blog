@@ -1,0 +1,71 @@
+@import "../../sass/variables";
+@import "../../sass/mixin/square";
+@import "../../sass/mixin/vertical_center";
+@import "../../sass/global/_center.scss";
+.root{
+	position:relative;
+	width:960px;
+	min-height:700px;
+	margin:0 auto;
+	padding:20px 20px 20px 100px;
+	[data-role=pagination]{
+		position: absolute;
+		right: 20px;
+		bottom: 10px;
+	}
+	.null-tip,.loading{
+		@extend .common-level-center-transform;
+		margin-top: 100px;
+		color:$theme-adorn-color;
+		font-size: 24px;
+	}
+	.loading{
+		i{
+			font-size: 30px;
+			margin-right: 20px;
+		}
+	}
+}
+.message-section{
+	margin-bottom:20px;
+	position:relative;
+	.msg-list li{
+		@include vCenterLineHeight(30px);
+		a{
+	    	color:$theme-main-color;
+	    	margin:0 5px;
+	    	&:hover{
+	    		text-decoration:underline;
+	    	}
+		}
+	}
+}
+.timeline-circle{
+	@include square(20px);
+	position:absolute;
+	top:(36px - 20px)/2;
+	left:-(100px + (20px - 10px));
+	background:$theme-adorn-color;
+	border-radius:50%;
+	z-index:99;
+}
+
+.timeline-date{
+	width:120px;
+	@include vCenterLineHeight(20px);
+	position:absolute;
+	text-align:right;
+	font-weight:bold;
+	top:(36px - 20px)/2;
+	left:-(120px + 100px + 20px);
+	color:$theme-adorn-color;
+}
+
+.timeline-bar{
+	width:10px;
+	height:100%;
+	position:absolute;
+	top:0;
+	left:-5px;
+	background:$theme-main-color;
+}

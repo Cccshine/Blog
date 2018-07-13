@@ -13,6 +13,7 @@ import User from './pages/user.js';
 import Draft from './pages/draft.js';
 import Article from './pages/article.js';
 import Setting from './pages/setting.js';
+import Message from './pages/message.js';
 import NoMatch from './pages/nomatch.js';
 
 import PubSub from 'pubsub-js';
@@ -112,6 +113,7 @@ export default class App extends React.Component{
 						<Route path="/draft" component={Draft}/>
 						<Route path="/articles/:articleId" component={Article}/>
 						<Route path="/setting" component={Setting}/>
+						<Route path="/message" component={Message}/>
 						<Route component={NoMatch}/>
 				    </Switch>
 				</main>
