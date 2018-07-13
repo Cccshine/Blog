@@ -15,45 +15,89 @@ class Praise extends React.Component{
 		this.state = {
 			praiseArticles:[],
 			status:0,
-			pageTotal: 0,
-			pageSize: 2,
-			lastTime:""
 		}
+		this.currentPage = 0;
+		this.pageTotal = 0;
+		this.pageSize = blogGlobal.pageSize;
+		this.lastTime = "";
+		this.mounted = true;
+		this.activeUsername = props.match.params.username;
+		this.activeUserId = null;
 	}
 
 	componentWillMount = () => {
-		this.fetchList((new Date()).toISOString(),0,this.state.pageSize,1);
+		this.mounted = true;
+		this.fetchUserAndList();
+	}
+
+	componentWillUnmount = () => {
+		this.mounted = false;
+	}
+
+	getCurrentPage = (currentPage) => {
+		this.currentPage = currentPage;
+	}
+
+	fetchUserAndList = () => {
+		let url = blogGlobal.requestBaseUrl + "/user?username="+this.activeUsername;
+		this.sendRequest(url, 'get', null, (json) => {
+			if(!this.mounted){
+				return;
+			}
+			this.activeUserId = json.userInfo._id;
+			this.fetchList((new Date()).toISOString(),0,this.pageSize,1);
+		});
 	}
 
 	fetchList = (lastTime,currentPage,pageSize,dir) => {
-		let url = blogGlobal.requestBaseUrl + "/articles?mode=praise&userId=" + sessionStorage.getItem('uid') +"&lastTime="+lastTime+"&currentPage="+currentPage+"&pageSize="+pageSize+"&dir="+dir;
-		fetch(url, {
-			method: 'get',
-			mode: 'cors',
-			credentials: 'include',
-		}).then((response) => {
-			return response.json();
-		}).then((json) => {
+		let url = blogGlobal.requestBaseUrl + "/articles?mode=praise&userId=" + this.activeUserId +"&lastTime="+lastTime+"&currentPage="+currentPage+"&pageSize="+pageSize+"&dir="+dir;
+		this.sendRequest(url, 'get', null, (json)=>{
+			if(!this.mounted){
+				return;
+			}
 			console.log(json);
 			let { status, articleList ,pageTotal} = json;
 			if (status == 0) {
 				this.setState({ status: 2 });
 			} else if (status == 1) {
-				this.setState({ status: 1, praiseArticles: articleList ,pageTotal:pageTotal, lastTime:articleList[articleList.length - 1].createTime});
+				this.pageTotal = pageTotal;
+				this.lastTime = articleList[articleList.length - 1].publicTime;
+				this.setState({ status: 1, praiseArticles: articleList});
 			}
+		})
+	}
+
+	//发送请求
+	sendRequest = (url, mode, data, callback) => {
+		fetch(url, {
+			method: mode,
+			headers: {
+				'Accept': 'application/json',
+				'Content-Type': 'application/json'
+			},
+			mode: 'cors',
+			credentials: 'include',
+			body: data ? JSON.stringify(data) : null
+		}).then((response) => {
+			return response.json();
+		}).then((json) => {
+			callback && callback(json);
 		}).catch((err) => {
 			console.log(err);
 		});
 	}
 
 	render(){
-		let {praiseArticles,status,pageSize,pageTotal,lastTime} = this.state;
+		let { currentPage, pageSize,pageTotal,lastTime } = this;
+		let {praiseArticles,status} = this.state;
 		let tagProps = { isLink: true, hasClose: false };
 		let pageProps ={
+			currentPage: currentPage,
 			pageSize: pageSize,
 			pageTotal: pageTotal,
 			lastTime: lastTime,
-			fetchList: this.fetchList
+			fetchList: this.fetchList,
+			getCurrentPage: this.getCurrentPage
 		}
 		return(
 			<div>

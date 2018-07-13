@@ -203,9 +203,6 @@ class Write extends React.Component {
 		this.setState({ selectIsDown: false, selectText: event.target.innerText, selectValue: event.target.dataset.value });
 	}
 
-	handleSave = (event) => {
-
-	}
 
 	handleSaveAsDraft = (event) => {
 		this.saveAsDraft(false);

@@ -24,7 +24,7 @@ class Header extends React.Component{
 
 	componentDidMount = () => {
 		console.log('this.props.username:'+sessionStorage.getItem('username'))
-		const ws = new WebSocket('ws://localhost:4000/message?username='+sessionStorage.getItem('username'));
+		const ws = new WebSocket('ws://localhost:3000/message?username='+sessionStorage.getItem('username'));
 		document.addEventListener('click', this.hideMsgList, false);
 		this.fetchNewMsgList();
 
@@ -50,6 +50,8 @@ class Header extends React.Component{
 
 	componentWillReceiveProps = (nextProps) => {
 		this.setState({isLogin:nextProps.isLogin,avatar:nextProps.avatar,role:nextProps.role});
+		this.fetchNewMsgList();
+		this.hideMsgList();
 	}
 
 	componentWillUnmount(){  
@@ -122,7 +124,7 @@ class Header extends React.Component{
 		}
 		return (
 			<header styleName="top-header">
-				<div styleName="logo" onClick={this.toggleMsgList}>
+				<div styleName="logo" style={{display:isLogin ? 'block' : 'none'}} onClick={this.toggleMsgList}>
 					<img src={avatar}  alt={this.props.username}/>
 					{newMessageCount > 0 ? <span>{newMessageCount}</span> : null}
 				</div>
@@ -144,8 +146,10 @@ class Header extends React.Component{
 														        [3]: '评论了你的文章',
 														        [4]: '点赞了你的评论',
 														        [5]: '回复了你的评论',
-														    }[item.messageMode]}
-														    <Link to={`/articles/${item.article._id}`}>{item.messageMode > 3 ? item.comment.content : item.article.title}</Link>
+															}[item.messageMode]}
+															{
+																!item.article ? <span style={{color:'#999',marginLeft:'5px'}}>相关文章已删除</span> : <Link to={`/articles/${item.article._id}`}>{item.messageMode > 3 ? item.comment.content : item.article.title}</Link>
+															}
 													    </li>
 													)
 												})
@@ -162,7 +166,7 @@ class Header extends React.Component{
 						})()
 					}
 					<div styleName="msg-toolbar" style={{ display: messageStatus === 2 ? 'none' : 'block' }}>
-						<Link to="/">查看全部>></Link>
+						{/*<Link to="/">查看全部>></Link>*/}
 					</div>
 				</div>
 				<nav styleName="header-nav">

@@ -7,14 +7,14 @@ class Pagination extends React.Component{
     constructor(props) {
 		super(props);
 	    this.state = {
-            currentPage:0,
-            pageSize:this.props.pageSize,
-            pageTotal:this.props.pageTotal,
-            lastTime:this.props.lastTime
+            currentPage:props.currentPage,
+            pageSize:props.pageSize,
+            pageTotal:props.pageTotal,
+            lastTime:props.lastTime
 	    };
     }
     componentWillReceiveProps = (nextProps) => {
-        this.setState({pageTotal:nextProps.pageTotal,lastTime:nextProps.lastTime});
+        this.setState({currentPage:nextProps.currentPage,pageTotal:nextProps.pageTotal,lastTime:nextProps.lastTime});
     }
     handleFirst = (e) => {
         if(this.state.currentPage === 0){
@@ -22,6 +22,7 @@ class Pagination extends React.Component{
         }
         this.setState({currentPage:0}, () => {
             this.props.fetchList(this.state.lastTime, this.state.currentPage,this.state.pageSize, -1);
+            this.props.getCurrentPage(this.state.currentPage);
         });
     }
     handlePrev = (e) => {
@@ -30,6 +31,7 @@ class Pagination extends React.Component{
         }
         this.setState({currentPage:(this.state.currentPage - 1)},() => {
             this.props.fetchList(this.state.lastTime, this.state.currentPage,this.state.pageSize, -1);
+            this.props.getCurrentPage(this.state.currentPage);
         });
     }
     handleNext = (e) => {
@@ -38,6 +40,7 @@ class Pagination extends React.Component{
         }
         this.setState({ currentPage: (this.state.currentPage + 1) },() => {
             this.props.fetchList(this.state.lastTime, this.state.currentPage,this.state.pageSize, 1);
+            this.props.getCurrentPage(this.state.currentPage);
         });
     }
     handleLast = (e) => {
@@ -46,6 +49,7 @@ class Pagination extends React.Component{
         }
         this.setState({currentPage:this.state.pageTotal - 1}, () => {
             this.props.fetchList(this.state.lastTime, this.state.currentPage,this.state.pageSize, 1);
+            this.props.getCurrentPage(this.state.currentPage);
         });
     }
     render(){

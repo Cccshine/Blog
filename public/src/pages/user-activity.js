@@ -15,36 +15,87 @@ class Activity extends React.Component{
 		this.state = {
 			status:0,
 			activityList:[],
-			pageTotal: 0,
-			pageSize: 2,
-			lastTime:""
 		}
+		this.currentPage = 0;
+		this.pageTotal = 0;
+		this.pageSize = blogGlobal.pageSize;
+		this.lastTime = "";
+		this.mounted = true;
+		this.activeUsername = props.match.params.username;
+		this.activeUserId = null;
 	}
 
 	componentWillMount = () => {
-		this.fetchList((new Date()).toISOString(),0,this.state.pageSize,1);
+		this.mounted = true;
+		this.fetchUserAndList();
+	}
+
+	componentWillUnmount = () => {
+		this.mounted = false;
+	}
+
+	componentWillReceiveProps = (nextProps) => {
+		if(this.activeUsername !== nextProps.match.params.username){
+			this.activeUsername = nextProps.match.params.username; 
+			this.currentPage = 0;
+			this.fetchUserAndList();
+		}
+	}
+
+	getCurrentPage = (currentPage) => {
+		this.currentPage = currentPage;
+	}
+
+	fetchUserAndList = () => {
+		let url = blogGlobal.requestBaseUrl + "/user?username="+this.activeUsername;
+		this.sendRequest(url, 'get', null, (json) => {
+			if(!this.mounted){
+				return;
+			}
+			this.activeUserId = json.userInfo._id;
+			this.fetchList((new Date()).toISOString(),0,this.pageSize,1);
+		});
 	}
 
 	fetchList = (lastTime,currentPage,pageSize,dir) => {
-		let url = blogGlobal.requestBaseUrl + "/activity?userId=" + sessionStorage.getItem('uid') +"&lastTime="+lastTime+"&currentPage="+currentPage+"&pageSize="+pageSize+"&dir="+dir;
-		fetch(url, {
-			method: 'get',
-			mode: 'cors',
-			credentials: 'include',
-		}).then((response) => {
-			return response.json();
-		}).then((json) => {
+		let url = blogGlobal.requestBaseUrl + "/activity?userId=" + this.activeUserId +"&lastTime="+lastTime+"&currentPage="+currentPage+"&pageSize="+pageSize+"&dir="+dir;
+		
+		this.sendRequest(url, 'get', null, (json) => {
+			if(!this.mounted){
+				return;
+			}
 			console.log(json);
 			let { status, activityList ,pageTotal} = json;
 			if (status == 0) {
 				this.setState({ status: 2 });
 			} else if (status == 1) {
-				this.setState({ status: 1, activityList: activityList ,pageTotal:pageTotal, lastTime:activityList[activityList.length - 1].createTime});
+				this.pageTotal = pageTotal;
+				this.lastTime = activityList[activityList.length - 1].createTime;
+				this.setState({ status: 1, activityList: activityList});
 			}
+		});
+	}
+
+	//发送请求
+	sendRequest = (url, mode, data, callback) => {
+		fetch(url, {
+			method: mode,
+			headers: {
+				'Accept': 'application/json',
+				'Content-Type': 'application/json'
+			},
+			mode: 'cors',
+			credentials: 'include',
+			body: data ? JSON.stringify(data) : null
+		}).then((response) => {
+			return response.json();
+		}).then((json) => {
+			callback && callback(json);
 		}).catch((err) => {
 			console.log(err);
 		});
 	}
+
 
 	getDateDiff(date) {
 		let timestamp = moment(date).format('x');
@@ -89,13 +140,16 @@ class Activity extends React.Component{
 	}
 
 	render(){
-		let {activityList,status,pageSize,pageTotal,lastTime} = this.state;
+		let { currentPage, pageTotal, pageSize, lastTime } = this;
+		let {activityList,status} = this.state;
 		let tagProps = { isLink: true, hasClose: false };
 		let pageProps ={
+			currentPage: currentPage,
 			pageSize: pageSize,
 			pageTotal: pageTotal,
 			lastTime: lastTime,
-			fetchList: this.fetchList
+			fetchList: this.fetchList,
+			getCurrentPage: this.getCurrentPage
 		}
 		return(
 			<div>
@@ -108,6 +162,23 @@ class Activity extends React.Component{
 										{
 											activityList.map((item, index) => {
 												let article = item.article;
+												if(!article){
+													return (
+														<section styleName="list-item" key={index}>
+															<div styleName="list-item-meta">{{
+																[1]: '收藏',
+																[2]: '点赞',
+																[3]: '取消收藏',
+																[4]: '取消点赞',
+																[5]: '评论',
+															  }[item.activityMode]}文章（{this.getDateDiff(item.createTime)}）
+															</div>
+															<div styleName="list-item-content" style={{color:'#999',margin:'5px 0'}}>
+															  该动态相关的文章已删除
+															</div>
+														</section>
+													);
+												}
 												let list = article.tag.split(';');
 												list = list.slice(0, list.length - 1);
 												return(

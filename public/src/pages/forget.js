@@ -28,6 +28,11 @@ class Forget extends React.Component {
 		    passwordStatus:0,//0--提示 1--错误 2--通过
 		    comfirmPasswordStatus:0,//0--正获得焦点 1--错误 2--通过
 		};
+		this.mounted = true;
+		this.timer = null;
+	}
+	componentWillUnmount = () =>{
+		this.mounted = false;
 	}
 	handleUserNameChange = (event) => {
 		this.setState({ username: event.target.value });
@@ -83,6 +88,7 @@ class Forget extends React.Component {
 					this.setState({ tip: '验证码不正确', status: 1 });
 				} else {
 					this.setState({ step: 3});
+					clearInterval(this.timer);
 				}
 			});
 		}else if(step === 3){
@@ -116,7 +122,7 @@ class Forget extends React.Component {
 			let {username, password} = this.state;
 			let data = {
 				username:username,
-				password:password,
+				password:SHA(password),
 				isAuto:false
 			}
 			let url = blogGlobal.requestBaseUrl+"/login";
@@ -146,10 +152,10 @@ class Forget extends React.Component {
 
 	countDown = (count) => {
 		let time = count;
-		let timer = setInterval(()=>{
+		this.timer = setInterval(()=>{
 			this.setState({time:time});
 			if(time <= 1){
-				clearInterval(timer);
+				clearInterval(this.timer);
 				this.setState({emailStatus:0, time: blogGlobal.tryTime});
 			}
 			time--;

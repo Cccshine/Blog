@@ -17,21 +17,26 @@ class Draft extends React.Component {
 			status: 0,//0--正在获取 1--获取成功 2--暂无草稿
 			draftList: null,
 			showModal: false,
-			tipType: '',
 			showTip: false,
-			tipText: '',
-			articleId: null,
-			pageTotal: 0,
-			pageSize: 2,
-			lastTime:""
 		}
+		this.articleId = null;
+		this.currentPage = 0;
+		this.pageTotal = 0;
+		this.pageSize = blogGlobal.pageSize;
+		this.lastTime = "";
+		this.mounted = true;
 	}
 
-	componentWillMount = () => {
-		this.fetchList((new Date()).toISOString(),0,this.state.pageSize,1);
+	componentDidMount = () => {
+		this.mounted = true;
+		this.fetchList((new Date()).toISOString(),0,this.pageSize,1);
 	}
 
-	fetchList(lastTime,currentPage,pageSize,dir){
+	componentWillUnmount = () => {
+		this.mounted = false;
+	}
+
+	fetchList = (lastTime,currentPage,pageSize,dir) => {
 		let url = blogGlobal.requestBaseUrl + "/articles/?mode=draft&lastTime="+lastTime+"&currentPage="+currentPage+"&pageSize="+pageSize+"&dir="+dir;
 		fetch(url, {
 			method: 'get',
@@ -40,16 +45,25 @@ class Draft extends React.Component {
 		}).then((response) => {
 			return response.json();
 		}).then((json) => {
+			if(!this.mounted){
+				return;
+			}
 			console.log(json);
 			let { status, articleList ,pageTotal } = json;
 			if (status == 0) {
 				this.setState({ status: 2 });
 			} else if (status == 1) {
-				this.setState({ status: 1, draftList: articleList ,pageTotal:pageTotal, lastTime:articleList[articleList.length - 1].publicTime});
+				this.pageTotal = pageTotal;
+				this.lastTime = articleList[articleList.length - 1].publicTime;
+				this.setState({ status: 1, draftList: articleList});
 			}
 		}).catch((err) => {
 			console.log(err);
 		});
+	}
+
+	getCurrentPage = (currentPage) => {
+		this.currentPage = currentPage;
 	}
 
 	handleEdit = (articleId, e) => {
@@ -57,18 +71,28 @@ class Draft extends React.Component {
 	}
 
 	handleQuitDraft = (articleId, e) => {
-		this.setState({ showModal: true, articleId: articleId });
+		this.articleId = articleId;
+		this.setState({ showModal: true});
 	}
 
 	comfirmQuit = () => {
 		this.setState({ showModal: false });
-		let articleId = this.state.articleId;
 		let data = {
-			articleId: articleId
+			articleId: this.articleId
 		}
 		this.sendRequest('delete', data, (json) => {
-			this.setState({ showTip: true, tipType: 'success', tipText: '舍弃成功' });
-			this.fetchList();
+			let {articleTotal} = json;
+			let pageTotal = Math.ceil(articleTotal/this.pageSize);
+			this.setState({ showTip: true });
+			//判断草稿是否全删完了
+			if(articleTotal <= 0){
+				this.setState({status:2});
+				this.hideTip();
+				return;
+			}else if(pageTotal <= this.currentPage){//判断本页草稿是否全删完了，如果是则到上一页
+				this.currentPage--;
+			}
+			this.fetchList(this.lastTime,this.currentPage,this.pageSize,1);
 			this.hideTip();
 		});
 	}
@@ -103,11 +127,12 @@ class Draft extends React.Component {
 	}
 
 	render() {
-		let { status, draftList, showModal, showTip, tipType, tipText, pageSize, pageTotal, lastTime} = this.state;
+		let { currentPage, pageSize, pageTotal, lastTime } = this;
+		let { status, draftList, showModal, showTip} = this.state;
 		let tipProps = {
 			arrow: 'no',
-			type: tipType,
-			text: tipText,
+			type: 'success',
+			text: '舍弃成功',
 			classNames: 'tip-bar-alert'
 		}
 		let modalProps = {
@@ -118,10 +143,12 @@ class Draft extends React.Component {
 			handleModalClose: this.handleModalClose
 		}
 		let pageProps ={
+			currentPage: currentPage,
 			pageSize: pageSize,
 			pageTotal: pageTotal,
 			lastTime: lastTime,
-			fetchList: this.fetchList
+			fetchList: this.fetchList,
+			getCurrentPage: this.getCurrentPage
 		}
 		return (
 			<div styleName="root">

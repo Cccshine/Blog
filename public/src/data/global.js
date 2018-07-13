@@ -17,8 +17,9 @@ const blogGlobal = {
 	"registerPassTip":"注册成功",
 	"loginPassTip":"登录成功",
 	"passwordUnMatchTip":"用户名与密码不匹配",
-	"tryTime":5,
-	"requestBaseUrl":"http://localhost:4000/api"
+	"tryTime":60,
+	"pageSize":2,
+	"requestBaseUrl":"/apis/api"
 }
 
 export default blogGlobal;

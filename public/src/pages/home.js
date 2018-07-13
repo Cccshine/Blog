@@ -14,22 +14,27 @@ class Home extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			isLogin: props.isLogin,
 			loginModalShow: !sessionStorage.getItem('loginTipClose'),
 			delModalShow: false,
 			status: 0,//0--正在获取 1--获取成功 2--暂无文章
 			summaryList: null,
-			articleId: null,
 			showTip: false,
-			role: props.role,
-			pageTotal: 0,
-			pageSize: 2,
-			lastTime:""
 		}
+		this.articleId = null;
+		this.currentPage = 0;
+		this.pageTotal = 0;
+		this.pageSize = blogGlobal.pageSize;
+		this.lastTime = "";
+		this.mounted = true;
 	}
 
 	componentDidMount = () => {
-		this.fetchList((new Date()).toISOString(),0,this.state.pageSize,1);
+		this.mounted = true;
+		this.fetchList((new Date()).toISOString(),this.currentPage,this.pageSize,1);
+	}
+
+	componentWillUnmount = () =>{
+		this.mounted = false;
 	}
 
 	fetchList = (lastTime,currentPage,pageSize,dir) => {
@@ -41,27 +46,36 @@ class Home extends React.Component {
 		}).then((response) => {
 			return response.json();
 		}).then((json) => {
+			if(!this.mounted){
+				return;
+			}
 			console.log(json);
 			let { status, articleList ,pageTotal} = json;
 			if (status == 0) {
 				this.setState({ status: 2 });
 			} else if (status == 1) {
-				this.setState({ status: 1, summaryList: articleList ,pageTotal:pageTotal, lastTime:articleList[articleList.length - 1].publicTime});
+				this.pageTotal = pageTotal;
+				this.lastTime = articleList[articleList.length - 1].publicTime;
+				this.setState({ status: 1, summaryList: articleList});
 			}
 		}).catch((err) => {
 			console.log(err);
 		});
 	}
 
+	getCurrentPage = (currentPage) => {
+		this.currentPage = currentPage;
+	}
+
 	handleDelete = (articleId, event) => {
-		this.setState({ delModalShow: true, articleId: articleId });
+		this.articleId = articleId;
+		this.setState({ delModalShow: true });
 	}
 
 	comfirmDel = () => {
 		this.setState({ delModalShow: false });
-		let articleId = this.state.articleId;
 		let data = {
-			articleId: articleId
+			articleId: this.articleId
 		}
 		fetch(blogGlobal.requestBaseUrl + "/articles", {
 			method: 'delete',
@@ -75,8 +89,18 @@ class Home extends React.Component {
 		}).then((response) => {
 			return response.json();
 		}).then((json) => {
+			let {articleTotal} = json;
+			let pageTotal = Math.ceil(articleTotal/this.pageSize);
 			this.setState({ showTip: true });
-			this.fetchList();
+			//判断文章是否全删完了
+			if(articleTotal <= 0){
+				this.setState({status:2});
+				this.hideTip();
+				return;
+			}else if(pageTotal <= this.currentPage){//判断本页文章是否全删完了，如果是则到上一页
+				this.currentPage--;
+			}
+			this.fetchList(this.lastTime,this.currentPage,this.pageSize,1);
 			this.hideTip();
 		}).catch((err) => {
 			console.log(err);
@@ -101,7 +125,9 @@ class Home extends React.Component {
 	}
 
 	render() {
-		let { status, summaryList, isLogin, loginModalShow, delModalShow, showTip, role ,pageTotal, pageSize, lastTime} = this.state;
+		let {currentPage,pageTotal,pageSize,lastTime} = this;
+		let {isLogin, role} = this.props;
+		let { status, summaryList, loginModalShow, delModalShow, showTip} = this.state;
 		let modalHtml = <p className="tips-in-modal">您还未登录，是否前往登录？<span className="small-tip">(登录后可评论，点赞，收藏)</span></p>;
 		let modalProps = {
 			isOpen: loginModalShow,
@@ -125,10 +151,12 @@ class Home extends React.Component {
 			classNames: 'tip-bar-alert'
 		}
 		let pageProps ={
+			currentPage: currentPage,
 			pageSize: pageSize,
 			pageTotal: pageTotal,
 			lastTime: lastTime,
-			fetchList: this.fetchList
+			fetchList: this.fetchList,
+			getCurrentPage: this.getCurrentPage,
 		}
 		return (
 			<div styleName="root">
@@ -173,10 +201,10 @@ class Home extends React.Component {
 								)
 								break;
 							case 2:
-								return <h3 styleName="null-tip" style={{display:'none'}}>暂无文章</h3>
+								return <h3 styleName="null-tip">暂无文章</h3>
 								break;
 							default:
-								return <div styleName="loading" style={{display:'none'}}><i className="fa fa-spinner fa-pulse"></i><span>正在加载...</span></div>
+								return <div styleName="loading"><i className="fa fa-spinner fa-pulse"></i><span>正在加载...</span></div>
 								break;
 						}
 					})()

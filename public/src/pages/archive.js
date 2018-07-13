@@ -19,19 +19,21 @@ class Archive extends React.Component {
 			archiveList: [],
 			isArchiveList: false,
 			articleList: [],
-			articleId: null,
-			role: props.role,
 			delModalShow: false,
 			showTip: false,
-			pageTotal: 0,
-			pageSize: 2,
-			lastTime:""
 		}
+		this.articleId = null;
+		this.currentPage = 0;
+		this.pageTotal = 0;
+		this.pageSize = blogGlobal.pageSize;
+		this.lastTime = "";
+		this.mounted = true;
 	}
 	componentWillMount = () => {
+		this.mounted = true;
 		let time = this.props.match.params.time || null;
 		if(time){
-			this.fetchList((new Date()).toISOString(),0,this.state.pageSize,1);
+			this.fetchList((new Date()).toISOString(),0,this.pageSize,1);
 		}else{
 			this.setState({ isArchiveList: true });
 			let url = blogGlobal.requestBaseUrl + "/articles?mode=archive";
@@ -42,6 +44,9 @@ class Archive extends React.Component {
 			}).then((response) => {
 				return response.json();
 			}).then((json) => {
+				if(!this.mounted){
+					return;
+				}
 				let { status, archiveList } = json;
 				this.setState({ status: status, archiveList: archiveList });
 				console.log(json);
@@ -49,6 +54,10 @@ class Archive extends React.Component {
 				console.log(err);
 			});
 		}
+	}
+
+	componentWillUnmount = () => {
+		this.mounted = false;
 	}
 
 	fetchList = (lastTime,currentPage,pageSize,dir) => {
@@ -70,22 +79,28 @@ class Archive extends React.Component {
 			if (status == 0) {
 				this.setState({ status: 2 });
 			} else if (status == 1) {
-				this.setState({ status: 1, articleList: articleList ,pageTotal:pageTotal, lastTime:articleList[articleList.length - 1].publicTime});
+				this.pageTotal = pageTotal;
+				this.lastTime = articleList[articleList.length - 1].publicTime;
+				this.setState({ status: 1, articleList: articleList });
 			}
 		}).catch((err) => {
 			console.log(err);
 		});
 	}
 
+	getCurrentPage = (currentPage) => {
+		this.currentPage = currentPage;
+	}
+
 	handleDelete = (articleId, event) => {
-		this.setState({ delModalShow: true, articleId: articleId });
+		this.articleId = articleId;
+		this.setState({ delModalShow: true});
 	}
 
 	comfirmDel = () => {
 		this.setState({ delModalShow: false });
-		let articleId = this.state.articleId;
 		let data = {
-			articleId: articleId
+			articleId: this.articleId
 		}
 		fetch(blogGlobal.requestBaseUrl + "/articles", {
 			method: 'delete',
@@ -99,8 +114,18 @@ class Archive extends React.Component {
 		}).then((response) => {
 			return response.json();
 		}).then((json) => {
+			let {articleTotal} = json;
+			let pageTotal = Math.ceil(articleTotal/this.pageSize);
 			this.setState({ showTip: true });
-			this.fetchList();
+			//判断文章是否全删完了
+			if(articleTotal <= 0){
+				this.setState({status:2});
+				this.hideTip();
+				return;
+			}else if(pageTotal <= this.currentPage){//判断本页文章是否全删完了，如果是则到上一页
+				this.currentPage--;
+			}
+			this.fetchList(this.lastTime,this.currentPage,this.pageSize,1);
 			this.hideTip();
 		}).catch((err) => {
 			console.log(err);
@@ -108,7 +133,9 @@ class Archive extends React.Component {
 	}
 
 	render() {
-		let { status, archiveList, isArchiveList, articleList, role, delModalShow, showTip, pageSize, pageTotal, lastTime} = this.state;
+		let {currentPage, pageSize, pageTotal, lastTime} = this;
+		let {role} = this.props;
+		let { status, archiveList, isArchiveList, articleList, delModalShow, showTip} = this.state;
 		let delModalProps = {
 			isOpen: delModalShow,
 			title: '删除提醒',
@@ -124,9 +151,11 @@ class Archive extends React.Component {
 			classNames: 'tip-bar-alert'
 		}
 		let pageProps ={
+			currentPage: currentPage,
 			pageSize: pageSize,
 			pageTotal: pageTotal,
 			lastTime: lastTime,
+			getCurrentPage: this.getCurrentPage,
 			fetchList: this.fetchList
 		}
 		let rootPadding = isArchiveList ? {padding:20} : {padding:'20px 20px 20px 100px'};

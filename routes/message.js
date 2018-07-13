@@ -49,34 +49,14 @@ router.get('/all',(req,res) => {
 })
 
 router.get('/setRead',(req,res) => {
-	let msgIds = req.query.msgIds;
-	// MessageModel.find({receiveUser:req.session.uid}).sort({createTime:-1}).populate('operateUser').populate('article').populate('comment').then((messageList) => {
-	// 	return res.json({"status":1,messageList:messageList,"msg":"success"});
-	// }).catch((err) => {
-	// 	console.log(err);
-	// 	res.status(500).send('Something broke!');
-	// })
+	let msgIds = req.query.msgIds.split(',');
+	console.log(typeof msgIds,msgIds)
+	MessageModel.update({_id:{$in:msgIds}},{$set:{isRead:true}}, {multi: true}).then(()=>{
+		return res.json({"status":1,"msg":"read success"});
+	}).catch((err)=>{
+		console.log(err);
+		res.status(500).send('Something broke!');
+	})
 })
-
-// router.ws('/message', (ws, req) => {
-//   ws.on('message', (msg) => {
-//   	console.log('messageChange 收到消息');
-//   	console.log(ws.getWss('/message').clients)
-//   	MessageModel.find({receiveUser:req.session.uid,isRead:false}).then((messageList) => {
-//   		ws.getWss('/message').clients.forEach(client => client.send(messageList.length));  
-// 	}).catch((err) => {
-// 		console.log(err);
-// 	}) 
-//   });
-//   emitter.on('messageChange', () => {    
-//     console.log('messageChange 事件触发');  
-//     MessageModel.find({receiveUser:req.session.uid,isRead:false}).then((messageList) => {
-//      	ws.getWss('/message').clients.forEach(client => client.send(messageList.length));  
-// 	}).catch((err) => {
-// 		console.log(err);
-// 	}) 
-//   });  
-// })
-
 
 module.exports = router;

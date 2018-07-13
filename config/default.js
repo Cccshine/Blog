@@ -1,5 +1,5 @@
 module.exports = {
-    port: 4000,
+    port: 3000,
     session: {
         secret: 'cshine',
         key: 'cshine',
@@ -15,5 +15,5 @@ module.exports = {
             pass: 'lxwhuloqtiiobcde' //邮箱第三方登录授权码
         },
     },
-    mongodb: 'mongodb://localhost:27017/runoob'
+    mongodb: 'mongodb://127.0.0.1:27017/runoob'
 };

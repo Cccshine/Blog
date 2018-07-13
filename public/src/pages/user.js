@@ -1,8 +1,6 @@
 import React from 'react';
 import {Route,Switch} from 'react-router-dom';
 import { Link, NavLink } from 'react-router-dom';
-import moment from 'moment';
-import marked from 'marked';
 import Modal from '../component/modal/modal';
 import Tag from '../component/tag/tag';
 import CSSModules from 'react-css-modules';
@@ -20,9 +18,6 @@ import '../other/cimage.css';
 let avatarFile = null;
 let avatarArea = null;
 
-let activeUsername = "";
-
-
 class User extends React.Component{
 	constructor(props){
 		super(props);
@@ -31,14 +26,35 @@ class User extends React.Component{
 			uploadSrc:'',
 			avatarSrc:'',
 		}
+		this.mounted = true;
+		this.activeUsername = props.match.params.username;
 	}
 
 	componentWillMount = () => {
-		activeUsername = window.location.pathname.split('/', 3)[2];
-		let url = blogGlobal.requestBaseUrl + "/user?username="+activeUsername;
+		this.mounted = true;
+		this.fetchUserInfo();
+	}
+
+	componentWillReceiveProps = (nextProps) => {
+		if(this.activeUsername !== nextProps.match.params.username){
+			this.activeUsername = nextProps.match.params.username; 
+			this.fetchUserInfo();
+		}
+	}
+
+
+	componentWillUnmount = () =>{
+		this.mounted = false;
+	}
+
+	fetchUserInfo = () => {
+		let url = blogGlobal.requestBaseUrl + "/user?username="+this.activeUsername;
 		this.sendRequest(url, 'get', null, (json) => {
+			if(!this.mounted){
+				return;
+			}
 			this.setState({avatarSrc:json.userInfo.avatar});
-			this.props.history.push({ pathname: '/user/'+activeUsername+'/activities'});
+			this.props.history.push({ pathname: '/user/'+this.activeUsername+'/activities'});
 		});
 	}
 
@@ -59,6 +75,7 @@ class User extends React.Component{
 			this.setState({avatarModalShow:true,uploadSrc:fd.result});
 			this.refs.upload.value = '';
 			setTimeout(()=>{
+				console.log(this.refs.cimage.offsetWidth)
 				let CI = new CImage({
 				    element: this.refs.cimage,
 				    createHandles: ['n', 's', 'e', 'w', 'ne', 'se', 'sw', 'nw'],
@@ -99,7 +116,7 @@ class User extends React.Component{
 	}
 
 	handleSetting = () => {
-		this.props.history.push({ pathname: '/setting', state: {username:activeUsername}});
+		this.props.history.push({ pathname: '/setting', state: {username:this.activeUsername}});
 	}
 
 	//发送请求
@@ -124,6 +141,7 @@ class User extends React.Component{
 
 
 	render(){
+		let {activeUsername} = this;
 		let {avatarModalShow,avatarSrc,uploadSrc} = this.state;
 		let tagProps = { isLink: true, hasClose: false };
 		let list = ["css","html"]

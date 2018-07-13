@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const router = express.Router();
 const ArticleModel = mongoose.model('Article');
 const TagModel = mongoose.model('Tag');
+const common = require('../common.js');
 router.post('/',function(req,res){
 	let {todo,articleId,type,title,tag,content} = req.body;
 	let matchArr = content.match(/(\.|\n)*<!-- more -->/);
@@ -79,6 +80,7 @@ router.delete('/',function(req,res){
 	let {articleId} = req.body;
 	let tagArr = [];
 	ArticleModel.findOneAndRemove({_id:articleId}).then((article) => {
+		common.articleTotal--;
 		tagArr = article.tag.split(';');
 		tagArr.pop();
 		for(let tagName of tagArr){
@@ -101,15 +103,16 @@ router.delete('/',function(req,res){
 				res.status(500).send('Something broke!');
 			});
 		}
-		return res.json({"status":1,"msg":"delete success"});
+		return res.json({"status":1,"articleTotal":common.articleTotal,"msg":"delete success"});
 	}).catch((err) => {
 		console.log(err);
-		res.status(500).send('Something broke!');
 	});
 });
 
 router.get('/',(req,res) => {
 	let {mode,lastTime,currentPage,pageSize,dir,articleId,tagName,startTime,endTime,userId} = req.query;
+	let articleTotal = common.articleTotal;
+	let pageTotal = Math.ceil(articleTotal/pageSize);
 	currentPage = Number(currentPage);
 	pageSize = Number(pageSize);
 	dir = Number(dir);
@@ -134,7 +137,7 @@ router.get('/',(req,res) => {
 	}else if(mode == 'draft'){//草稿箱
 		if(currentPage === 0){//第一页
 			ArticleModel.pageFirst(res,{isPublic:false},pageSize);
-		}else if(currentPage === homePageTotal - 1){//最后一页
+		}else if(currentPage === pageTotal - 1){//最后一页
 			ArticleModel.pageLast(res,{isPublic:false},pageSize);
 		}else if(dir > 0){//下一页
 			ArticleModel.pageNext(res,{isPublic:false},pageSize);
@@ -144,7 +147,7 @@ router.get('/',(req,res) => {
 	}else if(mode == 'public' && !tagName) {//首页文章列表
 		if(currentPage === 0){//第一页
 			ArticleModel.pageFirst(res,{isPublic:true},pageSize);
-		}else if(currentPage === homePageTotal - 1){//最后一页
+		}else if(currentPage === pageTotal - 1){//最后一页
 			ArticleModel.pageLast(res,{isPublic:true},pageSize);
 		}else if(dir > 0){//下一页
 			ArticleModel.pageNext(res,{isPublic:true,publicTime:{$lt:lastTime}},pageSize);
@@ -154,7 +157,7 @@ router.get('/',(req,res) => {
 	}else if(mode == 'public' && tagName){//标签分类文章列表
 		if(currentPage === 0){//第一页
 			ArticleModel.pageFirst(res,{tag:eval("/"+tagName+"/i"), isPublic:true},pageSize);
-		}else if(currentPage === homePageTotal - 1){//最后一页
+		}else if(currentPage === pageTotal - 1){//最后一页
 			ArticleModel.pageLast(res,{tag:eval("/"+tagName+"/i"), isPublic:true},pageSize);
 		}else if(dir > 0){//下一页
 			ArticleModel.pageNext(res,{tag:eval("/"+tagName+"/i"), isPublic:true,publicTime:{$lt:lastTime}},pageSize);
@@ -198,7 +201,7 @@ router.get('/',(req,res) => {
 	}else if(mode == 'archive' && startTime && endTime){//归档文章列表
 		if(currentPage === 0){//第一页
 			ArticleModel.pageFirst(res,{isPublic:true,publicTime:{$gte:startTime,$lte:endTime}},pageSize);
-		}else if(currentPage === homePageTotal - 1){//最后一页
+		}else if(currentPage === pageTotal - 1){//最后一页
 			ArticleModel.pageLast(res,{isPublic:true,publicTime:{$gte:startTime,$lte:endTime}},pageSize);
 		}else if(dir > 0){//下一页
 			ArticleModel.pageNext(res,{isPublic:true,publicTime:{$lt:lastTime,$gte:startTime,$lte:endTime}},pageSize);
@@ -208,7 +211,7 @@ router.get('/',(req,res) => {
 	}else if(mode == 'collection'){//用户中心---收藏的文章
 		if(currentPage === 0){//第一页
 			ArticleModel.pageFirst(res,{collectionUser:userId},pageSize);
-		}else if(currentPage === homePageTotal - 1){//最后一页
+		}else if(currentPage === pageTotal - 1){//最后一页
 			ArticleModel.pageLast(res,{collectionUser:userId},pageSize);
 		}else if(dir > 0){//下一页
 			ArticleModel.pageNext(res,{collectionUser:userId,publicTime:{$lt:lastTime}},pageSize);
@@ -224,7 +227,7 @@ router.get('/',(req,res) => {
 	}else if(mode == 'praise'){//用户中心---点赞的文章
 		if(currentPage === 0){//第一页
 			ArticleModel.pageFirst(res,{praiseUser:userId},pageSize);
-		}else if(currentPage === homePageTotal - 1){//最后一页
+		}else if(currentPage === pageTotal - 1){//最后一页
 			ArticleModel.pageLast(res,{praiseUser:userId},pageSize);
 		}else if(dir > 0){//下一页
 			ArticleModel.pageNext(res,{praiseUser:userId,publicTime:{$lt:lastTime}},pageSize);

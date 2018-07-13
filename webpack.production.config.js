@@ -2,6 +2,7 @@ var webpack = require('webpack');
 var path = require('path');
 //使用 ExtractTextWebpackPlugin (将打好包的 CSS 提出出来并输出成 CSS 文件)。
 var extractTextPlugin = require('extract-text-webpack-plugin');
+var htmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
 	entry:{
@@ -125,6 +126,10 @@ module.exports = {
 	//Common Chunks 插件的作用就是提取代码中的公共模块，然后将公共模块打包到一个独立的文件中去，以便在其它的入口和模块中使用。
 		new webpack.optimize.CommonsChunkPlugin({name:'vendors',filename:'js/vendors.js'}),
 		new extractTextPlugin({filename:'css/bundle.css'}),
+		new htmlWebpackPlugin({
+			filename: 'index.html',
+            template: 'index.html'
+		}),
 		// new webpack.ProvidePlugin({$:'jquery'}),
 		// 压缩配置
 		new webpack.optimize.UglifyJsPlugin({

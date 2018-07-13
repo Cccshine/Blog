@@ -41,7 +41,7 @@ router.post('/edit-email', function(req, res) {
 
 router.get('/', function(req, res) {
   let username = req.query.username;
-  UserModel.findOne({name:username},{name:1,email:1,avatar:1,role:1,_id:0}).then((user) => {
+  UserModel.findOne({name:username},{name:1,email:1,avatar:1,role:1,_id:1}).then((user) => {
       return res.json({"status":1,"userInfo":user,"msg":"get success"});
   }).catch((err) =>{
     console.log(err);

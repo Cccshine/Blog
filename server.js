@@ -1,4 +1,5 @@
 const express = require('express');
+const fs = require('fs');
 const path = require('path');
 const mongoose = require('mongoose');
 const moment = require('moment');
@@ -36,6 +37,8 @@ const expressWs = require('express-ws')(app);
 
 // 设置监听端口,环境变量要是设置了PORT就用环境变量的PORT
 const port = process.env.PORT || config.port;
+const host = process.env.HOST || '0.0.0.0';
+// const port = process.env.PORT || 80;
 mongoose.Promise = global.Promise
 //连接数据库
 mongoose.connect(config.mongodb,{useMongoClient:true});
@@ -62,13 +65,13 @@ app.use(session({
 app.use( bodyParser.json() );       // to support JSON-encoded bodies
 app.use( bodyParser.urlencoded({ extended: true }) ); // to support URL-encoded bodies
 
-app.all('*', (req, res, next) => {
-    res.header("Access-Control-Allow-Origin", req.headers.origin);
-    res.header('Access-Control-Allow-Headers', 'Origin, No-Cache, X-Requested-With, If-Modified-Since, Pragma, Last-Modified, Cache-Control, Expires, Content-Type, X-E4M-With');
-    res.header("Access-Control-Allow-Methods","PUT,POST,GET,DELETE,OPTIONS,UPDATE");
-    res.header("Access-Control-Allow-Credentials",true);
-    next();
-});
+// app.all('*', (req, res, next) => {
+//     res.header("Access-Control-Allow-Origin", req.headers.origin);
+//     res.header('Access-Control-Allow-Headers', 'Origin, No-Cache, X-Requested-With, If-Modified-Since, Pragma, Last-Modified, Cache-Control, Expires, Content-Type, X-E4M-With');
+//     res.header("Access-Control-Allow-Methods","PUT,POST,GET,DELETE,OPTIONS,UPDATE");
+//     res.header("Access-Control-Allow-Credentials",true);
+//     next();
+// });
 
 app.use('/api/', indexRouter);
 app.use('/api/register', registerRouter);
@@ -117,5 +120,12 @@ app.ws('/message', (ws, req) => {
     })
 })
 
-app.listen(port);
+app.use(express.static(path.resolve(__dirname, './dist')))
+
+// app.get('*', function(req, res) {
+//     const html = fs.readFileSync(path.resolve(__dirname, './dist/index.html'), 'utf-8')
+//     res.send(html)
+// })
+
+app.listen(port,host);
 
