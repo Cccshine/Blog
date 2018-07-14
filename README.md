@@ -31,8 +31,8 @@
        }
     }
 ```
-配置完成后启动`nginx`；
-3. 由于使用了`MongoDB`，所以需要安装`MongoDB`,安装方法可`Google`;安装完成后启动`MongoDB`;
+配置完成后启动`nginx`
+3. 由于使用了`MongoDB`，所以需要安装`MongoDB`,安装方法可`Google`;安装完成后启动`MongoDB`
 4. `cd`到项目文件，然后命令行下运行（需要先安装好`Node.js`）
 ```
   $ npm install
