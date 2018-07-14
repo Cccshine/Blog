@@ -49,7 +49,7 @@ class Tag extends React.Component {
 				if(!this.mounted){
 					return;
 				}
-				console.log(json);
+				//console.log(json);
 				let { status, tagList } = json;
 				if (status == 0) {
 					this.setState({ status: 2 });
@@ -65,7 +65,7 @@ class Tag extends React.Component {
 					this.tagCloudInit();
 				}
 			}).catch((err) => {
-				console.log(err);
+				//console.log(err);
 			});
 		}
 	}
@@ -88,7 +88,7 @@ class Tag extends React.Component {
 		}).then((response) => {
 			return response.json();
 		}).then((json) => {
-			console.log(json);
+			//console.log(json);
 			let { status, articleList ,pageTotal } = json;
 			if (status == 0) {
 				this.setState({ status: 2 });
@@ -98,7 +98,7 @@ class Tag extends React.Component {
 				this.setState({ status: 1, articleList: articleList});
 			}
 		}).catch((err) => {
-			console.log(err);
+			//console.log(err);
 		});
 	}
 
@@ -142,7 +142,7 @@ class Tag extends React.Component {
 			this.fetchList(this.lastTime,this.currentPage,this.pageSize,1);
 			this.hideTip();
 		}).catch((err) => {
-			console.log(err);
+			//console.log(err);
 		});
 	}
 	//-------------------------标签云-------------------------

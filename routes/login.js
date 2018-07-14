@@ -35,7 +35,7 @@ router.post('/', function(req, res, next) {
       return res.json({"status":0,"msg":"user unexsist"});//用户不存在
     }
   }).catch((err) => {
-    console.log(err);
+    //console.log(err);
     res.status(500).send('Something broke!');
   })
 });

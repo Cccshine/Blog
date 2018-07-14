@@ -48,7 +48,7 @@ class Message extends React.Component {
 			if(!this.mounted){
 				return;
 			}
-			console.log(json);
+			//console.log(json);
 			let { status, messageList ,pageTotal} = json;
 			if (status == 0) {
 				this.setState({ status: 2 });
@@ -58,7 +58,7 @@ class Message extends React.Component {
 				this.setState({ status: 1, messageList: messageList});
 			}
 		}).catch((err) => {
-			console.log(err);
+			//console.log(err);
 		});
 	}
 

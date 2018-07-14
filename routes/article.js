@@ -26,21 +26,21 @@ router.post('/',function(req,res){
 	}
 
 	if(articleId){//非新建
-		console.log('更新')
+		//console.log('更新')
 		ArticleModel.findOneAndUpdate({_id:articleId},{$set:_article}).then((article) => {
 			return res.json({"status":1,article:article,"msg":"save success"});
 		}).catch((err) => {
-			console.log(err);
+			//console.log(err);
 			res.status(500).send('Something broke!');
 		});
 	}else{//新建
-		console.log('新建');
+		//console.log('新建');
 		_article.authorId = req.session.uid;//只有admin可以写文章
 		newArticle = new ArticleModel(_article);
 		newArticle.save().then((article) => {
 			return res.json({"status":1,article:article,"msg":"add success"});
 		}).catch((err) => {
-			console.log(err);
+			//console.log(err);
 			res.status(500).send('Something broke!');
 		});
 	}
@@ -57,7 +57,7 @@ router.post('/',function(req,res){
 						tag.articles.push(id);	
 					}
 					tag.save((err) => {
-						console.log(err);
+						//console.log(err);
 					})
 				}else{
 					let newTag = new TagModel({
@@ -65,11 +65,11 @@ router.post('/',function(req,res){
 						articles: [articleId || newArticle._id]
 					});
 					newTag.save((err) => {
-						console.log(err);
+						//console.log(err);
 					})
 				}
 			}).catch((err) => {
-				console.log(err);
+				//console.log(err);
 				res.status(500).send('Something broke!');
 			});
 		}
@@ -90,22 +90,22 @@ router.delete('/',function(req,res){
 				});
 				if(tag.articles.length > 0){
 					tag.save((err) => {
-						console.log(err);
+						//console.log(err);
 					})
 				}else{
 					tag.remove((err) => {
-						console.log(err)
+						//console.log(err)
 					});
 				}
 				
 			}).catch((err) => {
-				console.log(err);
+				//console.log(err);
 				res.status(500).send('Something broke!');
 			});
 		}
 		return res.json({"status":1,"articleTotal":common.articleTotal,"msg":"delete success"});
 	}).catch((err) => {
-		console.log(err);
+		//console.log(err);
 	});
 });
 
@@ -125,13 +125,13 @@ router.get('/',(req,res) => {
 			return ArticleModel.find({isPublic:true, publicTime:{$gt:article.publicTime}}).sort({publicTime:1}).limit(1).exec();
 		}).then((lastArticle) => {
 			result.lastArticle = lastArticle ? lastArticle[0] : null;
-			console.log(result.article.publicTime)
+			//console.log(result.article.publicTime)
 			return ArticleModel.find({isPublic:true, publicTime:{$lt:result.article.publicTime}}).sort({publicTime:-1}).limit(1).exec();
 		}).then((nextArticle) => {
 			result.nextArticle = nextArticle ? nextArticle[0] : null;
 			return res.json({"status":1,result:result,"msg":"success"});
 		}).catch((err) => {
-			console.log(err);
+			//console.log(err);
 			res.status(500).send('Something broke!');
 		})
 	}else if(mode == 'draft'){//草稿箱
@@ -196,7 +196,7 @@ router.get('/',(req,res) => {
 				return res.json({"status":0,"archiveList":archiveList,"msg":"no article"});
 			}
 		}).catch((err)=>{
-			console.log(err);
+			//console.log(err);
 		})
 	}else if(mode == 'archive' && startTime && endTime){//归档文章列表
 		if(currentPage === 0){//第一页
@@ -221,7 +221,7 @@ router.get('/',(req,res) => {
 		// ArticleModel.find({collectionUser:userId}).then((collectionArticles) => {
 		// 	return res.json({"status":1,collectionArticles:collectionArticles,"msg":"success"});
 		// }).catch((err) => {
-		// 	console.log(err);
+		// 	//console.log(err);
 		// 	res.status(500).send('Something broke!');
 		// })
 	}else if(mode == 'praise'){//用户中心---点赞的文章
@@ -237,14 +237,14 @@ router.get('/',(req,res) => {
 		// ArticleModel.find({praiseUser:userId}).then((praiseArticles) => {
 		// 	return res.json({"status":1,praiseArticles:praiseArticles,"msg":"success"});
 		// }).catch((err) => {
-		// 	console.log(err);
+		// 	//console.log(err);
 		// 	res.status(500).send('Something broke!');
 		// })
 	}else if(mode == 'edit'){//编辑页
 		ArticleModel.findOne({_id:articleId}).then((article) => {
 			return res.json({"status":1,article:article,"msg":"success"});
 		}).catch((err) => {
-			console.log(err);
+			//console.log(err);
 			res.status(500).send('Something broke!');
 		})
 	}else{

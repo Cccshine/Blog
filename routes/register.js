@@ -24,7 +24,7 @@ router.post('/', function(req, res) {
   			//基于entity进行save保存
   			user.save(function(err,user){
   				if(err){
-  					console.log(err)
+  					//console.log(err)
   				}
   				// 将当前登录用户名保存到session中
   				req.session.username = user.name;
@@ -32,7 +32,7 @@ router.post('/', function(req, res) {
   			})
   		}
   	}).catch((err) =>{
-  		console.log(err);
+  		//console.log(err);
   		res.status(500).send('Something broke!');
   	});
 });

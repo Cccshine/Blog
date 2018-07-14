@@ -255,7 +255,7 @@ class Forget extends React.Component {
 		}).then((json) => {
 			callback && callback(json);
 		}).catch((err) => {
-			console.log(err);
+			//console.log(err);
 		});
 	}
 

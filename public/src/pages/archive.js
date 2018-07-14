@@ -48,10 +48,14 @@ class Archive extends React.Component {
 					return;
 				}
 				let { status, archiveList } = json;
-				this.setState({ status: status, archiveList: archiveList });
-				console.log(json);
+				if (status == 0) {
+					this.setState({ status: 2 });
+				} else if (status == 1) {
+					this.setState({ status: 1, archiveList: archiveList });
+				}
+				//console.log(json);
 			}).catch((err) => {
-				console.log(err);
+				//console.log(err);
 			});
 		}
 	}
@@ -84,7 +88,7 @@ class Archive extends React.Component {
 				this.setState({ status: 1, articleList: articleList });
 			}
 		}).catch((err) => {
-			console.log(err);
+			//console.log(err);
 		});
 	}
 
@@ -128,7 +132,7 @@ class Archive extends React.Component {
 			this.fetchList(this.lastTime,this.currentPage,this.pageSize,1);
 			this.hideTip();
 		}).catch((err) => {
-			console.log(err);
+			//console.log(err);
 		});
 	}
 

@@ -19,16 +19,16 @@ router.post('/',function(req,res){
 	if(messageMode > 2){
 		_message.comment = req.body.commentId
 	}
-	console.log('新增消息');
+	//console.log('新增消息');
 	let newMessage = new MessageModel(_message);
 	newMessage.save().then((message) => {
-		console.log(operateUserId,receiveUserId,operateUserId != receiveUserId)
+		//console.log(operateUserId,receiveUserId,operateUserId != receiveUserId)
 		if(operateUserId != receiveUserId){
 			common.emitter.emit('messageChange',req);
 		}
 		return res.json({"status":1,"msg":"add message success"});
 	}).catch((err) => {
-		console.log(err);
+		//console.log(err);
 		res.status(500).send('Something broke!');
 	});
 });
@@ -38,7 +38,7 @@ router.get('/unread',(req,res) => {
 	MessageModel.find({receiveUser:req.session.uid,isRead:false}).sort({createTime:-1}).populate('operateUser').populate('article').populate('comment').then((messageList) => {
 		return res.json({"status":1,messageList:messageList,"msg":"success"});
 	}).catch((err) => {
-		console.log(err);
+		//console.log(err);
 		res.status(500).send('Something broke!');
 	})
 })
@@ -66,7 +66,7 @@ router.get('/',(req,res) => {
 	if(currentPage === 0){//第一页
 		MessageModel.mapReduce(o, function (err, model) {
 			if(err){
-				console.log(err);
+				//console.log(err);
 				res.status(500).send('Something broke!');
 			}
 			model.find().then((messageByDayList)=>{//第一页时更新总数及总页数
@@ -75,7 +75,7 @@ router.get('/',(req,res) => {
 
 				model.find().sort({_id:-1}).limit(pageSize).populate({path:'value.infos.operateUser value.operateUser',select:'name',model:'User'}).populate({path:'value.infos.article value.article',select:'title',model:'Article'}).populate({path:'value.infos.comment value.comment',select:'content',model:'Comment'}).exec(function (err, messageList) {
 					if(err){
-						console.log(err);
+						//console.log(err);
 						res.status(500).send('Something broke!');
 					}
 					
@@ -86,7 +86,7 @@ router.get('/',(req,res) => {
 					}
 			});
 			}).catch((err) => {
-				console.log(err);
+				//console.log(err);
 				res.status(500).send('Something broke!');
 			})  
 		})
@@ -94,12 +94,12 @@ router.get('/',(req,res) => {
 		let limit = messageByDayTotal - (messagePageTotal - 1)*pageSize;
 		MessageModel.mapReduce(o, function (err, model) {
 			if(err){
-  				console.log(err);
+  				//console.log(err);
 				res.status(500).send('Something broke!');
   			}
 		    model.find().sort({_id:1}).limit(limit).populate({path:'value.infos.operateUser value.operateUser',select:'name',model:'User'}).populate({path:'value.infos.article value.article',select:'title',model:'Article'}).populate({path:'value.infos.comment value.comment',select:'content',model:'Comment'}).exec(function (err, messageList) {
 	  			if(err){
-	  				console.log(err);
+	  				//console.log(err);
 					res.status(500).send('Something broke!');
 	  			}
 
@@ -114,12 +114,12 @@ router.get('/',(req,res) => {
 	}else if(dir > 0){//下一页
 		MessageModel.mapReduce(o, function (err, model) {
 			if(err){
-  				console.log(err);
+  				//console.log(err);
 				res.status(500).send('Something broke!');
   			}
 		    model.find({_id:{$lt:lastTime}}).sort({_id:-1}).limit(pageSize).populate({path:'value.infos.operateUser value.operateUser',select:'name',model:'User'}).populate({path:'value.infos.article value.article',select:'title',model:'Article'}).populate({path:'value.infos.comment value.comment',select:'content',model:'Comment'}).exec(function (err, messageList) {
 	  			if(err){
-	  				console.log(err);
+	  				//console.log(err);
 					res.status(500).send('Something broke!');
 	  			}
 
@@ -139,12 +139,12 @@ router.get('/',(req,res) => {
 		}
 		MessageModel.mapReduce(o, function (err, model) {
 			if(err){
-  				console.log(err);
+  				//console.log(err);
 				res.status(500).send('Something broke!');
   			}
 		    model.find({_id:{$gt:lastTime}}).sort({_id:1}).skip(skipNum).limit(pageSize).populate({path:'value.infos.operateUser value.operateUser',select:'name',model:'User'}).populate({path:'value.infos.article value.article',select:'title',model:'Article'}).populate({path:'value.infos.comment value.comment',select:'content',model:'Comment'}).exec(function (err, messageList) {
 	  			if(err){
-	  				console.log(err);
+	  				//console.log(err);
 					res.status(500).send('Something broke!');
 	  			}
 	  			messageList.reverse();
@@ -159,7 +159,7 @@ router.get('/',(req,res) => {
 	// MessageModel.find({receiveUser:req.session.uid}).sort({createTime:-1}).populate('operateUser').populate('article').populate('comment').then((messageList) => {
 	// 	return res.json({"status":1,messageList:messageList,"msg":"success"});
 	// }).catch((err) => {
-	// 	console.log(err);
+	// 	//console.log(err);
 	// 	res.status(500).send('Something broke!');
 	// })
 })
@@ -168,7 +168,7 @@ router.get('/setRead',(req,res) => {
 	MessageModel.update({receiveUser:req.session.uid,isRead:false},{$set:{isRead:true}},{ multi: true }).then(() => {
 		return res.json({"status":1,"msg":"success"});
 	}).catch((err) => {
-		console.log(err);
+		//console.log(err);
 		res.status(500).send('Something broke!');
 	})
 })

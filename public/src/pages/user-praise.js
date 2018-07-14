@@ -55,7 +55,7 @@ class Praise extends React.Component{
 			if(!this.mounted){
 				return;
 			}
-			console.log(json);
+			//console.log(json);
 			let { status, articleList ,pageTotal} = json;
 			if (status == 0) {
 				this.setState({ status: 2 });
@@ -83,7 +83,7 @@ class Praise extends React.Component{
 		}).then((json) => {
 			callback && callback(json);
 		}).catch((err) => {
-			console.log(err);
+			//console.log(err);
 		});
 	}
 

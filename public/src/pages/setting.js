@@ -263,7 +263,7 @@ class Setting extends React.Component {
 			let {
 				status
 			} = json;
-			console.log(json)
+			//console.log(json)
 			if (status === 0) {
 				this.setState({
 					resetEmailTip: '验证码已过期',
@@ -385,7 +385,7 @@ class Setting extends React.Component {
 		}).then((json) => {
 			callback && callback(json);
 		}).catch((err) => {
-			console.log(err);
+			//console.log(err);
 		});
 	}
 

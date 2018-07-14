@@ -2,6 +2,7 @@ const express = require('express');
 const fs = require('fs');
 const path = require('path');
 const mongoose = require('mongoose');
+const compression = require('compression')
 const moment = require('moment');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
@@ -34,11 +35,13 @@ const common = require('./common.js');
 const app = express();
 const expressWs = require('express-ws')(app);
 
-
 // 设置监听端口,环境变量要是设置了PORT就用环境变量的PORT
 const port = process.env.PORT || config.port;
 const host = process.env.HOST || '0.0.0.0';
-// const port = process.env.PORT || 80;
+
+//尽量在其他中间件前使用compression
+app.use(compression());
+
 mongoose.Promise = global.Promise
 //连接数据库
 mongoose.connect(config.mongodb,{useMongoClient:true});
@@ -72,6 +75,8 @@ app.use( bodyParser.urlencoded({ extended: true }) ); // to support URL-encoded 
 //     res.header("Access-Control-Allow-Credentials",true);
 //     next();
 // });
+
+app.use(express.static(path.resolve(__dirname, './dist')))
 
 app.use('/api/', indexRouter);
 app.use('/api/register', registerRouter);
@@ -120,12 +125,10 @@ app.ws('/message', (ws, req) => {
     })
 })
 
-app.use(express.static(path.resolve(__dirname, './dist')))
-
-// app.get('*', function(req, res) {
-//     const html = fs.readFileSync(path.resolve(__dirname, './dist/index.html'), 'utf-8')
-//     res.send(html)
-// })
+app.get('*', function(req, res) {
+    const html = fs.readFileSync(path.resolve(__dirname, './dist/index.html'), 'utf-8')
+    res.send(html);
+})
 
 app.listen(port,host);
 

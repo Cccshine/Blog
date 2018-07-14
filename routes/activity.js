@@ -11,12 +11,12 @@ router.post('/',function(req,res){
 		userId:userId,
 		activityMode: activityMode
 	}
-	console.log('新增动态');
+	//console.log('新增动态');
 	let newActivity = new ActivityeModel(_activity);
 	newActivity.save().then((activity) => {
 		return res.json({"status":1,"msg":"add activity success"});
 	}).catch((err) => {
-		console.log(err);
+		//console.log(err);
 		res.status(500).send('Something broke!');
 	});
 });
@@ -37,11 +37,11 @@ router.get('/',function(req,res){
 					return res.json({"status":0,"activityList":activityList,"pageTotal":activityPageTotal,"msg":"no activity"});
 				}
 			}).catch((err) => {
-				console.log(err);
+				//console.log(err);
 				res.status(500).send('Something broke!');
 			})
 		}).catch((err) => {
-			console.log(err);
+			//console.log(err);
 			res.status(500).send('Something broke!');
 		})
 	}else if(currentPage === activityPageTotal - 1){//最后一页
@@ -53,7 +53,7 @@ router.get('/',function(req,res){
 				return res.json({"status":0,"activityList":activityList,"pageTotal":activityPageTotal,"msg":"no activity"});
 			}
 		}).catch((err) => {
-			console.log(err);
+			//console.log(err);
 			res.status(500).send('Something broke!');
 		})
 	}else if(dir > 0){//下一页
@@ -64,7 +64,7 @@ router.get('/',function(req,res){
 				return res.json({"status":0,"activityList":activityList,"pageTotal":activityPageTotal,"msg":"no activity"});
 			}
 		}).catch((err) => {
-			console.log(err);
+			//console.log(err);
 			res.status(500).send('Something broke!');
 		})
 	}else{//上一页
@@ -82,14 +82,14 @@ router.get('/',function(req,res){
 				return res.json({"status":0,"activityList":activityList,"pageTotal":activityPageTotal,"msg":"no activity"});
 			}
 		}).catch((err) => {
-			console.log(err);
+			//console.log(err);
 			res.status(500).send('Something broke!');
 		})
 	}
 	// ActivityeModel.find({userId:userId}).sort({createTime:-1}).populate('article').then((activityList) => {
 	// 	return res.json({"status":1,activityList:activityList,"msg":"success"});
 	// }).catch((err) => {
-	// 	console.log(err);
+	// 	//console.log(err);
 	// 	res.status(500).send('Something broke!');
 	// })
 })

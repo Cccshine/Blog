@@ -1,6 +1,5 @@
 @import "../_variables";
 @import "./_reset.scss";
-@import "./_font-awsome.scss";
 @import "./_center.scss";
 @import "./_markdown.scss";
 @import "../mixin/_vertical_center.scss";
@@ -154,4 +153,18 @@ body{
 	img{
 		border-radius: 10px 0 0 10px;
 	}
+}
+.fa-file-text-o,
+.fa-linkedin{
+	font-size: 20px;
+}
+.fa-segmentfault::before{
+	content:"Seg";
+	font-size:16px;
+	font-weight: bold;
+}
+.fa-douban::before{
+	content:"豆瓣";
+	font-size:16px;
+	font-weight: bold;
 }

@@ -8,7 +8,7 @@ router.post('/',function(req,res){
 	ArticleModel.findOneAndUpdate({_id:subjectId},{$addToSet: {collectionUser: uid}}).then(() => {
 		return res.json({"status":1,"msg":"collection success"});
 	}).catch((err) => {
-		console.log(err);
+		//console.log(err);
 		res.status(500).send('Something broke!');
 	});
 });
@@ -18,7 +18,7 @@ router.delete('/',function(req,res){
 	ArticleModel.findOneAndUpdate({_id:subjectId},{$pull: {collectionUser: uid}}).then(() => {
 		return res.json({"status":1,"msg":"cancle collection success"});
 	}).catch((err) => {
-		console.log(err);
+		//console.log(err);
 		res.status(500).send('Something broke!');
 	});
 });

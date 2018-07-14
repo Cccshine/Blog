@@ -17,7 +17,7 @@ router.post('/', function(req, res) {
       return res.json({"status":0,"msg":"user unexsist"});//用户不存在
     }
   }).catch((err) => {
-    console.log(err);
+    //console.log(err);
     res.status(500).send('Something broke!');
   })
 });
@@ -42,18 +42,18 @@ router.get('/', function(req, res) {
   }
   transporter.sendMail(option, function(error, response){
     if(error){
-        console.log("fail: " + error);
+        //console.log("fail: " + error);
         return res.json({"status":0,"msg":"send failed"});//发送失败
     }else{
-        console.log("success: " + response.messageID);
+        //console.log("success: " + response.messageID);
         VerifyCodeModel.findOneAndUpdate({username: username}, {$set:{verifyCode:verifyCode}}, {upsert: true,new: true,setDefaultsOnInsert:true}).then((verify) => {
           verify.meta.updateAt = Date.now();
           verify.save((err) => {
-            console.log(err);
+            //console.log(err);
           })
           return res.json({"status":1,"msg":"send success"});//发送成功
         }).catch((err) => {
-          console.log(err);
+          //console.log(err);
           res.status(500).send('Something broke!');
         });
     }
@@ -73,7 +73,7 @@ router.post('/verify', function(req, res) {
       return res.json({"status":0,"msg":"verify expires"});//验证码过期
     }
   }).catch((err) => {
-    console.log(err);
+    //console.log(err);
     res.status(500).send('Something broke!');
   })
 });

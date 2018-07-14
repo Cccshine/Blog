@@ -53,7 +53,7 @@ export default class App extends React.Component{
 			}
 			sessionStorage.setItem('isLogin',json.isLogin);
 		}).catch((err) => {
-			console.log(err)
+			//console.log(err)
 		})
 
 		this.pubsub_token = PubSub.subscribe('avtarChange', (topic,message) => {  
@@ -72,7 +72,7 @@ export default class App extends React.Component{
 		}).then((response) => {
 			return response.json();
 		}).then((json) => {
-			console.log(json);
+			//console.log(json);
 			this.setState({isLogin:false,role:0});
 			sessionStorage.setItem('isLogin',false);
 			sessionStorage.removeItem('username');
@@ -80,7 +80,7 @@ export default class App extends React.Component{
 			sessionStorage.removeItem('uid');
 			sessionStorage.removeItem('loginTipClose');
 		}).catch((err) => {
-			console.log(err)
+			//console.log(err)
 		})
 	}
 

@@ -58,7 +58,7 @@ class Write extends React.Component {
 		}).then((response) => {
 			return response.json();
 		}).then((json) => {
-			console.log(json);
+			//console.log(json);
 			let { status, article } = json;
 			articleID = article._id;
 			this.setState({
@@ -70,7 +70,7 @@ class Write extends React.Component {
 				selectValue: article.type
 			});
 		}).catch((err) => {
-			console.log(err);
+			//console.log(err);
 		});
 	}
 
@@ -250,7 +250,7 @@ class Write extends React.Component {
 
 	saveAsDraft = (isAuto) => {
 		let { editor, title, tagString, selectValue } = this.state;
-		console.log('articlID'+articleID)
+		//console.log('articlID'+articleID)
 		let data = {
 			type: selectValue,
 			title: title,
@@ -259,10 +259,10 @@ class Write extends React.Component {
 			articleId: articleID,
 			todo: 0//保存草稿
 		}
-		console.log(articleID)
+		//console.log(articleID)
 		this.sendRequest('post', data, (json) => {
 			let articleId = json.article._id;
-			console.log(json.article)
+			//console.log(json.article)
 			if (!articleID)
 				articleID = articleId;
 			if (!isAuto) {
@@ -290,7 +290,7 @@ class Write extends React.Component {
 		}).then((json) => {
 			callback && callback(json);
 		}).catch((err) => {
-			console.log(err);
+			//console.log(err);
 		});
 	}
 

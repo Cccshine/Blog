@@ -75,7 +75,7 @@ class User extends React.Component{
 			this.setState({avatarModalShow:true,uploadSrc:fd.result});
 			this.refs.upload.value = '';
 			setTimeout(()=>{
-				console.log(this.refs.cimage.offsetWidth)
+				//console.log(this.refs.cimage.offsetWidth)
 				let CI = new CImage({
 				    element: this.refs.cimage,
 				    createHandles: ['n', 's', 'e', 'w', 'ne', 'se', 'sw', 'nw'],
@@ -110,7 +110,7 @@ class User extends React.Component{
 			this.setState({avatarSrc:json.avatarSrc});
 			PubSub.publish('avtarChange',json.avatarSrc);
 		}).catch((err) => {
-			console.log(err);
+			//console.log(err);
 		});
 		this.setState({avatarModalShow:false});
 	}
@@ -135,7 +135,7 @@ class User extends React.Component{
 		}).then((json) => {
 			callback && callback(json);
 		}).catch((err) => {
-			console.log(err);
+			//console.log(err);
 		});
 	}
 

@@ -2,6 +2,7 @@ var webpack = require('webpack');
 var path = require('path');
 //使用 ExtractTextWebpackPlugin (将打好包的 CSS 提出出来并输出成 CSS 文件)。
 var extractTextPlugin = require('extract-text-webpack-plugin');
+var compressionPlugin = require('compression-webpack-plugin');
 var htmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
@@ -12,7 +13,7 @@ module.exports = {
 	},
 	output:{
 		path:__dirname+'/dist',
-		publicPath:'http://localhost:3000/dist',
+		publicPath:'/',
 		filename:'js/bundle.js'
 	},
 	module:{
@@ -127,16 +128,26 @@ module.exports = {
 		new webpack.optimize.CommonsChunkPlugin({name:'vendors',filename:'js/vendors.js'}),
 		new extractTextPlugin({filename:'css/bundle.css'}),
 		new htmlWebpackPlugin({
-			filename: 'index.html',
-            template: 'index.html'
+			title: '',
+			template: __dirname + '/public/index.html',
+			inject:false
 		}),
-		// new webpack.ProvidePlugin({$:'jquery'}),
 		// 压缩配置
 		new webpack.optimize.UglifyJsPlugin({
 		    compress: {
 		        warnings: false
 		    }
 		}),
+		// gzip压缩
+		new compressionPlugin({
+			asset: '[path].gz[query]', //目标资源名称。[file] 会被替换成原资源。[path] 会被替换成原资源路径，[query] 替换成原查询字符串
+			algorithm: 'gzip',//算法
+			test: new RegExp(
+				 '\\.(js|css)$'    //压缩 js 与 css
+			),
+			threshold: 1024,//只处理比这个值大的资源。按字节计算
+			minRatio: 0.8//只有压缩率比这个值小的资源才会被处理
+	   }),
 		// 配置环境变量到Production，防止控制台警告
 		new webpack.DefinePlugin({
 		  "process.env": { 

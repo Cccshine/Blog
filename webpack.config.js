@@ -4,6 +4,7 @@ var path = require('path');
 var extractTextPlugin = require('extract-text-webpack-plugin');
 //在热更新模式下，编译完成后自动打开浏览器
 var openBrowserPlugin = require('open-browser-webpack-plugin');
+var compressionPlugin = require('compression-webpack-plugin');
 
 module.exports = {
 	//配置服务器//详细见https://webpack.github.io/docs/webpack-dev-server.html#webpack-dev-server-cli
@@ -23,7 +24,7 @@ module.exports = {
 	entry:{
 		//__dirname是node.js中的一个全局变量，它指向当前执行脚本所在的目录。
 		pages:path.resolve(__dirname, './public/src/router.js'),//所有页面的入口
-		vendors:['react','react-dom','react-router','jquery']//抽取公共框架
+		vendors:['react','react-dom','react-router']//抽取公共框架
 	},
 	output:{
 		// path:__dirname+'/dist',
@@ -141,9 +142,18 @@ module.exports = {
 	//Common Chunks 插件的作用就是提取代码中的公共模块，然后将公共模块打包到一个独立的文件中去，以便在其它的入口和模块中使用。
 		new webpack.optimize.CommonsChunkPlugin({name:'vendors',filename:'js/vendors.js'}),
 		new extractTextPlugin({filename:'css/bundle.css'}),
-		new webpack.ProvidePlugin({$:'jquery'}),
 		new webpack.HotModuleReplacementPlugin(),
 		new openBrowserPlugin({url:'http://localhost:3030/'}),
+		// gzip压缩
+		new compressionPlugin({
+			asset: '[path].gz[query]', //目标资源名称。[file] 会被替换成原资源。[path] 会被替换成原资源路径，[query] 替换成原查询字符串
+			algorithm: 'gzip',//算法
+			test: new RegExp(
+				 '\\.(js|css)$'    //压缩 js 与 css
+			),
+			threshold: 1024,//只处理比这个值大的资源。按字节计算
+			minRatio: 0.8//只有压缩率比这个值小的资源才会被处理
+	   }),
 		new webpack.ContextReplacementPlugin(
 	      // 需要被处理的文件目录位置
 	      /highlight\.js/,

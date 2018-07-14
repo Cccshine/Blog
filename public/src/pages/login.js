@@ -68,7 +68,7 @@ class Login extends React.Component{
 				setTimeout(() => this.props.history.push({ pathname: '/', state: {isLogin:true} }), 2000);
 			}
 		}).catch(function(err){
-        	 console.log(err)
+        	 //console.log(err)
         })
 
 	}

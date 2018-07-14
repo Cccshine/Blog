@@ -19,7 +19,8 @@ const blogGlobal = {
 	"passwordUnMatchTip":"用户名与密码不匹配",
 	"tryTime":60,
 	"pageSize":2,
-	"requestBaseUrl":"/apis/api"
+	"requestBaseUrl":"/apis/api",//本地运行用这个
+	// "requestBaseUrl":"/api"//部署到服务器用这个
 }
 
 export default blogGlobal;

@@ -124,7 +124,7 @@ class Article extends React.Component {
 		}).then((response) => {
 			return response.json();
 		}).then((json) => {
-			console.log(json);
+			//console.log(json);
 			let {article, lastArticle, nextArticle }= json.result;
 			authorId = article.authorId;
 			this.setState({ article: article, content: article.content ,praiseUser: article.praiseUser,collectionUser: article.collectionUser, commentTotal: article.commentTotal, lastArticle:lastArticle, nextArticle:nextArticle});
@@ -139,7 +139,7 @@ class Article extends React.Component {
 			}
 			headingsOffset.reverse();
 		}).catch((err) => {
-			console.log(err);
+			//console.log(err);
 		});
 		this.sendRequest(blogGlobal.requestBaseUrl + "/user?username=" + sessionStorage.getItem('username'), 'get', null, (json) => {
 			this.setState({avatarSrc:json.userInfo.avatar});
@@ -213,7 +213,7 @@ class Article extends React.Component {
 			this.setState({praiseUser:newPraiseUser}) 
 		}
 		this.sendRequest(url, rquestMode, data, (json) => {
-			console.log(json);
+			//console.log(json);
 			if(type === 1){//评论点赞
 				this.fetchComments();
 			}else{
@@ -223,7 +223,7 @@ class Article extends React.Component {
 					activityMode: isPraise ? 2 : 4 //2--点赞 4--取消赞
 				}
 				this.sendRequest(blogGlobal.requestBaseUrl + '/activity', 'post', data, (json) => {
-					console.log(json)
+					//console.log(json)
 				});
 			}
 			if(isPraise && formUserId !== sessionStorage.getItem('uid')){
@@ -237,7 +237,7 @@ class Article extends React.Component {
 					data.commentId = subjectId;
 				}
 				this.sendRequest(blogGlobal.requestBaseUrl + '/message', 'post', data, (json) => {
-					console.log(json)
+					//console.log(json)
 				});
 			}
 		})
@@ -265,14 +265,14 @@ class Article extends React.Component {
 		}
 		this.setState({collectionUser:newCollectionUser});
 		this.sendRequest(url, rquestMode, data, (json) => {
-			console.log(json);
+			//console.log(json);
 			let data = {
 				userId:sessionStorage.getItem('uid'),
 				articleId:subjectId,
 				activityMode: isCollection ? 1 : 3
 			}
 			this.sendRequest(blogGlobal.requestBaseUrl + '/activity', 'post', data, (json) => {
-				console.log(json)
+				//console.log(json)
 			})
 		})
 		if(isCollection && authorId !== sessionStorage.getItem('uid')){
@@ -283,7 +283,7 @@ class Article extends React.Component {
 				messageMode: 1 //1--收藏文章
 			}
 			this.sendRequest(blogGlobal.requestBaseUrl + '/message', 'post', data, (json) => {
-				console.log(json)
+				//console.log(json)
 			});
 		}
 	}
@@ -323,7 +323,7 @@ class Article extends React.Component {
 	fetchComments = () => {
 		let url = blogGlobal.requestBaseUrl + '/comments?articleId=' + this.props.match.params.articleId;
 		this.sendRequest(url, 'get', null, (json) => {
-			console.log(json);
+			//console.log(json);
 			let { commentList, replyList } = json;
 			let newCommentList = [];
 			for (let comment of commentList) {
@@ -352,7 +352,7 @@ class Article extends React.Component {
 				this.refs.comment.focus();
 				return;
 			}
-			console.log(data)
+			//console.log(data)
 			this.refs.comment.value = '';
 		} else {
 			data.content = this.refs.reply.value;
@@ -363,12 +363,12 @@ class Article extends React.Component {
 			}
 			data.toUid = this.refs.reply.dataset.touid;
 			data.parentId = this.refs.reply.dataset.pid || null;
-			console.log(data)
+			//console.log(data)
 			this.refs.reply.value = '';
 		}
 		let url = blogGlobal.requestBaseUrl + '/comments';
 		this.sendRequest(url, 'post', data, (json) => {
-			console.log(json);
+			//console.log(json);
 			this.fetchComments();
 			this.setState({replyIndex:-1});
 			if(mode === 'comment'){
@@ -378,7 +378,7 @@ class Article extends React.Component {
 					activityMode: 5
 				}
 				this.sendRequest(blogGlobal.requestBaseUrl + '/activity', 'post', activityData, (json) => {
-					console.log(json)
+					//console.log(json)
 				})
 			}
 
@@ -391,7 +391,7 @@ class Article extends React.Component {
 			}
 			if(msgData.operateUserId !== msgData.receiveUserId){
 				this.sendRequest(blogGlobal.requestBaseUrl + '/message', 'post', msgData, (json) => {
-					console.log(json)
+					//console.log(json)
 				});
 			}
 		})
@@ -413,7 +413,7 @@ class Article extends React.Component {
 		}).then((json) => {
 			callback && callback(json);
 		}).catch((err) => {
-			console.log(err);
+			//console.log(err);
 		});
 	}
 

@@ -22,13 +22,14 @@ class Header extends React.Component{
 	}
 
 	componentDidMount = () => {
-		console.log('this.props.username:'+sessionStorage.getItem('username'))
-		const ws = new WebSocket('ws://localhost:3000/message?username='+sessionStorage.getItem('username'));
+		//console.log('this.props.username:'+sessionStorage.getItem('username'))
+		let host = window.location.hostname;
+		const ws = new WebSocket('ws://'+host+':3000/message?username='+sessionStorage.getItem('username'));
 		document.addEventListener('click', this.hideMsgList, false);
 		this.fetchNewMsgList();
 
 		ws.onmessage= (e) => {  
-			console.log('_message');  
+			//console.log('_message');  
 			this.setState({newMessageCount:Number(e.data)},()=>{
 				if(this.state.newMessageCount){
 					this.fetchNewMsgList();
@@ -36,15 +37,15 @@ class Header extends React.Component{
 			});
 		};  
 		ws.onerror= (err) => {  
-			console.log('_error');  
-			console.log(err);  
+			//console.log('_error');  
+			//console.log(err);  
 		};  
 		ws.onopen= () => {  
 			ws.send(sessionStorage.getItem('username'));
-			console.log('_connect')  
+			//console.log('_connect')  
 		};  
 		ws.onclose= () => {  
-			console.log('_close');  
+			//console.log('_close');  
 		};  
 
 	}
@@ -69,14 +70,14 @@ class Header extends React.Component{
 		}).then((response) => {
 			return response.json();
 		}).then((json) => {
-			console.log(json)
+			//console.log(json)
 			let status = json.messageList.length ? 1 : 2;
 			this.setState({  
 		        messageList: json.messageList,
 		        messageStatus: status
 		    });
 		}).catch((err) => {
-			console.log(err)
+			//console.log(err)
 		})
 	}
 
@@ -91,9 +92,9 @@ class Header extends React.Component{
 			}).then((response) => {
 				return response.json();
 			}).then((json) => {
-				console.log(json)
+				//console.log(json)
 			}).catch((err) => {
-				console.log(err)
+				//console.log(err)
 			})
 		}
 		this.setState({msgShow:!this.state.msgShow});
@@ -170,7 +171,7 @@ class Header extends React.Component{
 					<NavLink exact to='/' activeClassName="active-nav">首页</NavLink>
 					<NavLink to="/tags" activeClassName="active-nav">标签</NavLink>
 					<NavLink to="/archive" activeClassName="active-nav">归档</NavLink>
-					<NavLink to="/about" activeClassName="active-nav">About Me</NavLink>
+					{/*<NavLink to="/about" activeClassName="active-nav">About Me</NavLink>*/}
 					{role == 1 ? <NavLink to="/write" activeClassName="active-nav">写文章</NavLink> : null}
 					{role == 1 ? <NavLink to="/draft" activeClassName="active-nav">草稿箱</NavLink> : null}
 				</nav>

@@ -10,7 +10,7 @@ router.post('/',function(req,res){
 		ArticleModel.findOneAndUpdate({_id:subjectId},{$addToSet: {praiseUser: uid}}).then((praise) => {
 			return res.json({"status":1,"msg":"praise success"});
 		}).catch((err) => {
-			console.log(err);
+			//console.log(err);
 			res.status(500).send('Something broke!');
 		});
 	}else{//对评论点赞
@@ -19,7 +19,7 @@ router.post('/',function(req,res){
 			comment.save();
 			return res.json({"status":1,"msg":"praise success"});
 		}).catch((err) => {
-			console.log(err);
+			//console.log(err);
 			res.status(500).send('Something broke!');
 		});
 	}
@@ -31,7 +31,7 @@ router.delete('/',function(req,res){
 		ArticleModel.findOneAndUpdate({_id:subjectId},{$pull: {praiseUser: uid}}).then(() => {
 			return res.json({"status":1,"msg":"cancle praise success"});
 		}).catch((err) => {
-			console.log(err);
+			//console.log(err);
 			res.status(500).send('Something broke!');
 		});
 	}else{//对评论取消点赞
@@ -40,7 +40,7 @@ router.delete('/',function(req,res){
 			comment.save();
 			return res.json({"status":1,"msg":"cancle praise success"});
 		}).catch((err) => {
-			console.log(err);
+			//console.log(err);
 			res.status(500).send('Something broke!');
 		});
 	}
