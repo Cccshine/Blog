@@ -5,7 +5,7 @@
 .root{
 	position:relative;
 	width:960px;
-	min-height:700px;
+	min-height:800px;
 	margin:0 auto;
 	padding:20px 20px 20px 100px;
 	[data-role=tag]{
@@ -45,6 +45,10 @@
 			// }
 		}
 	}
+	.summary{
+		color: #666;
+		padding: 0;
+	}
 	.btn-group{
 		@include vCenterLineHeight(36px);
 		a{
@@ -65,15 +69,15 @@
 			}
     	}
 	}
+	&:last-of-type{
+		margin-bottom: 40px;
+	}
 }
 .tag-panel{
 	margin: 10px 0;
 	.tag{
 		background:black;
 	}
-}
-.summary{
-	color: #999;
 }
 .timeline-circle{
 	@include square(20px);

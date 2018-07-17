@@ -90,6 +90,10 @@
             // }
         }
     }
+    .summary{
+        color: #666;
+        padding: 0;
+    }
     .btn-group{
         @include vCenterLineHeight(36px);
         a{
@@ -110,15 +114,15 @@
             }
         }
     }
+    &:last-of-type{
+        margin-bottom:40px;
+    }
 }
 .tag-panel{
     margin: 10px 0;
     .tag{
         background:black;
     }
-}
-.summary{
-    color: #999;
 }
 .timeline-circle{
     @include square(20px);

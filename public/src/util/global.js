@@ -5,9 +5,9 @@ const blogGlobal = {
 	"usernameExist":"用户名已存在",
 	"usernameUnExist":"用户不存在",
 	"usernameNullTip":"请输入用户名",
-	"passwordRuleTip":"必须包含数字、字母、下划线其中两种，长度不小于8",
+	"passwordRuleTip":"必须包含数字、字母、特殊字符（_~!@#$%\^&\*）其中两种，长度不小于8",
 	"passwordRuleErrLength":"密码长度不能少于8个字符",
-	"passwordRuleErrType":"密码必须包含数字、字母、下划线其中两种",
+	"passwordRuleErrType":"密码必须包含数字、字母、特殊字符（_~!@#$%\^&\*）其中两种",
 	"passwordNullTip":"请输入密码",
 	"comfirmPasswordErr":"两次输入密码不一致",
 	"comfirmPasswordNullTip":"请确认密码",
@@ -18,7 +18,7 @@ const blogGlobal = {
 	"loginPassTip":"登录成功",
 	"passwordUnMatchTip":"用户名与密码不匹配",
 	"tryTime":60,
-	"pageSize":2,
+	"pageSize":5,
 	"requestBaseUrl":"/apis/api",//本地运行用这个
 	// "requestBaseUrl":"/api"//部署到服务器用这个
 }

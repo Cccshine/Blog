@@ -1,37 +1,18 @@
 import React from 'react';
-import marked from 'marked';
-import Highlight from 'highlight.js';
 import { Link } from 'react-router-dom';
 import moment from 'moment';
 import Modal from '../component/modal/modal';
 import Tag from '../component/tag/tag';
 import CSSModules from 'react-css-modules';
 import style from '../sass/pages/article.scss';
-import blogGlobal from '../data/global';
+import blogGlobal from '../util/global';
+import { marked, sendRequest, getDateDiff } from '../util/util';
+
 
 let eHeadings = null, headingsOffset = [];//存储所有的h1,h2,h3标签及其距离顶部的距离
 let loginUid = sessionStorage.getItem('uid');
 let isLogin = sessionStorage.getItem('isLogin') === "false" ? false : true;
 let authorId = null;
-let rendererMD = new marked.Renderer();
-rendererMD.heading = function (text, level) {
-	let className = Number(level) <= 3 ? 'heading' : '';
-	return '<h' + level + ' id=' + text + ' class=' + className + '>' + text + '</h' + level + '>';
-}
-Highlight.initHighlightingOnLoad();
-marked.setOptions({
-	renderer: rendererMD,
-	gfm: true,
-	tables: true,
-	breaks: false,
-	pedantic: false,
-	sanitize: false,
-	smartLists: true,
-	smartypants: false,
-	highlight: function (code) {
-		return Highlight.highlightAuto(code).value;
-	}
-});
 
 class Article extends React.Component {
 	constructor(props) {
@@ -56,6 +37,7 @@ class Article extends React.Component {
 			loginModalShow:false,
 			avatarSrc:''
 		}
+		this.mounted = true;
 	}
 	createCatalog = (html) => {
 		let originTitle = html.match(/<(h[1-3]{1})[^>]*>(.*?)<\/h[1-3]{1}>/g);
@@ -104,7 +86,7 @@ class Article extends React.Component {
 		} else {
 			vdom.push(
 				<li key={menuList.eleId} styleName={('title-level-' + menuList.level) + (this.state.activeCatalog === menuList.eleId ? ' active' : '')}>
-					<a href={'#' + menuList.eleId} styleName='catalog-anchor' onClick={this.handleCatalogClick}>
+					<a href={'#' + menuList.eleId} onClick={this.handleCatalogClick}>
 						<i className="fa fa-star"></i>
 						<span>{menuList.label}</span>
 					</a>
@@ -115,15 +97,13 @@ class Article extends React.Component {
 		return vdom;
 	}
 	componentWillMount = () => {
+		this.mounted = true;
 		document.body.className = 'article-detail';
 		let url = blogGlobal.requestBaseUrl + "/articles?mode=detail&articleId=" + this.props.match.params.articleId;
-		fetch(url, {
-			method: 'get',
-			mode: 'cors',
-			credentials: 'include',
-		}).then((response) => {
-			return response.json();
-		}).then((json) => {
+		sendRequest(url, 'get', null, (json) => {
+			if(!this.mounted){
+				return;
+			}
 			//console.log(json);
 			let {article, lastArticle, nextArticle }= json.result;
 			authorId = article.authorId;
@@ -138,10 +118,11 @@ class Article extends React.Component {
 				headingsOffset.push(item);
 			}
 			headingsOffset.reverse();
-		}).catch((err) => {
-			//console.log(err);
-		});
-		this.sendRequest(blogGlobal.requestBaseUrl + "/user?username=" + sessionStorage.getItem('username'), 'get', null, (json) => {
+		})
+		sendRequest(blogGlobal.requestBaseUrl + "/user?username=" + sessionStorage.getItem('username'), 'get', null, (json) => {
+			if(!this.mounted){
+				return;
+			}
 			this.setState({avatarSrc:json.userInfo.avatar});
 		});
 		this.fetchComments();
@@ -149,6 +130,7 @@ class Article extends React.Component {
 	}
 
 	componentWillUnmount = () => {
+		this.mounted = false;
 		window.removeEventListener('scroll', this.changeCatalog, false);
 		document.body.className = '';
 	}
@@ -212,7 +194,7 @@ class Article extends React.Component {
 			}
 			this.setState({praiseUser:newPraiseUser}) 
 		}
-		this.sendRequest(url, rquestMode, data, (json) => {
+		sendRequest(url, rquestMode, data, (json) => {
 			//console.log(json);
 			if(type === 1){//评论点赞
 				this.fetchComments();
@@ -222,7 +204,7 @@ class Article extends React.Component {
 					articleId:subjectId,
 					activityMode: isPraise ? 2 : 4 //2--点赞 4--取消赞
 				}
-				this.sendRequest(blogGlobal.requestBaseUrl + '/activity', 'post', data, (json) => {
+				sendRequest(blogGlobal.requestBaseUrl + '/activity', 'post', data, (json) => {
 					//console.log(json)
 				});
 			}
@@ -236,7 +218,7 @@ class Article extends React.Component {
 				if(type === 1){
 					data.commentId = subjectId;
 				}
-				this.sendRequest(blogGlobal.requestBaseUrl + '/message', 'post', data, (json) => {
+				sendRequest(blogGlobal.requestBaseUrl + '/message', 'post', data, (json) => {
 					//console.log(json)
 				});
 			}
@@ -264,14 +246,14 @@ class Article extends React.Component {
 			}
 		}
 		this.setState({collectionUser:newCollectionUser});
-		this.sendRequest(url, rquestMode, data, (json) => {
+		sendRequest(url, rquestMode, data, (json) => {
 			//console.log(json);
 			let data = {
 				userId:sessionStorage.getItem('uid'),
 				articleId:subjectId,
 				activityMode: isCollection ? 1 : 3
 			}
-			this.sendRequest(blogGlobal.requestBaseUrl + '/activity', 'post', data, (json) => {
+			sendRequest(blogGlobal.requestBaseUrl + '/activity', 'post', data, (json) => {
 				//console.log(json)
 			})
 		})
@@ -282,7 +264,7 @@ class Article extends React.Component {
 				articleId:subjectId,
 				messageMode: 1 //1--收藏文章
 			}
-			this.sendRequest(blogGlobal.requestBaseUrl + '/message', 'post', data, (json) => {
+			sendRequest(blogGlobal.requestBaseUrl + '/message', 'post', data, (json) => {
 				//console.log(json)
 			});
 		}
@@ -322,7 +304,7 @@ class Article extends React.Component {
 
 	fetchComments = () => {
 		let url = blogGlobal.requestBaseUrl + '/comments?articleId=' + this.props.match.params.articleId;
-		this.sendRequest(url, 'get', null, (json) => {
+		sendRequest(url, 'get', null, (json) => {
 			//console.log(json);
 			let { commentList, replyList } = json;
 			let newCommentList = [];
@@ -367,7 +349,7 @@ class Article extends React.Component {
 			this.refs.reply.value = '';
 		}
 		let url = blogGlobal.requestBaseUrl + '/comments';
-		this.sendRequest(url, 'post', data, (json) => {
+		sendRequest(url, 'post', data, (json) => {
 			//console.log(json);
 			this.fetchComments();
 			this.setState({replyIndex:-1});
@@ -377,7 +359,7 @@ class Article extends React.Component {
 					articleId:data.articleId,
 					activityMode: 5
 				}
-				this.sendRequest(blogGlobal.requestBaseUrl + '/activity', 'post', activityData, (json) => {
+				sendRequest(blogGlobal.requestBaseUrl + '/activity', 'post', activityData, (json) => {
 					//console.log(json)
 				})
 			}
@@ -390,31 +372,11 @@ class Article extends React.Component {
 				messageMode: mode === 'comment' ? 3 : 5 //3--评论 5--回复评论
 			}
 			if(msgData.operateUserId !== msgData.receiveUserId){
-				this.sendRequest(blogGlobal.requestBaseUrl + '/message', 'post', msgData, (json) => {
+				sendRequest(blogGlobal.requestBaseUrl + '/message', 'post', msgData, (json) => {
 					//console.log(json)
 				});
 			}
 		})
-	}
-
-	//发送请求mode: post--新建评论
-	sendRequest = (url, mode, data, callback) => {
-		fetch(url, {
-			method: mode,
-			headers: {
-				'Accept': 'application/json',
-				'Content-Type': 'application/json'
-			},
-			mode: 'cors',
-			credentials: 'include',
-			body: data ? JSON.stringify(data) : null
-		}).then((response) => {
-			return response.json();
-		}).then((json) => {
-			callback && callback(json);
-		}).catch((err) => {
-			//console.log(err);
-		});
 	}
 
 	getOffset = (obj) => {
@@ -425,48 +387,6 @@ class Article extends React.Component {
 			obj = obj.offsetParent;
 		}
 		return { "top": top, "left": left };
-	}
-
-	getDateDiff(date) {
-		let timestamp = moment(date).format('x');
-		let minute = 1000 * 60;
-		let hour = minute * 60;
-		let day = hour * 24;
-		let halfamonth = day * 15;
-		let month = day * 30;
-		let year = month * 12;
-		let now = new Date().getTime();
-		let diffValue = now - timestamp;
-		if (diffValue < 0) {
-			return '未知';
-		}
-		let yearC = diffValue / year;
-		let monthC = diffValue / month;
-		let weekC = diffValue / (7 * day);
-		let dayC = diffValue / day;
-		let hourC = diffValue / hour;
-		let minC = diffValue / minute;
-		let result = '';
-		if(yearC >= 1){
-			result = "" + parseInt(yearC) + "年前";
-		}
-		else if (monthC >= 1) {
-			result = "" + parseInt(monthC) + "月前";
-		}
-		else if (weekC >= 1) {
-			result = "" + parseInt(weekC) + "周前";
-		}
-		else if (dayC >= 1) {
-			result = "" + parseInt(dayC) + "天前";
-		}
-		else if (hourC >= 1) {
-			result = "" + parseInt(hourC) + "小时前";
-		}
-		else if (minC >= 1) {
-			result = "" + parseInt(minC) + "分钟前";
-		} else
-			result = "刚刚";
-		return result;
 	}
 
 	gotoLogin = () => {
@@ -534,7 +454,7 @@ class Article extends React.Component {
 														<div className="fl" styleName="user-info">
 															<strong>{item.fromUser._id === sessionStorage.getItem('uid') ? '我' : item.fromUser.name}</strong>
 															{item.fromUser.name === 'admin' ? <span>作者</span> : null}
-															<time>{this.getDateDiff(item.createTime)}</time>
+															<time>{getDateDiff(item.createTime)}</time>
 														</div>
 														<div className="fr" styleName="operate">
 															{item.praiseUser.includes(loginUid) ? 
@@ -558,7 +478,7 @@ class Article extends React.Component {
 																					<div className="fl" styleName="user-info">
 																						<strong>{ritem.fromUser._id === sessionStorage.getItem('uid') ? '我' : ritem.fromUser.name}</strong>
 																						{ritem.fromUser.name === 'admin' ? <span>作者</span> : null}
-																						<time>{this.getDateDiff(ritem.createTime)}</time>
+																						<time>{getDateDiff(ritem.createTime)}</time>
 																					</div> : 
 																					<div className="fl" styleName="user-info">
 																						<strong>{ritem.fromUser._id === sessionStorage.getItem('uid') ? '我' : ritem.fromUser.name}</strong>
@@ -566,7 +486,7 @@ class Article extends React.Component {
 																						<i>@</i>
 																						<strong>{ritem.toUser._id === sessionStorage.getItem('uid') ? '我' : ritem.toUser.name}</strong>
 																						{ritem.toUser.name === 'admin' ? <span>作者</span> : null}
-																						<time>{this.getDateDiff(ritem.createTime)}</time>
+																						<time>{getDateDiff(ritem.createTime)}</time>
 																					</div>
 																				}
 																				{

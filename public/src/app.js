@@ -1,14 +1,13 @@
 import React from 'react';
 import {Route,Switch} from 'react-router-dom';
-import blogGlobal from './data/global';
+import blogGlobal from './util/global';
+import { sendRequest } from './util/util';
 import Header from './component/header/header';
 import Home from './pages/home';
 import Write from './pages/write';
 import Tag from './pages/tag';
 import Archive from './pages/archive';
 import About from './pages/about';
-import Login from './pages/login.js';
-import Register from './pages/register.js';
 import User from './pages/user.js';
 import Draft from './pages/draft.js';
 import Article from './pages/article.js';
@@ -36,13 +35,7 @@ export default class App extends React.Component{
 	}
 	componentDidMount = () => {
 		let url = blogGlobal.requestBaseUrl;
-		fetch(url,{
-			method:'GET',
-			mode:'cors',
-			credentials: 'include',
-		}).then((response) => {
-			return response.json();
-		}).then((json) => {
+		sendRequest(url, 'get', null, (json) => {
 			if(json.username){
 				this.setState({isLogin:json.isLogin,username:json.username,avatar:json.avatar,role:json.role});
 				sessionStorage.setItem('username',json.username);
@@ -52,10 +45,7 @@ export default class App extends React.Component{
 				this.setState({isLogin:json.isLogin});
 			}
 			sessionStorage.setItem('isLogin',json.isLogin);
-		}).catch((err) => {
-			//console.log(err)
 		})
-
 		this.pubsub_token = PubSub.subscribe('avtarChange', (topic,message) => {  
 		    this.setState({  
 		        avatar: message  
@@ -65,13 +55,7 @@ export default class App extends React.Component{
 
 	handleLogout = () => {
 		let url = blogGlobal.requestBaseUrl+'/logout';
-		fetch(url,{
-			method:'GET',
-			mode:'cors',
-			credentials: 'include',
-		}).then((response) => {
-			return response.json();
-		}).then((json) => {
+		sendRequest(url, 'get', null, (json) => {
 			//console.log(json);
 			this.setState({isLogin:false,role:0});
 			sessionStorage.setItem('isLogin',false);
@@ -79,8 +63,6 @@ export default class App extends React.Component{
 			sessionStorage.removeItem('role');
 			sessionStorage.removeItem('uid');
 			sessionStorage.removeItem('loginTipClose');
-		}).catch((err) => {
-			//console.log(err)
 		})
 	}
 

@@ -124,7 +124,8 @@ body{
 	min-width:$tip-bar-alert-min-width;
 	width:auto;
 	text-align: center;
-	@extend .common-l-v-center-transform;
+	@extend .common-level-center-transform;
+	top: 200px;
 	i{
 		left:auto;
 		margin-left:$tip-bar-alert-icon-margin-left;
@@ -159,8 +160,8 @@ body{
 	font-size: 20px;
 }
 .fa-segmentfault::before{
-	content:"Seg";
-	font-size:16px;
+	content:"sf";
+	font-size:20px;
 	font-weight: bold;
 }
 .fa-douban::before{

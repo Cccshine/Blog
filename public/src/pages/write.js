@@ -1,32 +1,16 @@
 import React from 'react';
-import marked from 'marked';
-import Highlight from 'highlight.js';
 import Tag from '../component/tag/tag';
 import Select from '../component/select/select';
 import TipBar from '../component/tipBar/tip-bar';
 import Modal from '../component/modal/modal';
 import CSSModules from 'react-css-modules';
 import style from '../sass/pages/write.scss'
-import blogGlobal from '../data/global';
+import blogGlobal from '../util/global';
+import { marked, sendRequest, hideTip } from '../util/util';
 
 const url = blogGlobal.requestBaseUrl + "/articles";
 let timer = null;
 let articleID = null;
-let rendererMD = new marked.Renderer();
-Highlight.initHighlightingOnLoad();
-marked.setOptions({
-	renderer: rendererMD,
-	gfm: true,
-	tables: true,
-	breaks: false,
-	pedantic: false,
-	sanitize: false,
-	smartLists: true,
-	smartypants: false,
-	highlight: function (code) {
-		return Highlight.highlightAuto(code).value;
-	}
-});
 
 class Write extends React.Component {
 	constructor(props) {
@@ -45,19 +29,18 @@ class Write extends React.Component {
 			showModal: false,
 			isPublic: false //是否已发表（true--已发表的文章再来编辑  false--新建的文章或者草稿来编辑）
 		}
+		this.mounted = true;
 	}
 
 	componentWillMount = () => {
+		this.mounted = true;
 		let articleId = this.props.match.params.articleId || null;
 		if (!articleId)
 			return;
-		fetch(url + '?mode=edit&articleId=' + articleId, {
-			method: 'get',
-			mode: 'cors',
-			credentials: 'include',
-		}).then((response) => {
-			return response.json();
-		}).then((json) => {
+		sendRequest(url + '?mode=edit&articleId=' + articleId, 'get', null, (json) => {
+			if(!this.mounted){
+				return;
+			}
 			//console.log(json);
 			let { status, article } = json;
 			articleID = article._id;
@@ -69,12 +52,11 @@ class Write extends React.Component {
 				tagString: article.tag,
 				selectValue: article.type
 			});
-		}).catch((err) => {
-			//console.log(err);
-		});
+		})
 	}
 
 	componentWillUnmount = () => {
+		this.mounted = false;
 		articleID = null;
 	}
 
@@ -209,10 +191,9 @@ class Write extends React.Component {
 	}
 
 	handleQuitDraft = (event) => {
-		let { editor, title, tagString, selectValue } = this.state;
 		if (!articleID) {
 			this.setState({ showTip: true, tipType: 'error', tipText: '该文章暂未保存到草稿箱' });
-			this.hideTip();
+			hideTip.call(this);
 			return;
 		}
 		this.setState({ showModal: true });
@@ -223,11 +204,11 @@ class Write extends React.Component {
 		let { editor, title, tagString, selectValue } = this.state;
 		if (title.trim() === '') {
 			this.setState({ showTip: true, tipType: 'error', tipText: '标题不能为空' });
-			this.hideTip();
+			hideTip.call(this);
 			return;
 		} else if (editor.trim() == '') {
 			this.setState({ showTip: true, tipType: 'error', tipText: '文章还没有内容' });
-			this.hideTip();
+			hideTip.call(this);
 			return;
 		}
 		let data = {
@@ -238,11 +219,11 @@ class Write extends React.Component {
 			articleId: articleID,
 			todo: 1//发布文章
 		}
-		this.sendRequest('post', data, (json) => {
+		sendRequest(url, 'post', data, (json) => {
 			let articleId = json.article._id;
 			let tipText = mode == 'save' ? '保存成功' : '发布成功';
 			this.setState({ showTip: true, tipType: 'success', tipText: tipText });
-			this.hideTip(() => {
+			hideTip.call(this, () => {
 				this.props.history.push('/articles/' + articleId);
 			});
 		});
@@ -260,38 +241,17 @@ class Write extends React.Component {
 			todo: 0//保存草稿
 		}
 		//console.log(articleID)
-		this.sendRequest('post', data, (json) => {
+		sendRequest(url, 'post', data, (json) => {
 			let articleId = json.article._id;
 			//console.log(json.article)
 			if (!articleID)
 				articleID = articleId;
 			if (!isAuto) {
 				this.setState({ showTip: true, tipType: 'success', tipText: '保存成功' });
-				this.hideTip();
+				hideTip.call(this);
 			}
 
 		})
-	}
-
-	//发送请求mode: post--新建/保存草稿/发布文章 delete--舍弃草稿
-	sendRequest = (mode, data, callback) => {
-		clearTimeout(timer);
-		fetch(url, {
-			method: mode,
-			headers: {
-				'Accept': 'application/json',
-				'Content-Type': 'application/json'
-			},
-			mode: 'cors',
-			credentials: 'include',
-			body: data ? JSON.stringify(data) : null
-		}).then((response) => {
-			return response.json();
-		}).then((json) => {
-			callback && callback(json);
-		}).catch((err) => {
-			//console.log(err);
-		});
 	}
 
 	comfirmQuit = () => {
@@ -299,9 +259,9 @@ class Write extends React.Component {
 		let data = {
 			articleId: articleID
 		}
-		this.sendRequest('delete', data, (json) => {
+		sendRequest(url, 'delete', data, (json) => {
 			this.setState({ showTip: true, tipType: 'success', tipText: '舍弃成功' });
-			this.hideTip();
+			hideTip.call(this);
 			articleID = null;
 		});
 	}
@@ -309,15 +269,6 @@ class Write extends React.Component {
 	handleModalClose = () => {
 		this.setState({ showModal: false });
 	}
-
-	hideTip = (callback) => {
-		setTimeout(() => {
-			this.setState({ showTip: false });
-			Object.prototype.toString.call(callback) == "[object Function]" && callback();
-		}, 1000);
-	}
-
-
 
 	render() {
 		let { title, editor, previewer, tagString, selectIsDown, selectText, selectValue, showTip, tipType, tipText, showModal, isPublic } = this.state;
@@ -372,7 +323,7 @@ class Write extends React.Component {
 				</div>
 				<div styleName="previewer">
 					<header styleName="header">预览区</header>
-					<div className="markdown" dangerouslySetInnerHTML={this.state.previewer}></div>
+					<div className="markdown" dangerouslySetInnerHTML={previewer}></div>
 				</div>
 				{showTip ? <TipBar {...tipProps} /> : null}
 				{showModal ? <Modal {...modalProps} /> : null}

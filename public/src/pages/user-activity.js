@@ -1,13 +1,12 @@
 import React from 'react';
-import { Link, NavLink } from 'react-router-dom';
-import moment from 'moment';
-import marked from 'marked';
-import Modal from '../component/modal/modal';
+import { Link } from 'react-router-dom';
 import Tag from '../component/tag/tag';
 import Pagination from '../component/pagination/pagination';
 import CSSModules from 'react-css-modules';
 import style from '../sass/pages/user.scss';
-import blogGlobal from '../data/global';
+import blogGlobal from '../util/global';
+import { marked, sendRequest, setPageAttr, getCurrentPage, getDateDiff } from '../util/util';
+
 
 class Activity extends React.Component{
 	constructor(props){
@@ -16,10 +15,7 @@ class Activity extends React.Component{
 			status:0,
 			activityList:[],
 		}
-		this.currentPage = 0;
-		this.pageTotal = 0;
-		this.pageSize = blogGlobal.pageSize;
-		this.lastTime = "";
+		setPageAttr.call(this);
 		this.mounted = true;
 		this.activeUsername = props.match.params.username;
 		this.activeUserId = null;
@@ -42,13 +38,9 @@ class Activity extends React.Component{
 		}
 	}
 
-	getCurrentPage = (currentPage) => {
-		this.currentPage = currentPage;
-	}
-
 	fetchUserAndList = () => {
 		let url = blogGlobal.requestBaseUrl + "/user?username="+this.activeUsername;
-		this.sendRequest(url, 'get', null, (json) => {
+		sendRequest(url, 'get', null, (json) => {
 			if(!this.mounted){
 				return;
 			}
@@ -60,7 +52,7 @@ class Activity extends React.Component{
 	fetchList = (lastTime,currentPage,pageSize,dir) => {
 		let url = blogGlobal.requestBaseUrl + "/activity?userId=" + this.activeUserId +"&lastTime="+lastTime+"&currentPage="+currentPage+"&pageSize="+pageSize+"&dir="+dir;
 		
-		this.sendRequest(url, 'get', null, (json) => {
+		sendRequest(url, 'get', null, (json) => {
 			if(!this.mounted){
 				return;
 			}
@@ -76,69 +68,6 @@ class Activity extends React.Component{
 		});
 	}
 
-	//发送请求
-	sendRequest = (url, mode, data, callback) => {
-		fetch(url, {
-			method: mode,
-			headers: {
-				'Accept': 'application/json',
-				'Content-Type': 'application/json'
-			},
-			mode: 'cors',
-			credentials: 'include',
-			body: data ? JSON.stringify(data) : null
-		}).then((response) => {
-			return response.json();
-		}).then((json) => {
-			callback && callback(json);
-		}).catch((err) => {
-			//console.log(err);
-		});
-	}
-
-
-	getDateDiff(date) {
-		let timestamp = moment(date).format('x');
-		let minute = 1000 * 60;
-		let hour = minute * 60;
-		let day = hour * 24;
-		let halfamonth = day * 15;
-		let month = day * 30;
-		let year = month * 12;
-		let now = new Date().getTime();
-		let diffValue = now - timestamp;
-		if (diffValue < 0) {
-			return '未知';
-		}
-		let yearC = diffValue / year;
-		let monthC = diffValue / month;
-		let weekC = diffValue / (7 * day);
-		let dayC = diffValue / day;
-		let hourC = diffValue / hour;
-		let minC = diffValue / minute;
-		let result = '';
-		if(yearC >= 1){
-			result = "" + parseInt(yearC) + "年前";
-		}
-		else if (monthC >= 1) {
-			result = "" + parseInt(monthC) + "月前";
-		}
-		else if (weekC >= 1) {
-			result = "" + parseInt(weekC) + "周前";
-		}
-		else if (dayC >= 1) {
-			result = "" + parseInt(dayC) + "天前";
-		}
-		else if (hourC >= 1) {
-			result = "" + parseInt(hourC) + "小时前";
-		}
-		else if (minC >= 1) {
-			result = "" + parseInt(minC) + "分钟前";
-		} else
-			result = "刚刚";
-		return result;
-	}
-
 	render(){
 		let { currentPage, pageTotal, pageSize, lastTime } = this;
 		let {activityList,status} = this.state;
@@ -149,7 +78,7 @@ class Activity extends React.Component{
 			pageTotal: pageTotal,
 			lastTime: lastTime,
 			fetchList: this.fetchList,
-			getCurrentPage: this.getCurrentPage
+			getCurrentPage: getCurrentPage.bind(this)
 		}
 		return(
 			<div>
@@ -171,9 +100,9 @@ class Activity extends React.Component{
 																[3]: '取消收藏',
 																[4]: '取消点赞',
 																[5]: '评论',
-															  }[item.activityMode]}文章（{this.getDateDiff(item.createTime)}）
+															  }[item.activityMode]}文章（{getDateDiff(item.createTime)}）
 															</div>
-															<div styleName="list-item-content" style={{color:'#999',margin:'5px 0'}}>
+															<div style={{color:'#999',margin:'5px 0'}}>
 															  该动态相关的文章已删除
 															</div>
 														</section>
@@ -189,16 +118,16 @@ class Activity extends React.Component{
 													        [3]: '取消收藏',
 													        [4]: '取消点赞',
 													        [5]: '评论',
-													      }[item.activityMode]}文章（{this.getDateDiff(item.createTime)}）
+													      }[item.activityMode]}文章（{getDateDiff(item.createTime)}）
 												      	</div>
-												      	<div styleName="list-item-content">
+												      	<div>
 												      		<div className="clearfix">
 												      			<h3 className="fl"><Link target="_blank" to={"/articles/" + article._id}>{article.title}</Link></h3>
 											      			</div>
 											      			<div styleName="tag-panel">
 											      				<Tag {...tagProps} list={list} />
 										      				</div>
-										      				<div styleName="summary">
+										      				<div styleName="summary" className="markdown">
 										      					<p dangerouslySetInnerHTML={{ __html: marked(article.summary) }}></p>
 									      					</div>
 									      					<div className="clearfix">

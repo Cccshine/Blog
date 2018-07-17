@@ -1,11 +1,19 @@
 import React from 'react';
 import SHA from 'sha1';
-import { Link } from 'react-router-dom';
-import blogGlobal from '../data/global';
+import blogGlobal from '../util/global';
 import QuickLink from '../component/quickLink/quick-link';
 import TipBar from '../component/tipBar/tip-bar';
 import CSSModules from 'react-css-modules';
 import style from '../sass/pages/forget.scss';
+import { 
+	sendRequest,
+	handlePasswordChange,
+	handlePasswordFocus,
+	handlePasswordBlur,
+	handleComfirmPasswordChange,
+	handleComfirmPasswordFocus,
+	handleComfirmPasswordBlur 
+} from '../util/util';
 import '../sass/global/_form-box.scss';
 
 
@@ -61,7 +69,7 @@ class Forget extends React.Component {
 				username: username,
 			}
 			let url = blogGlobal.requestBaseUrl + "/forget";
-			this.sendRequest(url, 'post', data, (json) => {
+			sendRequest(url, 'post', data, (json) => {
 				let {status, email} = json;
 				if (status === 0) {
 					this.setState({ tip: blogGlobal.usernameUnExist, status: 1 });
@@ -80,7 +88,7 @@ class Forget extends React.Component {
 				verifyCode: verifyCode
 			}
 			let url = blogGlobal.requestBaseUrl + "/forget/verify";
-			this.sendRequest(url, 'post', data, (json) => {
+			sendRequest(url, 'post', data, (json) => {
 				let {status} = json;
 				if (status === 0) {
 					this.setState({ tip: '验证码已过期', status: 1 });
@@ -115,7 +123,7 @@ class Forget extends React.Component {
 				password:SHA(this.state.password)
 			}
 			let url = blogGlobal.requestBaseUrl + "/user/reset-password";
-			this.sendRequest(url, 'post', data, (json) => {
+			sendRequest(url, 'post', data, (json) => {
 				this.setState({ step: 4 });
 			});
 		}else{
@@ -126,7 +134,7 @@ class Forget extends React.Component {
 				isAuto:false
 			}
 			let url = blogGlobal.requestBaseUrl+"/login";
-			this.sendRequest(url, 'post', data, (json) => {
+			sendRequest(url, 'post', data, (json) => {
 				setTimeout(() => this.props.history.push({ pathname: '/', state: {isLogin:true} }), 2000);
 			});
 		}
@@ -139,7 +147,7 @@ class Forget extends React.Component {
 			return;
 		}
 		let url = blogGlobal.requestBaseUrl + "/forget?toEmail="+email+"&username="+username;
-		this.sendRequest(url, 'get', null, (json) => {
+		sendRequest(url, 'get', null, (json) => {
 			let status = json.status;
 			if (status === 0) {
 				this.setState({ tip: '验证码发送失败，请重新发送', status: 1 });
@@ -160,103 +168,6 @@ class Forget extends React.Component {
 			}
 			time--;
 		},1000)
-	}
-
-
-	handlePasswordChange = (event) => {
-		let value = event.target.value;
-		this.setState({password:value});
-		if(value === ''){
-			this.setState({
-				passwordTip:blogGlobal.passwordRuleTip,
-				passwordStatus:0,
-				comfirmPasswordTip:'',
-				comfirmPasswordStatus:0
-			});
-			return;
-		}else if(value.length < 8){
-			this.setState({
-				passwordTip:blogGlobal.passwordRuleErrLength,
-				passwordStatus:1,
-				comfirmPasswordTip:'',
-				comfirmPasswordStatus:0
-			});
-			return;
-		}else if(value.match(/^[0-9]+$/) || value.match(/^[a-zA-Z]+$/) || value.match(/^[_]+$/)){
-			this.setState({
-				passwordTip:blogGlobal.passwordRuleErrType,
-				passwordStatus:1,
-				comfirmPasswordTip:'',
-				comfirmPasswordStatus:0
-			});
-			return;
-		}
-		this.setState({
-			passwordTip:blogGlobal.rulePassTip,
-			passwordStatus:2
-		});
-	}
-	handlePasswordFocus = (event) => {
-		if(this.state.password.trim() === ''){
-			this.setState({
-				passwordTip:blogGlobal.passwordRuleTip,
-				passwordStatus:0
-			});
-		}
-	}
-	handlePasswordBlur = (event) => {
-		if(this.state.password.trim() === ''){
-			this.setState({
-				passwordTip:blogGlobal.passwordNullTip,
-				passwordStatus:1
-			});
-		}
-	}
-	handleComfirmPasswordChange = (event) => {
-		this.setState({comfirmPassword:event.target.value});
-	}
-	handleComfirmPasswordFocus = (event) => {
-		this.setState({comfirmPasswordStatus:0});
-	}
-	handleComfirmPasswordBlur = (event) => {
-		let comfirmPassword = this.state.comfirmPassword;
-		if(comfirmPassword.trim() === '' && this.state.passwordStatus === 2){
-			this.setState({
-				comfirmPasswordTip:blogGlobal.comfirmPasswordNullTip,
-				comfirmPasswordStatus:1
-			});
-			return;
-		}else if(comfirmPassword !== this.state.password && this.state.passwordStatus === 2){
-			this.setState({
-				comfirmPasswordTip:blogGlobal.comfirmPasswordErr,
-				comfirmPasswordStatus:1
-			});
-			return;
-		}
-		this.setState({
-			comfirmPasswordTip:'',
-			comfirmPasswordStatus:2
-		});
-	}
-
-	//发送请求
-	sendRequest = (url, mode, data, callback) => {
-		fetch(url, {
-			method: mode,
-			headers: {
-				'Accept': 'application/json',
-				'Content-Type': 'application/json'
-			},
-			mode: 'cors',
-			credentials: 'include',
-			body: data ? JSON.stringify(data) : null
-		}).then((response) => {
-			return response.json();
-		}).then((json) => {
-			callback && callback(json);
-		}).catch((err) => {
-			//console.log(err);
-		});
 	}
 
 	render() {
@@ -301,11 +212,11 @@ class Forget extends React.Component {
 										<div className="form-box" styleName="form-box-spc">
 											<form>
 												<div className="form-group">
-													<input type="password" name="password" ref="inputPassword" placeholder="新密码" onChange={this.handlePasswordChange} onFocus={this.handlePasswordFocus} onBlur={this.handlePasswordBlur}/>
+													<input type="password" name="password" ref="inputPassword" placeholder="新密码" onChange={handlePasswordChange.bind(this)} onFocus={handlePasswordFocus.bind(this)} onBlur={handlePasswordBlur.bind(this)}/>
 													<TipBar type={passwordTipType} text={passwordTip} arrow="has"/>
 												</div>
 												<div className="form-group">
-													<input type="password" name="password" ref="inputComfirm" placeholder="确认密码" onChange={this.handleComfirmPasswordChange} onFocus={this.handleComfirmPasswordFocus} onBlur={this.handleComfirmPasswordBlur}/>
+													<input type="password" name="password" ref="inputComfirm" placeholder="确认密码" onChange={handleComfirmPasswordChange.bind(this)} onFocus={handleComfirmPasswordFocus.bind(this)} onBlur={handleComfirmPasswordBlur.bind(this)}/>
 													{comfirmPasswordStatus != 1 ? null : <TipBar type="error" text={comfirmPasswordTip} arrow="has"/>}
 												</div>
 												<button className="operate-btn" onClick={this.handleSubmit}>确定</button>

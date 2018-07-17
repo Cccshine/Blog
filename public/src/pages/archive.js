@@ -1,6 +1,5 @@
 import React from 'react';
 import moment from 'moment';
-import marked from 'marked';
 import { Link } from 'react-router-dom';
 import Modal from '../component/modal/modal';
 import TipBar from '../component/tipBar/tip-bar';
@@ -8,9 +7,12 @@ import Pagination from '../component/pagination/pagination';
 import TagComponent from '../component/tag/tag';
 import CSSModules from 'react-css-modules';
 import style from '../sass/pages/archive.scss';
-import blogGlobal from '../data/global';
+import blogGlobal from '../util/global';
+import { marked, sendRequest, setPageAttr, getCurrentPage, handleDelete, comfirmDel, handleDelModalClose } from '../util/util';
+
 
 let year = null, month = null;
+
 class Archive extends React.Component {
 	constructor(props) {
 		super(props);
@@ -23,11 +25,8 @@ class Archive extends React.Component {
 			showTip: false,
 		}
 		this.articleId = null;
-		this.currentPage = 0;
-		this.pageTotal = 0;
-		this.pageSize = blogGlobal.pageSize;
-		this.lastTime = "";
 		this.mounted = true;
+		setPageAttr.call(this);
 	}
 	componentWillMount = () => {
 		this.mounted = true;
@@ -37,13 +36,7 @@ class Archive extends React.Component {
 		}else{
 			this.setState({ isArchiveList: true });
 			let url = blogGlobal.requestBaseUrl + "/articles?mode=archive";
-			fetch(url, {
-				method: 'get',
-				mode: 'cors',
-				credentials: 'include',
-			}).then((response) => {
-				return response.json();
-			}).then((json) => {
+			sendRequest(url, 'get', null, (json) => {
 				if(!this.mounted){
 					return;
 				}
@@ -53,10 +46,7 @@ class Archive extends React.Component {
 				} else if (status == 1) {
 					this.setState({ status: 1, archiveList: archiveList });
 				}
-				//console.log(json);
-			}).catch((err) => {
-				//console.log(err);
-			});
+			})
 		}
 	}
 
@@ -72,13 +62,10 @@ class Archive extends React.Component {
 		let startTime = moment(realTime).format('x')*1;
 		let endTime = moment(startTime).add(1,'months').subtract(1,'seconds').format('x')*1;
 		let url = blogGlobal.requestBaseUrl + "/articles?mode=archive&startTime="+startTime+"&endTime="+endTime+"&lastTime="+lastTime+"&currentPage="+currentPage+"&pageSize="+pageSize+"&dir="+dir;
-		fetch(url, {
-			method: 'get',
-			mode: 'cors',
-			credentials: 'include',
-		}).then((response) => {
-			return response.json();
-		}).then((json) => {
+		sendRequest(url, 'get', null, (json) => {
+			if(!this.mounted){
+				return;
+			}
 			let { status, articleList ,pageTotal } = json;
 			if (status == 0) {
 				this.setState({ status: 2 });
@@ -87,53 +74,7 @@ class Archive extends React.Component {
 				this.lastTime = articleList[articleList.length - 1].publicTime;
 				this.setState({ status: 1, articleList: articleList });
 			}
-		}).catch((err) => {
-			//console.log(err);
-		});
-	}
-
-	getCurrentPage = (currentPage) => {
-		this.currentPage = currentPage;
-	}
-
-	handleDelete = (articleId, event) => {
-		this.articleId = articleId;
-		this.setState({ delModalShow: true});
-	}
-
-	comfirmDel = () => {
-		this.setState({ delModalShow: false });
-		let data = {
-			articleId: this.articleId
-		}
-		fetch(blogGlobal.requestBaseUrl + "/articles", {
-			method: 'delete',
-			headers: {
-				'Accept': 'application/json',
-				'Content-Type': 'application/json'
-			},
-			mode: 'cors',
-			credentials: 'include',
-			body: JSON.stringify(data)
-		}).then((response) => {
-			return response.json();
-		}).then((json) => {
-			let {articleTotal} = json;
-			let pageTotal = Math.ceil(articleTotal/this.pageSize);
-			this.setState({ showTip: true });
-			//判断文章是否全删完了
-			if(articleTotal <= 0){
-				this.setState({status:2});
-				this.hideTip();
-				return;
-			}else if(pageTotal <= this.currentPage){//判断本页文章是否全删完了，如果是则到上一页
-				this.currentPage--;
-			}
-			this.fetchList(this.lastTime,this.currentPage,this.pageSize,1);
-			this.hideTip();
-		}).catch((err) => {
-			//console.log(err);
-		});
+		})
 	}
 
 	render() {
@@ -144,8 +85,8 @@ class Archive extends React.Component {
 			isOpen: delModalShow,
 			title: '删除提醒',
 			modalHtml: <p className="tips-in-modal">确定删除该文章吗？</p>,
-			btns: [{ name: '确定', ref: 'ok', handleClick: this.comfirmDel }, { name: '取消', ref: 'close' }],
-			handleModalClose: this.handleDelModalClose
+			btns: [{ name: '确定', ref: 'ok', handleClick: comfirmDel.bind(this) }, { name: '取消', ref: 'close' }],
+			handleModalClose: handleDelModalClose.bind(this)
 		}
 		let tagProps = { isLink: true, hasClose: false };
 		let tipProps = {
@@ -159,7 +100,7 @@ class Archive extends React.Component {
 			pageSize: pageSize,
 			pageTotal: pageTotal,
 			lastTime: lastTime,
-			getCurrentPage: this.getCurrentPage,
+			getCurrentPage: getCurrentPage.bind(this),
 			fetchList: this.fetchList
 		}
 		let rootPadding = isArchiveList ? {padding:20} : {padding:'20px 20px 20px 100px'};
@@ -196,14 +137,14 @@ class Archive extends React.Component {
 															{
 																role === 0 ? null : <div styleName="btn-group" className="fr">
 																	<button className="btn-normal btn-sm"><Link target="_self" to={"/write/" + item._id}>编辑</Link></button>
-																	<button className="btn-normal btn-sm" onClick={this.handleDelete.bind(this, item._id)}>删除</button>
+																	<button className="btn-normal btn-sm" onClick={handleDelete.bind(this, item._id)}>删除</button>
 																</div>
 															}
 														</div>
 														<div styleName="tag-panel">
 															{<TagComponent {...tagProps} list={list} />}
 														</div>
-														<div styleName="summary">
+														<div styleName="summary" className="markdown">
 															<p dangerouslySetInnerHTML={{ __html: marked(item.summary) }}></p>
 														</div>
 														<div styleName="more">

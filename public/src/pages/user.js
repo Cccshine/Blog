@@ -1,11 +1,11 @@
 import React from 'react';
 import {Route,Switch} from 'react-router-dom';
-import { Link, NavLink } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import Modal from '../component/modal/modal';
-import Tag from '../component/tag/tag';
 import CSSModules from 'react-css-modules';
 import style from '../sass/pages/user.scss';
-import blogGlobal from '../data/global';
+import blogGlobal from '../util/global';
+import { sendRequest } from '../util/util';
 import Activity from './user-activity.js';
 import Collection from './user-collection.js';
 import Praise from './user-praise.js';
@@ -49,7 +49,7 @@ class User extends React.Component{
 
 	fetchUserInfo = () => {
 		let url = blogGlobal.requestBaseUrl + "/user?username="+this.activeUsername;
-		this.sendRequest(url, 'get', null, (json) => {
+		sendRequest(url, 'get', null, (json) => {
 			if(!this.mounted){
 				return;
 			}
@@ -119,27 +119,6 @@ class User extends React.Component{
 		this.props.history.push({ pathname: '/setting', state: {username:this.activeUsername}});
 	}
 
-	//发送请求
-	sendRequest = (url, mode, data, callback) => {
-		fetch(url, {
-			method: mode,
-			headers: {
-				'Accept': 'application/json',
-				'Content-Type': 'application/json'
-			},
-			mode: 'cors',
-			credentials: 'include',
-			body: data ? JSON.stringify(data) : null
-		}).then((response) => {
-			return response.json();
-		}).then((json) => {
-			callback && callback(json);
-		}).catch((err) => {
-			//console.log(err);
-		});
-	}
-
-
 	render(){
 		let {activeUsername} = this;
 		let {avatarModalShow,avatarSrc,uploadSrc} = this.state;
@@ -167,13 +146,13 @@ class User extends React.Component{
 						<h3 className="fl">{activeUsername}</h3>
 					</div>
 					{
-						activeUsername === sessionStorage.getItem('username') ? <div className="fr" styleName="btn-group">
+						activeUsername === sessionStorage.getItem('username') ? <div className="fr">
 						<button className="btn-normal btn-md" onClick={this.handleSetting}>设置</button>
 					</div> : null
 					}
 					
 				</header>
-				<div styleName="profile-main">
+				<div>
 					<nav styleName="profile-tabs" className="profile-tabs">
 						<NavLink to={"/user/"+activeUsername+"/activities"} activeClassName="active-tab">动态</NavLink>
 						<NavLink to={"/user/"+activeUsername+"/collections"} activeClassName="active-tab">收藏的文章</NavLink>

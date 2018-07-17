@@ -24,7 +24,8 @@ router.post('/', function(req, res) {
   			//基于entity进行save保存
   			user.save(function(err,user){
   				if(err){
-  					//console.log(err)
+						//console.log(err)
+						return;
   				}
   				// 将当前登录用户名保存到session中
   				req.session.username = user.name;

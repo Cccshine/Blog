@@ -8,7 +8,8 @@ const images = require("images");
 const multer  = require('multer');
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, './dist/uploads')
+    // cb(null, 'dist/uploads');//部署服务器用这个
+    cb(null, 'public/uploads');//本地用这个
   },
   filename: (req, file, cb) => {
     let type = file.originalname.split(".");
@@ -53,8 +54,7 @@ router.post('/upload-avatar', function (req, res) {
   upload(req,res,(err)=>{
     if(err){
       //console.log(err);
-      res.status(500).send('Something broke!');
-      return;
+      return res.status(500).send('Something broke upload!');
     }
     // req.file 是 `avatar` 文件的信息,req.body 将具有文本域数据，如果存在的话
     let avatarArea = JSON.parse(req.body.avatarArea);
@@ -67,13 +67,13 @@ router.post('/upload-avatar', function (req, res) {
     fs.unlink(req.file.path,(err)=>{
       if(err){
         //console.log(err);
-        res.status(500).send('Something broke!');
-        return;
+        return res.status(500).send('Something broke!');
       }
       //console.log('删除用户上传的图片成功');
       UserModel.findOneAndUpdate({name:req.session.username},{$set:{avatar:frontPath}}).then((user) => {
           //user默认为更新前的集合，所以可以直接删掉上一次的头像
-          fs.unlink('public'+user.avatar,(err)=>{
+          // fs.unlink('dist'+user.avatar,(err)=>{//部署服务器用这个
+          fs.unlink('public'+user.avatar,(err)=>{//本地用这个
             if(err){
               //console.log(err);
               return;

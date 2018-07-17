@@ -3,6 +3,7 @@
 @import "../../sass/mixin/_vertical_center.scss";
 .root{
 	height:100%;
+	min-height: 600px;
 	background: linear-gradient(#fff,#22C3AA);
 	[data-role*="tip-no"]{
 		position:relative;

@@ -61,13 +61,12 @@ router.get('/',(req,res) => {
 	o.reduce = function (k, vals) { return {infos:vals} }
 	o.query = {receiveUser:req.session.uid}
 	o.sort = {createTime:1}
-	o.out = { replace: 'createdCollectionNameForResults' }
-
+	o.out = { replace: 'messageByDay'}
 	if(currentPage === 0){//第一页
 		MessageModel.mapReduce(o, function (err, model) {
 			if(err){
-				//console.log(err);
-				res.status(500).send('Something broke!');
+				console.log(err);
+				return res.status(500).send('Something broke!');
 			}
 			model.find().then((messageByDayList)=>{//第一页时更新总数及总页数
 				messageByDayTotal = messageByDayList.length;
@@ -76,7 +75,7 @@ router.get('/',(req,res) => {
 				model.find().sort({_id:-1}).limit(pageSize).populate({path:'value.infos.operateUser value.operateUser',select:'name',model:'User'}).populate({path:'value.infos.article value.article',select:'title',model:'Article'}).populate({path:'value.infos.comment value.comment',select:'content',model:'Comment'}).exec(function (err, messageList) {
 					if(err){
 						//console.log(err);
-						res.status(500).send('Something broke!');
+						return res.status(500).send('Something broke!');
 					}
 					
 					if(messageList.length > 0){
@@ -95,12 +94,12 @@ router.get('/',(req,res) => {
 		MessageModel.mapReduce(o, function (err, model) {
 			if(err){
   				//console.log(err);
-				res.status(500).send('Something broke!');
+				  return res.status(500).send('Something broke!');
   			}
 		    model.find().sort({_id:1}).limit(limit).populate({path:'value.infos.operateUser value.operateUser',select:'name',model:'User'}).populate({path:'value.infos.article value.article',select:'title',model:'Article'}).populate({path:'value.infos.comment value.comment',select:'content',model:'Comment'}).exec(function (err, messageList) {
 	  			if(err){
 	  				//console.log(err);
-					res.status(500).send('Something broke!');
+					  return res.status(500).send('Something broke!');
 	  			}
 
 	  			if(messageList.length > 0){
@@ -115,12 +114,12 @@ router.get('/',(req,res) => {
 		MessageModel.mapReduce(o, function (err, model) {
 			if(err){
   				//console.log(err);
-				res.status(500).send('Something broke!');
+				  return res.status(500).send('Something broke!');
   			}
 		    model.find({_id:{$lt:lastTime}}).sort({_id:-1}).limit(pageSize).populate({path:'value.infos.operateUser value.operateUser',select:'name',model:'User'}).populate({path:'value.infos.article value.article',select:'title',model:'Article'}).populate({path:'value.infos.comment value.comment',select:'content',model:'Comment'}).exec(function (err, messageList) {
 	  			if(err){
 	  				//console.log(err);
-					res.status(500).send('Something broke!');
+					  return res.status(500).send('Something broke!');
 	  			}
 
 	  			if(messageList.length > 0){
@@ -140,12 +139,12 @@ router.get('/',(req,res) => {
 		MessageModel.mapReduce(o, function (err, model) {
 			if(err){
   				//console.log(err);
-				res.status(500).send('Something broke!');
+				  return res.status(500).send('Something broke!');
   			}
 		    model.find({_id:{$gt:lastTime}}).sort({_id:1}).skip(skipNum).limit(pageSize).populate({path:'value.infos.operateUser value.operateUser',select:'name',model:'User'}).populate({path:'value.infos.article value.article',select:'title',model:'Article'}).populate({path:'value.infos.comment value.comment',select:'content',model:'Comment'}).exec(function (err, messageList) {
 	  			if(err){
 	  				//console.log(err);
-					res.status(500).send('Something broke!');
+					return res.status(500).send('Something broke!');
 	  			}
 	  			messageList.reverse();
 	  			if(messageList.length > 0){

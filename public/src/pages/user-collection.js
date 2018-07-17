@@ -1,13 +1,11 @@
 import React from 'react';
-import { Link, NavLink } from 'react-router-dom';
-import moment from 'moment';
-import marked from 'marked';
-import Modal from '../component/modal/modal';
+import { Link } from 'react-router-dom';
 import Tag from '../component/tag/tag';
 import Pagination from '../component/pagination/pagination';
 import CSSModules from 'react-css-modules';
 import style from '../sass/pages/user.scss';
-import blogGlobal from '../data/global';
+import blogGlobal from '../util/global';
+import { marked, sendRequest, setPageAttr, getCurrentPage } from '../util/util';
 
 class Collection extends React.Component{
 	constructor(props){
@@ -16,10 +14,7 @@ class Collection extends React.Component{
 			collectionArticles:[],
 			status:0,
 		}
-		this.currentPage = 0;
-		this.pageTotal = 0;
-		this.pageSize = blogGlobal.pageSize;
-		this.lastTime = "";
+		setPageAttr.call(this);
 		this.mounted = true;
 		this.activeUsername = props.match.params.username;
 		this.activeUserId = null;
@@ -34,13 +29,9 @@ class Collection extends React.Component{
 		this.mounted = false;
 	}
 
-	getCurrentPage = (currentPage) => {
-		this.currentPage = currentPage;
-	}
-
 	fetchUserAndList = () => {
 		let url = blogGlobal.requestBaseUrl + "/user?username="+this.activeUsername;
-		this.sendRequest(url, 'get', null, (json) => {
+		sendRequest(url, 'get', null, (json) => {
 			if(!this.mounted){
 				return;
 			}
@@ -51,7 +42,7 @@ class Collection extends React.Component{
 
 	fetchList = (lastTime,currentPage,pageSize,dir) => {
 		let url = blogGlobal.requestBaseUrl + "/articles?mode=collection&userId=" + this.activeUserId +"&lastTime="+lastTime+"&currentPage="+currentPage+"&pageSize="+pageSize+"&dir="+dir;
-		this.sendRequest(url, 'get', null, (json) => {
+		sendRequest(url, 'get', null, (json) => {
 			if(!this.mounted){
 				return;
 			}
@@ -67,26 +58,6 @@ class Collection extends React.Component{
 		})
 	}
 
-	//发送请求
-	sendRequest = (url, mode, data, callback) => {
-		fetch(url, {
-			method: mode,
-			headers: {
-				'Accept': 'application/json',
-				'Content-Type': 'application/json'
-			},
-			mode: 'cors',
-			credentials: 'include',
-			body: data ? JSON.stringify(data) : null
-		}).then((response) => {
-			return response.json();
-		}).then((json) => {
-			callback && callback(json);
-		}).catch((err) => {
-			//console.log(err);
-		});
-	}
-
 	render(){
 		let { currentPage, pageSize,pageTotal,lastTime } = this;
 		let {collectionArticles,status} = this.state;
@@ -97,7 +68,7 @@ class Collection extends React.Component{
 			pageTotal: pageTotal,
 			lastTime: lastTime,
 			fetchList: this.fetchList,
-			getCurrentPage: this.getCurrentPage
+			getCurrentPage: getCurrentPage.bind(this)
 		}
 		return(
 			<div>
@@ -113,14 +84,14 @@ class Collection extends React.Component{
 												list = list.slice(0, list.length - 1);
 												return(
 													<section styleName="list-item" key={index}>
-												      	<div styleName="list-item-content">
+												      	<div>
 												      		<div className="clearfix">
 												      			<h3 className="fl"><Link target="_blank" to={"/articles/" + item._id}>{item.title}</Link></h3>
 											      			</div>
 											      			<div styleName="tag-panel">
 											      				<Tag {...tagProps} list={list} />
 										      				</div>
-										      				<div styleName="summary">
+										      				<div styleName="summary" className="markdown">
 										      					<p dangerouslySetInnerHTML={{ __html: marked(item.summary) }}></p>
 									      					</div>
 									      					<div className="clearfix">

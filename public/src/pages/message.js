@@ -4,7 +4,9 @@ import { Link } from 'react-router-dom';
 import Pagination from '../component/pagination/pagination';
 import CSSModules from 'react-css-modules';
 import style from '../sass/pages/message.scss';
-import blogGlobal from '../data/global';
+import blogGlobal from '../util/global';
+import { sendRequest, setPageAttr, getCurrentPage } from '../util/util';
+
 
 class Message extends React.Component {
 	constructor(props) {
@@ -12,15 +14,9 @@ class Message extends React.Component {
 		this.state = {
 			status:0,
 			messageList:[],
-			// pageTotal: 0,
-			// pageSize: 2,
-			// lastTime:""
 		}
-		this.currentPage = 0;
-		this.pageTotal = 0;
-		this.pageSize = blogGlobal.pageSize;
-		this.lastTime = "";
 		this.mounted = true;
+		setPageAttr.call(this);
 	}
 
 	componentDidMount = () => {;
@@ -32,19 +28,9 @@ class Message extends React.Component {
 		this.mounted = false;
 	}
 
-	getCurrentPage = (currentPage) => {
-		this.currentPage = currentPage;
-	}
-
 	fetchList = (lastTime,currentPage,pageSize,dir) => {
 		let url = blogGlobal.requestBaseUrl + "/message?lastTime="+lastTime+"&currentPage="+currentPage+"&pageSize="+pageSize+"&dir="+dir;
-		fetch(url, {
-			method: 'get',
-			mode: 'cors',
-			credentials: 'include',
-		}).then((response) => {
-			return response.json();
-		}).then((json) => {
+		sendRequest(url, 'get', null, (json) => {
 			if(!this.mounted){
 				return;
 			}
@@ -57,9 +43,7 @@ class Message extends React.Component {
 				this.lastTime = messageList[messageList.length - 1]._id;
 				this.setState({ status: 1, messageList: messageList});
 			}
-		}).catch((err) => {
-			//console.log(err);
-		});
+		})
 	}
 
 	render() {
@@ -70,7 +54,7 @@ class Message extends React.Component {
 			pageSize: pageSize,
 			pageTotal: pageTotal,
 			lastTime: lastTime,
-			getCurrentPage: this.getCurrentPage,
+			getCurrentPage: getCurrentPage.bind(this),
 			fetchList: this.fetchList
 		}
 		return (
@@ -130,10 +114,10 @@ class Message extends React.Component {
 								)
 								break;
 							case 2:
-								return <h3 styleName="null-tip" style={{display:'none'}}>暂无提醒</h3>
+								return <h3 styleName="null-tip">暂无提醒</h3>
 								break;
 							default:
-								return <div styleName="loading" style={{display:'none'}}><i className="fa fa-spinner fa-pulse"></i><span>正在加载...</span></div>
+								return <div styleName="loading"><i className="fa fa-spinner fa-pulse"></i><span>正在加载...</span></div>
 								break;
 						}
 					})()

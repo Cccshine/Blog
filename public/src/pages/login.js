@@ -1,7 +1,8 @@
 import React from 'react';
 import SHA from 'sha1';
 import { Link } from 'react-router-dom';
-import blogGlobal from '../data/global';
+import blogGlobal from '../util/global';
+import { sendRequest } from '../util/util';
 import QuickLink from '../component/quickLink/quick-link';
 import TipBar from '../component/tipBar/tip-bar';
 import CSSModules from 'react-css-modules';
@@ -46,18 +47,7 @@ class Login extends React.Component{
 			isAuto:this.state.autoLogin
 		}
 		let url = blogGlobal.requestBaseUrl+"/login";
-		fetch(url,{
-			method:'POST',
-			headers:{
-				'Accept':'application/json',
-				'Content-Type':'application/json'
-			},
-			mode:'cors',
-			credentials: 'include',
-			body:JSON.stringify(data)
-		}).then((response) => {
-			return response.json();
-		}).then((json) => {
+		sendRequest(url, 'post', data, (json) => {
 			let status = json.status;
 			if(status === 0){
 				this.setState({info:blogGlobal.usernameUnExist,status:1});
@@ -67,10 +57,7 @@ class Login extends React.Component{
 				this.setState({info:blogGlobal.loginPassTip,status:2});
 				setTimeout(() => this.props.history.push({ pathname: '/', state: {isLogin:true} }), 2000);
 			}
-		}).catch(function(err){
-        	 //console.log(err)
-        })
-
+		})
 	}
 	render(){
 		let {status,info,autoLogin} = this.state;
@@ -107,4 +94,3 @@ class Login extends React.Component{
 }
 
 export default CSSModules(Login, style,{handleNotFoundStyleName:'log'});
-// export default Login;

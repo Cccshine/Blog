@@ -1,5 +1,6 @@
 import React from 'react';
-import blogGlobal from '../../data/global';
+import blogGlobal from '../../util/global';
+import { sendRequest } from '../../util/util';
 import {NavLink,Link} from 'react-router-dom';
 import CSSModules from 'react-css-modules';
 import QuickLink from '../quickLink/quick-link';
@@ -19,10 +20,12 @@ class Header extends React.Component{
 			messageStatus:0,
 			msgShow:false
 		}
+		this.mounted = true;
 	}
 
 	componentDidMount = () => {
 		//console.log('this.props.username:'+sessionStorage.getItem('username'))
+		this.mounted = true;
 		let host = window.location.hostname;
 		const ws = new WebSocket('ws://'+host+':3000/message?username='+sessionStorage.getItem('username'));
 		document.addEventListener('click', this.hideMsgList, false);
@@ -30,6 +33,9 @@ class Header extends React.Component{
 
 		ws.onmessage= (e) => {  
 			//console.log('_message');  
+			if(!this.mounted){
+				return;
+			}
 			this.setState({newMessageCount:Number(e.data)},()=>{
 				if(this.state.newMessageCount){
 					this.fetchNewMsgList();
@@ -58,26 +64,22 @@ class Header extends React.Component{
 	}
 
 	componentWillUnmount(){  
+		this.mounted = false;
 	    document.removeEventListener('click', this.hideMsgList, false);
 	} 
 
 	fetchNewMsgList = () => {
 		let url = blogGlobal.requestBaseUrl+'/message/unread';
-		fetch(url,{
-			method:'GET',
-			mode:'cors',
-			credentials: 'include',
-		}).then((response) => {
-			return response.json();
-		}).then((json) => {
+		sendRequest(url, 'get', null, (json) => {
+			if(!this.mounted){
+				return;
+			}
 			//console.log(json)
 			let status = json.messageList.length ? 1 : 2;
 			this.setState({  
 		        messageList: json.messageList,
 		        messageStatus: status
 		    });
-		}).catch((err) => {
-			//console.log(err)
 		})
 	}
 
@@ -85,16 +87,8 @@ class Header extends React.Component{
 		if(this.state.newMessageCount){
 			this.setState({newMessageCount:0});
 			let url = blogGlobal.requestBaseUrl+'/message/setRead';
-			fetch(url,{
-				method:'GET',
-				mode:'cors',
-				credentials: 'include',
-			}).then((response) => {
-				return response.json();
-			}).then((json) => {
-				//console.log(json)
-			}).catch((err) => {
-				//console.log(err)
+			sendRequest(url, 'get', null, (json) => {
+				// console.log(json)
 			})
 		}
 		this.setState({msgShow:!this.state.msgShow});

@@ -1,6 +1,5 @@
 import React from 'react';
 import moment from 'moment';
-import marked from 'marked';
 import { Link } from 'react-router-dom';
 import Modal from '../component/modal/modal';
 import TipBar from '../component/tipBar/tip-bar';
@@ -8,11 +7,13 @@ import Pagination from '../component/pagination/pagination';
 import TagComponent from '../component/tag/tag';
 import CSSModules from 'react-css-modules';
 import style from '../sass/pages/tag.scss';
-import blogGlobal from '../data/global';
+import blogGlobal from '../util/global';
+import { marked, sendRequest, setPageAttr, getCurrentPage, handleDelete, comfirmDel, handleDelModalClose } from '../util/util';
 
 const RADIUS = 200,FALLLENGTH = 400;
 let tagBallAttr = {}, tags = [], animateFrame = null, angleX = Math.PI/1000,angleY = Math.PI/1000;//angleX与angleY分别表示x,y轴转动的弧度
 let target = null;
+
 class Tag extends React.Component {
 	constructor(props) {
 		super(props);
@@ -25,11 +26,8 @@ class Tag extends React.Component {
 		}
 		this.articleId = null;
 		this.isTagList = false;
-		this.currentPage = 0;
-		this.pageTotal = 0;
-		this.pageSize = blogGlobal.pageSize;
-		this.lastTime = "";
 		this.mounted = true;
+		setPageAttr.call(this);
 	}
 
 	componentWillMount = () => {
@@ -39,13 +37,7 @@ class Tag extends React.Component {
 		} else {
 			this.isTagList = true;
 			let url = blogGlobal.requestBaseUrl + "/tags";
-			fetch(url, {
-				method: 'get',
-				mode: 'cors',
-				credentials: 'include',
-			}).then((response) => {
-				return response.json();
-			}).then((json) => {
+			sendRequest(url, 'get', null, (json) => {
 				if(!this.mounted){
 					return;
 				}
@@ -64,9 +56,7 @@ class Tag extends React.Component {
 					}
 					this.tagCloudInit();
 				}
-			}).catch((err) => {
-				//console.log(err);
-			});
+			})
 		}
 	}
 
@@ -81,13 +71,10 @@ class Tag extends React.Component {
 	fetchList = (lastTime,currentPage,pageSize,dir) => {
 		let tagName = this.props.match.params.tagName || null;
 		let url = blogGlobal.requestBaseUrl + "/articles?mode=public&tagName="+tagName+"&lastTime="+lastTime+"&currentPage="+currentPage+"&pageSize="+pageSize+"&dir="+dir;
-		fetch(url, {
-			method: 'get',
-			mode: 'cors',
-			credentials: 'include',
-		}).then((response) => {
-			return response.json();
-		}).then((json) => {
+		sendRequest(url, 'get', null, (json) => {
+			if(!this.mounted){
+				return;
+			}
 			//console.log(json);
 			let { status, articleList ,pageTotal } = json;
 			if (status == 0) {
@@ -97,54 +84,9 @@ class Tag extends React.Component {
 				this.lastTime = articleList[articleList.length - 1].publicTime;
 				this.setState({ status: 1, articleList: articleList});
 			}
-		}).catch((err) => {
-			//console.log(err);
-		});
+		})
 	}
 
-	getCurrentPage = (currentPage) => {
-		this.currentPage = currentPage;
-	}
-
-	handleDelete = (articleId, event) => {
-		this.articleId = articleId;
-		this.setState({ delModalShow: true});
-	}
-
-	comfirmDel = () => {
-		this.setState({ delModalShow: false });
-		let data = {
-			articleId: this.articleId
-		}
-		fetch(blogGlobal.requestBaseUrl + "/articles", {
-			method: 'delete',
-			headers: {
-				'Accept': 'application/json',
-				'Content-Type': 'application/json'
-			},
-			mode: 'cors',
-			credentials: 'include',
-			body: JSON.stringify(data)
-		}).then((response) => {
-			return response.json();
-		}).then((json) => {
-			let {articleTotal} = json;
-			let pageTotal = Math.ceil(articleTotal/this.pageSize);
-			this.setState({ showTip: true });
-			//判断文章是否全删完了
-			if(articleTotal <= 0){
-				this.setState({status:2});
-				this.hideTip();
-				return;
-			}else if(pageTotal <= this.currentPage){//判断本页文章是否全删完了，如果是则到上一页
-				this.currentPage--;
-			}
-			this.fetchList(this.lastTime,this.currentPage,this.pageSize,1);
-			this.hideTip();
-		}).catch((err) => {
-			//console.log(err);
-		});
-	}
 	//-------------------------标签云-------------------------
 	
 
@@ -205,26 +147,18 @@ class Tag extends React.Component {
 		let x = event.clientX - tagBallAttr.left - tagBallAttr.halfW;
 		let y = event.clientY - tagBallAttr.top - tagBallAttr.halfH;
 		if(x > -200 && x < 200){
-			angleY = -(x * 0.000005);
+			angleY = -(x * 0.00001);
 		}else{
 			angleY = -(x * 0.00005);
 		}
 		if(y > -200 && y < 200){
-			angleX = -(y * 0.000005);
+			angleX = -(y * 0.00001);
 		}else{
 			angleX = -(y * 0.00005);
 		}
 	}
 
 	//-------------------------标签云-------------------------
-
-	handleDelModalClose = () => {
-		this.setState({ delModalShow: false })
-	}
-
-	hideTip = () => {
-		setTimeout(() => this.setState({ showTip: false }), 1000);
-	}
 
 	getOffset = (obj) => {
 		let top = 0,left = 0;
@@ -244,8 +178,8 @@ class Tag extends React.Component {
 			isOpen: delModalShow,
 			title: '删除提醒',
 			modalHtml: <p className="tips-in-modal">确定删除该文章吗？</p>,
-			btns: [{ name: '确定', ref: 'ok', handleClick: this.comfirmDel }, { name: '取消', ref: 'close' }],
-			handleModalClose: this.handleDelModalClose
+			btns: [{ name: '确定', ref: 'ok', handleClick: comfirmDel.bind(this) }, { name: '取消', ref: 'close' }],
+			handleModalClose: handleDelModalClose.bind(this)
 		}
 		let tagProps = { isLink: true, hasClose: false };
 		let tipProps = {
@@ -260,7 +194,7 @@ class Tag extends React.Component {
 			pageTotal: pageTotal,
 			lastTime: lastTime,
 			fetchList: this.fetchList,
-			getCurrentPage: this.getCurrentPage
+			getCurrentPage: getCurrentPage.bind(this)
 		}
 		let rootPadding = isTagList ? {padding:20} : {padding:'20px 20px 20px 100px'};
 		return (
@@ -291,14 +225,14 @@ class Tag extends React.Component {
 															{
 																role === 0 ? null : <div styleName="btn-group" className="fr">
 																	<button className="btn-normal btn-sm"><Link target="_self" to={"/write/" + item._id}>编辑</Link></button>
-																	<button className="btn-normal btn-sm" onClick={this.handleDelete.bind(this, item._id)}>删除</button>
+																	<button className="btn-normal btn-sm" onClick={handleDelete.bind(this, item._id)}>删除</button>
 																</div>
 															}
 														</div>
 														<div styleName="tag-panel">
 															{<TagComponent {...tagProps} list={list} />}
 														</div>
-														<div styleName="summary">
+														<div styleName="summary" className="markdown">
 															<p dangerouslySetInnerHTML={{ __html: marked(item.summary) }}></p>
 														</div>
 														<div styleName="more">

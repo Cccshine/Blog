@@ -113,6 +113,13 @@
 		margin-bottom: 20px;
 		padding-bottom: 5px;
 		border-bottom: 1px dotted $theme-adorn-color;
+		.summary{
+			color: #666;
+			padding: 0;
+		}
+		&:last-of-type{
+			margin-bottom: 40px;
+		}
 	}
 	.list-item-meta{
 		color:#999;
@@ -126,9 +133,6 @@
 		.tag{
 			background:black;
 		}
-	}
-	.summary{
-		margin: 10px 0;
 	}
 	.article-info{
 		width: 300px;

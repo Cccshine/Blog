@@ -1,12 +1,20 @@
 import React from 'react';
 import SHA from 'sha1';
-import moment from 'moment';
 import Modal from '../component/modal/modal';
 import TipBar from '../component/tipBar/tip-bar';
 import CSSModules from 'react-css-modules';
 import style from '../sass/pages/setting.scss';
-import blogGlobal from '../data/global';
-import NoMatch from './nomatch.js';
+import blogGlobal from '../util/global';
+import { 
+	sendRequest,
+	hideTip,
+	handlePasswordChange,
+	handlePasswordFocus,
+	handlePasswordBlur,
+	handleComfirmPasswordChange,
+	handleComfirmPasswordFocus,
+	handleComfirmPasswordBlur 
+} from '../util/util';
 
 class Setting extends React.Component {
 	constructor(props) {
@@ -31,15 +39,24 @@ class Setting extends React.Component {
 			resetEmailStep: 1,
 		}
 		this.timer = null;
+		this.mounted = true;
 	}
 
 	componentWillMount = () => {
+		this.mounted = true;
 		let url = blogGlobal.requestBaseUrl + "/user?username="+sessionStorage.getItem('username');
-		this.sendRequest(url, 'get', null, (json) => {
+		sendRequest(url, 'get', null, (json) => {
+			if(!this.mounted){
+				return;
+			}
 			this.setState({
 				email: json.userInfo.email
 			})
 		});
+	}
+
+	componentWillUnmount = () => {
+		this.mounted = false;
 	}
 
 	handleChangePw = (event) => {
@@ -108,7 +125,7 @@ class Setting extends React.Component {
 			password: SHA(this.state.password)
 		}
 		let url = blogGlobal.requestBaseUrl + "/user/reset-password";
-		this.sendRequest(url, 'post', data, (json) => {
+		sendRequest(url, 'post', data, (json) => {
 			this.setState({
 				pwModalShow: false,
 				password: '',
@@ -119,90 +136,8 @@ class Setting extends React.Component {
 				comfirmPasswordTip: '',
 				showTip: true
 			});
-			this.hideTip();
+			hideTip.call(this);
 			setTimeout(() => this.props.history.push('/login'), 2000);
-		});
-	}
-
-	handlePasswordChange = (event) => {
-		let value = event.target.value;
-		this.setState({
-			password: value
-		});
-		if (value === '') {
-			this.setState({
-				passwordTip: blogGlobal.passwordRuleTip,
-				passwordStatus: 0,
-				comfirmPasswordTip: '',
-				comfirmPasswordStatus: 0
-			});
-			return;
-		} else if (value.length < 8) {
-			this.setState({
-				passwordTip: blogGlobal.passwordRuleErrLength,
-				passwordStatus: 1,
-				comfirmPasswordTip: '',
-				comfirmPasswordStatus: 0
-			});
-			return;
-		} else if (value.match(/^[0-9]+$/) || value.match(/^[a-zA-Z]+$/) || value.match(/^[_]+$/)) {
-			this.setState({
-				passwordTip: blogGlobal.passwordRuleErrType,
-				passwordStatus: 1,
-				comfirmPasswordTip: '',
-				comfirmPasswordStatus: 0
-			});
-			return;
-		}
-		this.setState({
-			passwordTip: blogGlobal.rulePassTip,
-			passwordStatus: 2
-		});
-	}
-	handlePasswordFocus = (event) => {
-		if (this.state.password.trim() === '') {
-			this.setState({
-				passwordTip: blogGlobal.passwordRuleTip,
-				passwordStatus: 0
-			});
-		}
-	}
-	handlePasswordBlur = (event) => {
-		if (this.state.password.trim() === '') {
-			this.setState({
-				passwordTip: blogGlobal.passwordNullTip,
-				passwordStatus: 1
-			});
-		}
-	}
-	handleComfirmPasswordChange = (event) => {
-		this.setState({
-			comfirmPassword: event.target.value
-		});
-	}
-	handleComfirmPasswordFocus = (event) => {
-		this.setState({
-			comfirmPasswordStatus: 0
-		});
-	}
-	handleComfirmPasswordBlur = (event) => {
-		let comfirmPassword = this.state.comfirmPassword;
-		if (comfirmPassword.trim() === '' && this.state.passwordStatus === 2) {
-			this.setState({
-				comfirmPasswordTip: blogGlobal.comfirmPasswordNullTip,
-				comfirmPasswordStatus: 1
-			});
-			return;
-		} else if (comfirmPassword !== this.state.password && this.state.passwordStatus === 2) {
-			this.setState({
-				comfirmPasswordTip: blogGlobal.comfirmPasswordErr,
-				comfirmPasswordStatus: 1
-			});
-			return;
-		}
-		this.setState({
-			comfirmPasswordTip: '',
-			comfirmPasswordStatus: 2
 		});
 	}
 
@@ -226,7 +161,7 @@ class Setting extends React.Component {
 			return;
 		}
 		let url = blogGlobal.requestBaseUrl + "/forget?toEmail=" + email + "&username=" + username;
-		this.sendRequest(url, 'get', null, (json) => {
+		sendRequest(url, 'get', null, (json) => {
 			let status = json.status;
 			if (status === 0) {
 				this.setState({
@@ -259,7 +194,7 @@ class Setting extends React.Component {
 			verifyCode: verifyCode
 		}
 		let url = blogGlobal.requestBaseUrl + "/forget/verify";
-		this.sendRequest(url, 'post', data, (json) => {
+		sendRequest(url, 'post', data, (json) => {
 			let {
 				status
 			} = json;
@@ -352,7 +287,7 @@ class Setting extends React.Component {
 			email: resetEmail
 		}
 		let url = blogGlobal.requestBaseUrl + "/user/edit-email";
-		this.sendRequest(url, 'post', data, (json) => {
+		sendRequest(url, 'post', data, (json) => {
 			this.setState({
 				email: resetEmail,
 				emailModalShow: false,
@@ -364,36 +299,11 @@ class Setting extends React.Component {
 				resetEmailStep: 1,
 				showTip: true
 			});
-			this.hideTip();
+			hideTip.call(this);
 		});
 
 	}
 
-	//发送请求
-	sendRequest = (url, mode, data, callback) => {
-		fetch(url, {
-			method: mode,
-			headers: {
-				'Accept': 'application/json',
-				'Content-Type': 'application/json'
-			},
-			mode: 'cors',
-			credentials: 'include',
-			body: data ? JSON.stringify(data) : null
-		}).then((response) => {
-			return response.json();
-		}).then((json) => {
-			callback && callback(json);
-		}).catch((err) => {
-			//console.log(err);
-		});
-	}
-
-	hideTip = () => {
-		setTimeout(() => this.setState({
-			showTip: false
-		}), 1000);
-	}
 
 	render() {
 		let {email,pwModalShow,emailModalShow,passwordStatus,passwordTip,comfirmPasswordStatus,comfirmPasswordTip,resetEmailStatus,resetEmailTip,verifyEmailStatus,resetEmailStep,showTip,time} = this.state;
@@ -405,11 +315,11 @@ class Setting extends React.Component {
 		let pwModalHtml = <div className = "form-box" styleName = "form-box-spc">
 							<form>
 								<div className = "form-group" >
-									<input type = "password" name = "password" ref = "inputPassword" placeholder = "新密码" onChange = {this.handlePasswordChange} onFocus = {this.handlePasswordFocus} onBlur = {this.handlePasswordBlur}/> 
+									<input type = "password" name = "password" ref = "inputPassword" placeholder = "新密码" onChange = {handlePasswordChange.bind(this)} onFocus = {handlePasswordFocus.bind(this)} onBlur = {handlePasswordBlur.bind(this)}/> 
 									<TipBar type = {passwordTipType} text = {passwordTip} arrow = "has" />
 								</div>
 								<div className = "form-group">
-									<input type = "password" name = "password" ref = "inputComfirm" placeholder = "确认密码" onChange = {this.handleComfirmPasswordChange} onFocus = {this.handleComfirmPasswordFocus} onBlur = {this.handleComfirmPasswordBlur}/> 
+									<input type = "password" name = "password" ref = "inputComfirm" placeholder = "确认密码" onChange = {handleComfirmPasswordChange.bind(this)} onFocus = {handleComfirmPasswordFocus.bind(this)} onBlur = {handleComfirmPasswordBlur.bind(this)}/> 
 									{
 										comfirmPasswordStatus != 1 ? null : < TipBar type = "error" text = {comfirmPasswordTip} arrow = "has" />
 									} 
